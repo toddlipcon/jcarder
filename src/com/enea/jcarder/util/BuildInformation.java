@@ -23,7 +23,7 @@ public final class BuildInformation {
 
     public static void printLongBuildInformation() {
         try {
-            System.out.println("\njcarder by Ulrik Svensson (ulriksv@gmail.com), Enea Epact");
+            System.out.println("\nJCarder by Ulrik Svensson <ulriksv@gmail.com>, Enea");
             Properties props = loadBuildProperties();
             System.out.println("  \nVersion: "
                                + props.getProperty("build.version")
