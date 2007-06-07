@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.enea.jcarder.analyzer.Analyzer
+Premain-Class: com.enea.jcarder.agent.JavaAgent
+Can-Redefine-Classes: true

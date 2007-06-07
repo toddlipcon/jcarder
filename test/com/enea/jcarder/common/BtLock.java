@@ -1,0 +1,15 @@
+package com.enea.jcarder.common;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.enea.jcarder.common.Lock;
+
+public final class BtLock {
+
+    @Test
+    public void testGetClassName() {
+        Lock lock = new Lock(this);
+        Assert.assertEquals(this.getClass().getName(), lock.getClassName());
+    }
+}

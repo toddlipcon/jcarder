@@ -1,0 +1,65 @@
+<!--
+   TODO Add checkstyle, junit and test coverage (for example cobertura)
+        targets. Also start using the checkstyle-plugin for eclipse.
+-->
+
+<project name="JCarder" default="dist" basedir=".">
+  <property name="src" location="src"/>
+  <property name="3pp" location="3pp"/>
+  <property name="build" location="build/"/>
+  <property name="examples" location="examples"/>
+  <property name="dist"  location="dist"/>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac srcdir="${src}"
+           destdir="${build}"
+           classpath="${3pp}/asm-all-2.2.2.jar:${3pp}/jcip-annotations.jar"
+           debug="true"
+           debuglevel="lines,vars,source"/>
+    <javac srcdir="${examples}"
+           destdir="${examples}"
+           classpath="${examples}:${build}"
+           debug="true"
+           debuglevel="lines,vars,source"/>
+  </target>
+
+  <target name="buildproperty">
+        <propertyfile comment="Build Information"
+                      file="${src}/build.properties">
+            <entry key="build.timestamp"
+                   type="date"
+                   pattern="yyyy-MM-dd HH:mm:ss"
+                   value="now"/>
+            <entry key="build.user.name" value="${user.name}"/>
+            <entry key="build.os.name" value="${os.name}"/>
+            <entry key="build.number" default="1" type="int" operation="+"/>
+            <entry key="build.version" value="pre-0.1"/>
+        </propertyfile>
+  </target>
+
+  <target name="dist" depends="compile, buildproperty">
+    <mkdir dir="${dist}"/>
+    <taskdef name="jarjar"
+             classname="com.tonicsystems.jarjar.JarJarTask"
+             classpath="${3pp}/jarjar-0.7.jar"/>
+    <jarjar jarfile="${dist}/jcarder.jar" manifest="${src}/MANIFEST.MF">
+      <fileset dir="${build}"/>
+      <fileset file="${src}/build.properties"/>
+      <zipfileset src="${3pp}/jcip-annotations.jar"/>
+      <zipfileset src="${3pp}/asm-all-2.2.2.jar"/>
+      <rule pattern="org.objectweb.**"
+            result="com.enea.jcarder.org.objectweb.@1"/>
+    </jarjar>
+    <jar destfile="${dist}/examples.jar" basedir="${examples}"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
