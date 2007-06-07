@@ -20,12 +20,12 @@ public final class TwoThreadSynchronization extends Thread
             assertTrue(Thread.holdsLock(mSync0));
             synchronized (mSync1) {
                 assertTrue(Thread.holdsLock(mSync1));
-                this.start();
+                start();
                 Thread.yield();
                 Thread.sleep(100);
             }
             assertFalse(Thread.holdsLock(mSync1));
-            this.join();
+            join();
         }
         assertFalse(Thread.holdsLock(mSync0));
         assertFalse(Thread.holdsLock(mSync1));
