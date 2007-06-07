@@ -1,31 +1,32 @@
 import java.util.ArrayList;
 import java.util.List;
 
-class DataModel {
-    private final List<View> mListeners = new ArrayList<View>();
+public class DataModel {
+    private List<View> mListeners = new ArrayList<View>();
 
-    synchronized void registerListener(View view) {
+    synchronized public void registerListener(View view) {
         mListeners.add(view);
     }
 
-    synchronized void unregisterListener(View view) {
+    synchronized public void unregisterListener(View view) {
         mListeners.remove(view);
     }
 
-    synchronized void notifyListeners() {
+    synchronized public void notifyListeners() {
         System.out.println("Notifying listeners");
-        for (View view: mListeners) {
+        for (View view : mListeners) {
             view.modelUpdated();
         }
     }
 
-    void doSomeAsynchronousModelUpdate() {
-        new Thread("asynchronousThread") {
+    public void doSomeAsynchronousModelUpdate() {
+        Thread updateThread = new Thread("modelUpdateThread") {
            public void run() {
                System.out.println("Performing some update");
                // ...
                notifyListeners();
            };
-        }.start();
+        };
+        updateThread.start();
     }
 }

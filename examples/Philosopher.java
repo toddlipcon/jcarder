@@ -1,6 +1,6 @@
 public class Philosopher extends Thread {
-    private final Chopstick mLeftChopstick;
-    private final Chopstick mRightChopstick;
+    private Chopstick mLeftChopstick;
+    private Chopstick mRightChopstick;
 
     public Philosopher(String name,
                        Chopstick leftChopstick,
@@ -17,8 +17,7 @@ public class Philosopher extends Thread {
     private void pickUpSticksAndEat() {
         synchronized (mLeftChopstick) {
             synchronized (mRightChopstick) {
-                System.err.println(getName() + " is eating.");
-
+                System.out.println(getName() + " is eating.");
             }
         }
     }

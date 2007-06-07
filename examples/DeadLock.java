@@ -1,4 +1,3 @@
-
 public class DeadLock {
     public static void main(String[] args) throws Exception {
         DataModel dataModel = new DataModel();
@@ -11,5 +10,4 @@ public class DeadLock {
         view2.thaw();
         System.out.println("Main thread finished");
     }
-
 }

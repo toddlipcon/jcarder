@@ -1,26 +1,26 @@
-class View {
-    private final DataModel mDataModel;
-    private boolean mFreezed = false;
+public class View {
+    private DataModel mDataModel;
+    private boolean mFrozen = false;
 
-    View(DataModel dataModel) {
+    public View(DataModel dataModel) {
        mDataModel = dataModel;
        System.out.println("Registering view in data model");
        dataModel.registerListener(this);
     }
 
     synchronized void freeze() {
-        if (!mFreezed) {
+        if (!mFrozen) {
            System.out.println("Freezing view");
            mDataModel.unregisterListener(this);
-           mFreezed = true;
+           mFrozen = true;
        }
     }
 
     synchronized void thaw() {
-       if (mFreezed) {
+       if (mFrozen) {
            System.out.println("Thawing view");
            mDataModel.registerListener(this);
-           mFreezed = false;
+           mFrozen = false;
        }
     }
 

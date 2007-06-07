@@ -1,5 +1,4 @@
 public class DiningPhilosophers {
-
     public static void main(String[] args) throws Exception {
         Chopstick stick1 = new Chopstick();
         Chopstick stick2 = new Chopstick();
@@ -16,7 +15,9 @@ public class DiningPhilosophers {
         Philosopher phil4 = new Philosopher("Philosopher4", stick4, stick5);
         Philosopher phil5 = new Philosopher("Philosopher5", stick5, stick1);
 
-        Philosopher phil6 = new Philosopher("PhilosopherWithOwnSticks", stick6, stick7);
+        Philosopher phil6 = new Philosopher("PhilosopherWithOwnSticks", 
+                                            stick6,
+                                            stick7);
 
         phil1.start();
         phil1.join();
