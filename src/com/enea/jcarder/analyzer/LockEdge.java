@@ -55,7 +55,6 @@ class LockEdge {
                && mTarget.alike(other.mTarget, ras);
     }
 
-    @Override
     public boolean equals(Object obj) {
         // TODO It might be a potential problem to use LockEdges in HashMaps
         //      since they are mutable and this equals method depends
@@ -72,7 +71,6 @@ class LockEdge {
         }
     }
 
-    @Override
     public int hashCode() {
         // TODO Improve hashCode algorithm to improve performance?
         return mTarget.getLockId() + mSource.getLockId();
@@ -113,7 +111,6 @@ class LockEdge {
         return mThreadId;
     }
 
-    @Override
     public String toString() {
         return "  " + mSource + "->" + mTarget;
     }

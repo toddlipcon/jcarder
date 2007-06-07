@@ -55,7 +55,6 @@ public final class LockingContext {
                && mMethodWithClass.equals(other.mMethodWithClass);
     }
 
-    @Override
     public boolean equals(Object other) {
         try {
             if (other == null) {
@@ -71,14 +70,12 @@ public final class LockingContext {
         }
     }
 
-    @Override
     public int hashCode() {
         return mThreadName.hashCode()
                + mMethodWithClass.hashCode()
                + mLockReference.hashCode();
     }
 
-    @Override
     public String toString() {
         return "Thread: " + mThreadName
                + " LockRef: " + mLockReference

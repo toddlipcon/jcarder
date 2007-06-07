@@ -36,7 +36,6 @@ public final class Logger {
 
     static {
         Thread hook = new Thread() {
-            @Override
             public void run() {
                 // System.out.println("TimeFrames.maxSize: " + TimeFrames.maxSize);
                 Logger.flush();

@@ -90,7 +90,6 @@ class Cycle {
         return true;
     }
 
-    @Override
     public boolean equals(Object obj) {
         try {
             Cycle other = (Cycle) obj;
@@ -100,13 +99,11 @@ class Cycle {
         }
     }
 
-    @Override
     public int hashCode() {
         return mEdgesInCycle.hashCode();
     }
 
 
-    @Override
     public String toString() {
         return mEdgesInCycle.toString();
     }

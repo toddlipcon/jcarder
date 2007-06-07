@@ -79,7 +79,6 @@ public final class IdentityWeakHashMap<V> {
             return mReferent;
         }
 
-        @Override
         public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
@@ -92,7 +91,6 @@ public final class IdentityWeakHashMap<V> {
             }
         }
 
-        @Override
         public int hashCode() {
             return System.identityHashCode(mReferent);
         }
@@ -108,7 +106,6 @@ public final class IdentityWeakHashMap<V> {
             mHash = System.identityHashCode(referent);
         }
 
-        @Override
         public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
@@ -122,7 +119,6 @@ public final class IdentityWeakHashMap<V> {
             }
         }
 
-        @Override
         public int hashCode() {
             return mHash;
         }

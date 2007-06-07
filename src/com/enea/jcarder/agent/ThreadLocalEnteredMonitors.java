@@ -16,7 +16,6 @@ import net.jcip.annotations.ThreadSafe;
 final class ThreadLocalEnteredMonitors extends ThreadLocal<ArrayList<EnteredMonitor>>
 {
 
-    @Override
     public ArrayList<EnteredMonitor> initialValue() {
         return new ArrayList<EnteredMonitor>();
     }

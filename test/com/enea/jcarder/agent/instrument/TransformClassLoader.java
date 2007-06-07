@@ -73,7 +73,6 @@ public final class TransformClassLoader extends ClassLoader {
     }
 
 
-    @Override
     protected synchronized Class<?> loadClass(String className, boolean resolve)
     throws ClassNotFoundException {
         Class c = findLoadedClass(className);
@@ -95,7 +94,6 @@ public final class TransformClassLoader extends ClassLoader {
                && mClassNamePattern.matcher(className).matches();
     }
 
-    @Override
     protected synchronized Class<?> findClass(String className)
     throws ClassNotFoundException {
         byte[] classBuffer = ClassTransformer.getClassBytes(className,

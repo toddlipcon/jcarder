@@ -22,7 +22,6 @@ class SimulateMethodSyncMethodAdapter extends MethodAdapter {
         mIsStatic = isStatic;
     }
 
-    @Override
     public void visitCode() {
         super.visitCode();
         // This MethodAdapter will only be applied to synchronized methods,
@@ -40,7 +39,6 @@ class SimulateMethodSyncMethodAdapter extends MethodAdapter {
     /**
      * This method is called just after the last code in the method.
      */
-    @Override
     public void visitMaxs(int arg0, int arg1) {
         // This finally block is needed in order to exit the monitor
         // even when the method is exited by throwing an exception.
@@ -55,7 +53,6 @@ class SimulateMethodSyncMethodAdapter extends MethodAdapter {
         super.visitMaxs(arg0, arg1);
     }
 
-    @Override
     public void visitInsn(int inst) {
         switch (inst) {
         case Opcodes.IRETURN:

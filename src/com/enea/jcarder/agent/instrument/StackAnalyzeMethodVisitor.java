@@ -42,7 +42,6 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
             mDescription = description;
         }
 
-        @Override
         public String toString() {
             return mDescription;
         }

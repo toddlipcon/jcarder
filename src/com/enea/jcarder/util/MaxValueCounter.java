@@ -22,7 +22,6 @@ public final class MaxValueCounter {
         }
     }
 
-    @Override
     public String toString() {
         return String.valueOf(mMaxValue);
     }

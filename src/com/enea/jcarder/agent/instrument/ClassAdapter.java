@@ -29,13 +29,11 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
             mLogger.fine("Dead lock instrumenting the class: " + mClassName);
     }
 
-    @Override
     public void visit(int arg0, int arg1, String arg2, String arg3, String arg4, String[] arg5) {
         super.visit(arg0, arg1, arg2, arg3, arg4, arg5);
         super.visitAttribute(new InstrumentedAttribute("DeadLock"));
     }
 
-    @Override
     public MethodVisitor visitMethod(final int arg,
                                      final String methodName,
                                      final String descriptor,

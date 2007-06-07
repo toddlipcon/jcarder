@@ -69,7 +69,6 @@ class LockNode {
         return mOutgoingEdges.keySet();
     }
 
-    @Override
     public String toString() {
         return "L_" + mLockId;
     }

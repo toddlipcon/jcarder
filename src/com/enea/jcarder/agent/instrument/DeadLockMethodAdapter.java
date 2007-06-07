@@ -24,7 +24,6 @@ class DeadLockMethodAdapter extends MethodAdapter {
         mClassName = className;
     }
 
-    @Override
     public void visitInsn(int inst) {
         if (inst == Opcodes.MONITORENTER) {
             mv.visitInsn(Opcodes.DUP);

@@ -31,7 +31,6 @@ public final class TwoThreadSynchronization extends Thread
         assertFalse(Thread.holdsLock(mSync1));
     }
 
-    @Override
     public void run() {
         assertFalse(Thread.holdsLock(mSync2));
         assertFalse(Thread.holdsLock(mSync1));

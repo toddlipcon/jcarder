@@ -19,7 +19,6 @@ public final class InstrumentedAttribute extends Attribute {
         return a.type.startsWith(PREFIX);
     }
 
-    @Override
     protected ByteVector write(ClassWriter arg0,
                                byte[] arg1,
                                int arg2,

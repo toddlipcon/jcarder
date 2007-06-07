@@ -95,7 +95,6 @@ public final class LockingContextIdCache implements LockingContextAcquiringIfc {
             return mReferent;
         }
 
-        @Override
         public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
@@ -108,7 +107,6 @@ public final class LockingContextIdCache implements LockingContextAcquiringIfc {
             }
         }
 
-        @Override
         public int hashCode() {
             return mReferent.hashCode();
         }
@@ -124,7 +122,6 @@ public final class LockingContextIdCache implements LockingContextAcquiringIfc {
             mHash = referent.hashCode();
         }
 
-        @Override
         public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
@@ -140,7 +137,6 @@ public final class LockingContextIdCache implements LockingContextAcquiringIfc {
             }
         }
 
-        @Override
         public int hashCode() {
             return mHash;
         }

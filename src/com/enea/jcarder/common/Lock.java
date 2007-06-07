@@ -20,7 +20,6 @@ public final class Lock {
         mObjectId = objectId;
     }
 
-    @Override
     public String toString() {
         return mClassName + '@' + Integer.toHexString(mObjectId).toUpperCase();
     }
@@ -33,12 +32,10 @@ public final class Lock {
         return mClassName;
     }
 
-    @Override
     public int hashCode() {
         return mObjectId;
     }
 
-    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
