@@ -34,8 +34,6 @@ public final class Logger {
     // performance reasons.
     private final int mFileLogLevel;
 
-    private final String mName;
-
     static {
         Thread hook = new Thread() {
             @Override
@@ -59,7 +57,6 @@ public final class Logger {
     }
 
     private Logger(String name) {
-        mName = name;
         mFileLogLevel = smMainFileLogLevel;
     }
 
