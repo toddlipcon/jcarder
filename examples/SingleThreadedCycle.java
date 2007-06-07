@@ -1,5 +1,5 @@
 public class SingleThreadedCycle {
-    
+
     public static void main(String[] args) {
         final Object lock1 = new Object();
         final Object lock2 = new Object();

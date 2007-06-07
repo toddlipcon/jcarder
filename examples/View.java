@@ -1,7 +1,7 @@
 class View {
     private final DataModel mDataModel;
     private boolean mFreezed = false;
-     
+
     View(DataModel dataModel) {
        mDataModel = dataModel;
        System.out.println("Registering view in data model");

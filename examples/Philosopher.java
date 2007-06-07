@@ -1,7 +1,7 @@
 public class Philosopher extends Thread {
     private final Chopstick mLeftChopstick;
     private final Chopstick mRightChopstick;
-    
+
     public Philosopher(String name,
                        Chopstick leftChopstick,
                        Chopstick rightChopstick) {
@@ -13,7 +13,7 @@ public class Philosopher extends Thread {
     public void run() {
         pickUpSticksAndEat();
     }
-    
+
     private void pickUpSticksAndEat() {
         synchronized (mLeftChopstick) {
             synchronized (mRightChopstick) {
@@ -23,4 +23,3 @@ public class Philosopher extends Thread {
         }
     }
 }
-    
