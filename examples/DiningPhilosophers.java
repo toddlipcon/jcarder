@@ -15,7 +15,7 @@ public class DiningPhilosophers {
         Philosopher phil4 = new Philosopher("Philosopher4", stick4, stick5);
         Philosopher phil5 = new Philosopher("Philosopher5", stick5, stick1);
 
-        Philosopher phil6 = new Philosopher("PhilosopherWithOwnSticks", 
+        Philosopher phil6 = new Philosopher("PhilosopherWithOwnSticks",
                                             stick6,
                                             stick7);
 
