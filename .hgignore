@@ -1,0 +1,8 @@
+.*~$
+.*\.class$
+
+^3pp/.*
+^bin/.*
+^build/.*
+^dist/.*
+^src/build\.properties$
