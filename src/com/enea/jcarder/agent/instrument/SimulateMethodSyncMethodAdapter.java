@@ -6,7 +6,10 @@ import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-
+/**
+ * This Method Adapter simulates a synchronized declaration on a method
+ * by adding a MonitorEnter and MonitorExits.
+ */
 @NotThreadSafe
 class SimulateMethodSyncMethodAdapter extends MethodAdapter {
     private final String mClassName;
@@ -27,7 +30,7 @@ class SimulateMethodSyncMethodAdapter extends MethodAdapter {
         // This MethodAdapter will only be applied to synchronized methods,
         // and constructors is not allowed to be declared synchronized,
         // therefor we can add instructions at the begining of the method
-        // and no not have to find the place after the initial constructor
+        // and does not have to find the place after the initial constructor
         // byte codes:
         //     ALOAD 0: this
         //     INVOKESPECIAL Object.<init>() : void
