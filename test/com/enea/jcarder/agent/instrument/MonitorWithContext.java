@@ -16,9 +16,9 @@ public final class MonitorWithContext {
     }
 
     public MonitorWithContext(Object monitor,
-                       String method,
-                       String lockReference,
-                       Thread thread) {
+                              String method,
+                              String lockReference,
+                              Thread thread) {
         mMonitor = monitor;
         mContext = new LockingContext(thread, lockReference, method);
     }

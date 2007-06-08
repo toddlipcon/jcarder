@@ -21,12 +21,12 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
     private final Logger mLogger = Logger.getLogger(this);
 
     ClassAdapter(ClassVisitor visitor,
-                         String className,
-                         boolean redefiningAlreadyLoadedClass) {
-            super(visitor);
-            mClassName = className;
-            mRedefiningAlreadyLoadedClass = redefiningAlreadyLoadedClass;
-            mLogger.fine("Dead lock instrumenting the class: " + mClassName);
+                 String className,
+                 boolean redefiningAlreadyLoadedClass) {
+        super(visitor);
+        mClassName = className;
+        mRedefiningAlreadyLoadedClass = redefiningAlreadyLoadedClass;
+        mLogger.fine("Dead lock instrumenting the class: " + mClassName);
     }
 
     public void visit(int arg0, int arg1, String arg2, String arg3, String arg4, String[] arg5) {

@@ -1,8 +1,6 @@
 package com.enea.jcarder.agent;
 
-import java.io.IOException;
 import java.lang.instrument.Instrumentation;
-
 import com.enea.jcarder.agent.instrument.ClassTransformer;
 import com.enea.jcarder.agent.instrument.InstrumentConfig;
 import com.enea.jcarder.util.BuildInformation;
@@ -15,7 +13,7 @@ import com.enea.jcarder.util.Logger;
  */
 public final class JavaAgent {
 
-    private static InstrumentConfig smInstrumentConfig = new InstrumentConfig();
+    private final static InstrumentConfig smConfig = new InstrumentConfig();
     private final Logger mLogger = Logger.getLogger(this);
 
     private JavaAgent() { }
@@ -28,24 +26,18 @@ public final class JavaAgent {
                                final Instrumentation instrumentation)
     throws Exception {
         JavaAgent javaAgent = new JavaAgent();
-        javaAgent.start(args, instrumentation);
+        javaAgent.init(args, instrumentation);
     }
 
-    private void init(final Instrumentation instrumentation)
-    throws IOException {
-        EventListenerIfc listener = EventListener.create();
-        ClassTransformer classTransformer = new ClassTransformer(smInstrumentConfig);
-        instrumentation.addTransformer(classTransformer);
-        mLogger.info("Dead Lock Agent initialized\n");
-        StaticEventListener.setDeadLockActionListener(listener);
-    }
-
-    private void start(final String args,
-                       final Instrumentation instrumentation)
+    private void init(String args, Instrumentation instrumentation)
     throws Exception {
         mLogger.info("Starting " + BuildInformation.getShortInfo() + ".");
         handleArguments(args);
-        init(instrumentation);
+        EventListener listener = EventListener.create();
+        ClassTransformer classTransformer = new ClassTransformer(smConfig);
+        instrumentation.addTransformer(classTransformer);
+        mLogger.info("Dead Lock Agent initialized\n");
+        StaticEventListener.setListener(listener);
     }
 
     private static void handleArguments(final String allArgs) {
@@ -56,7 +48,7 @@ public final class JavaAgent {
                 } else if (arg.equals("finest")) {
                     Logger.setFileLogLevel(Logger.FINEST);
                 } else if (arg.equals("dump")) {
-                    smInstrumentConfig.setDumpClassFiles(true);
+                    smConfig.setDumpClassFiles(true);
                 } else {
                     System.err.println("Invalid jcarder parameter: " + allArgs);
                     System.err.println("Valid arguments are:"

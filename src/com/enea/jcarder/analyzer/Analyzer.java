@@ -16,8 +16,8 @@ import com.enea.jcarder.common.events.EventFileReader;
 import com.enea.jcarder.util.BuildInformation;
 import com.enea.jcarder.util.Logger;
 
-import static com.enea.jcarder.common.contexts.ContextFileReader.EVENT_LOG_DB_FILE;
-import static com.enea.jcarder.common.contexts.ContextFileReader.RANDOM_ACCESS_STORE_DB_FILE;
+import static com.enea.jcarder.common.contexts.ContextFileReader.EVENT_DB_FILE;
+import static com.enea.jcarder.common.contexts.ContextFileReader.CONTEXTS_DB_FILE;
 
 /**
  * The main class of the jcarder analyzer.
@@ -48,9 +48,9 @@ public final class Analyzer {
         LockGraphBuilder graphBuilder = new LockGraphBuilder();
 
         ContextReaderIfc ras
-        = new ContextFileReader(RANDOM_ACCESS_STORE_DB_FILE);
+        = new ContextFileReader(CONTEXTS_DB_FILE);
 
-        EventFileReader.parseFile(EVENT_LOG_DB_FILE, graphBuilder);
+        EventFileReader.parseFile(EVENT_DB_FILE, graphBuilder);
         printInitiallyLoadedStatistics(graphBuilder.getAllLocks());
 
         CycleDetector cycleDetector = new CycleDetector();
@@ -179,8 +179,8 @@ public final class Analyzer {
         SortedSet<String> methods = new TreeSet<String>();
         for (Cycle cycle : cycles) {
             for (LockEdge edge : cycle.getEdges()) {
-                LockingContext source = ras.readLockingContext(edge.getSourceLockingContextId());
-                LockingContext target = ras.readLockingContext(edge.getTargetLockingContextId());
+                LockingContext source = ras.readContext(edge.getSourceLockingContextId());
+                LockingContext target = ras.readContext(edge.getTargetLockingContextId());
                 threads.add(source.getThreadName());
                 threads.add(target.getThreadName());
                 methods.add(source.getMethodWithClass());

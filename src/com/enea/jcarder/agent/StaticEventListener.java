@@ -1,5 +1,4 @@
 package com.enea.jcarder.agent;
-import net.jcip.annotations.ThreadSafe;
 
 import com.enea.jcarder.common.LockingContext;
 
@@ -7,13 +6,12 @@ import com.enea.jcarder.common.LockingContext;
  * This class provides static methods that are supposed to be invoked directly
  * from the instrumented classes.
  */
-@ThreadSafe
 public final class StaticEventListener {
 
     private StaticEventListener() { }
     private static EventListenerIfc smListener;
 
-    public static void setDeadLockActionListener(EventListenerIfc listener) {
+    public static void setListener(EventListenerIfc listener) {
         smListener = listener;
     }
 

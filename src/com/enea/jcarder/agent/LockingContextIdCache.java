@@ -21,50 +21,49 @@ import com.enea.jcarder.util.Logger;
  * instead of weak references in order to try to keep the entries in the cache
  * as long as there is enough memory available.
  *
- * This class is using a RandomAccessStoreWriterIfc as a backend for storing
- * the ids.
- *
  * TODO An alternative implementation to consider could be to only store the
- *      hashCode in a map and perform a comparison with the RandomAccessStore
- *      file (which can be expected to be memory mapped). I don't know how
- *      that would affect the performance. Another option  to consider would be
- *      to use a plain HashMap without SoftReferences and accept the potential
- *      memory problem as a trade of for better performance (?) and to avoid
- *      getting different ids for duplicated LockingContexts.
+ *      hashCode in a map and perform a comparison with the Context file
+ *      file (possibly memory mapped). I don't know how that would affect the
+ *      performance? Another option to consider would be to use a plain HashMap
+ *      without SoftReferences and accept the potential memory problem as a
+ *      trade of for better performance (?) and to avoid getting different ids
+ *      for duplicated LockingContexts.
  *
  * TODO Add basic tests for this class.
  */
 @NotThreadSafe
-public final class LockingContextIdCache implements LockingContextAcquiringIfc {
-    private final HashMap<EqualsComparableKey, Integer> mHashMap;
+final class LockingContextIdCache {
+    private final HashMap<EqualsComparableKey, Integer> mCache;
     private final ReferenceQueue<Object> mReferenceQueue;
-    private final ContextWriterIfc mRas;
+    private final ContextWriterIfc mContextWriter;
     private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
 
-    public LockingContextIdCache(ContextWriterIfc ras) {
-        mHashMap = new HashMap<EqualsComparableKey, Integer>();
+    /**
+     * Create a LockingContextIdCache backed by a ContextWriterIfc
+     */
+    public LockingContextIdCache(ContextWriterIfc writer) {
+        mCache = new HashMap<EqualsComparableKey, Integer>();
         mReferenceQueue = new ReferenceQueue<Object>();
-        mRas = ras;
+        mContextWriter = writer;
     }
 
     /**
      * Acquire an unique id for the provided LockingContext. The id will be
-     * chached. If a provided LockingContext is equal to a previously
+     * cached. If a provided LockingContext is equal to a previously
      * provided LockingContext that is still in the cache, the same id will be
      * returned.
      *
      * The equality is checked with the LockingContext.equals(Object other)
      * method.
      */
-    public int acquireLockingContextId(LockingContext lockingContext)
-    throws IOException {
-        assert lockingContext != null;
+    public int acquireContextId(LockingContext context) throws IOException {
+        assert context != null;
         removeGarbageCollectedKeys();
-        Integer id = mHashMap.get(new StrongKey(lockingContext));
+        Integer id = mCache.get(new StrongKey(context));
         if (id == null) {
             mLogger.finest("Creating new ContextId");
-            id = mRas.writeLockingContext(lockingContext);
-            mHashMap.put((new SoftKey(lockingContext, mReferenceQueue)), id);
+            id = mContextWriter.writeContext(context);
+            mCache.put((new SoftKey(context, mReferenceQueue)), id);
         }
         return id;
     }
@@ -73,7 +72,7 @@ public final class LockingContextIdCache implements LockingContextAcquiringIfc {
         Reference e;
         while ((e = mReferenceQueue.poll()) != null) {
             mLogger.finest("Removing GarbageCollected Cached Context");
-            mHashMap.remove(e);
+            mCache.remove(e);
         }
     }
 

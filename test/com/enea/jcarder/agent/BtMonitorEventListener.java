@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import com.enea.jcarder.agent.StaticEventListener;
 import com.enea.jcarder.agent.EventListener;
-import com.enea.jcarder.agent.LockIdGenerator;
-import com.enea.jcarder.agent.LockingContextIdCache;
 import com.enea.jcarder.agent.instrument.ClassTransformer;
 import com.enea.jcarder.agent.instrument.InstrumentConfig;
 import com.enea.jcarder.agent.instrument.TransformClassLoader;
@@ -33,7 +31,7 @@ import com.enea.jcarder.testclasses.agent.TwoThreadSynchronization;
  * the monitor events are sent BEFORE instead of AFTER the monitor is entered.
  */
 public final class BtMonitorEventListener implements LockEventListenerIfc {
-    private ContextMemory mRandomAccessStore;
+    private ContextMemory mContextMemory;
     private final TransformClassLoader mClassLoader;
     private final LinkedList<LockEvent> mEvents = new LinkedList<LockEvent>();
 
@@ -44,16 +42,9 @@ public final class BtMonitorEventListener implements LockEventListenerIfc {
 
     @Before
     public void setUp() throws Exception {
-        mRandomAccessStore = new ContextMemory();
-        final LockIdGenerator lockIdGenerator
-        = new LockIdGenerator(mRandomAccessStore);
-        final LockingContextIdCache lockingContextIdCache
-        = new LockingContextIdCache(mRandomAccessStore);
-        final EventListener monitorEventListener
-        = new EventListener(this,
-                                    lockIdGenerator,
-                                    lockingContextIdCache);
-        StaticEventListener.setDeadLockActionListener(monitorEventListener);
+        mContextMemory = new ContextMemory();
+        StaticEventListener.setListener(new EventListener(this,
+                                                          mContextMemory));
     }
 
     private void testClass(Class clazz) throws Exception {
@@ -79,10 +70,10 @@ public final class BtMonitorEventListener implements LockEventListenerIfc {
                             int lastTakenLockId,
                             int lastTakenLockingContextId,
                             long threadId) throws IOException {
-        mEvents.add(new LockEvent(mRandomAccessStore.readLock(lockId),
-                                  mRandomAccessStore.readLockingContext(lockingContextId),
-                                  mRandomAccessStore.readLock(lastTakenLockId),
-                                  mRandomAccessStore.readLockingContext(lastTakenLockingContextId)));
+        mEvents.add(new LockEvent(mContextMemory.readLock(lockId),
+                                  mContextMemory.readContext(lockingContextId),
+                                  mContextMemory.readLock(lastTakenLockId),
+                                  mContextMemory.readContext(lastTakenLockingContextId)));
     }
 
     @Test

@@ -51,7 +51,7 @@ public final class BtDeadLockInstrumentation implements EventListenerIfc {
 
     public BtDeadLockInstrumentation() {
         mClassLoader = new TransformClassLoader(new ClassTransformer(new InstrumentConfig()));
-        StaticEventListener.setDeadLockActionListener(this);
+        StaticEventListener.setListener(this);
         mEnteredMonitors = new ArrayList<MonitorWithContext>();
     }
 
