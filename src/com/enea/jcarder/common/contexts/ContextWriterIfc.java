@@ -9,5 +9,5 @@ public interface ContextWriterIfc {
 
     int writeLock(Lock lock) throws IOException;
 
-    int writeLockingContext(LockingContext context) throws IOException;
+    int writeContext(LockingContext context) throws IOException;
 }

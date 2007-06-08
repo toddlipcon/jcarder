@@ -81,9 +81,9 @@ final class GraphvizGenerator {
                                    LockEdge edge,
                                    boolean includePackages) {
         final LockingContext sourceContext
-        = ras.readLockingContext(edge.getSourceLockingContextId());
+        = ras.readContext(edge.getSourceLockingContextId());
         final LockingContext targetContext
-        = ras.readLockingContext(edge.getTargetLockingContextId());
+        = ras.readContext(edge.getTargetLockingContextId());
         return String.format(EDGE_LABEL_FORMAT,
                              escape(handlePackage(targetContext.getThreadName(),
                                                   includePackages)),

@@ -68,7 +68,7 @@ public final class DuplicatedEdgesHandler {
         final Map<LockingContext, TreeSet<Integer>> contextToId
         = new HashMap<LockingContext, TreeSet<Integer>>();
         for (Integer id : mContextIdTranslation.values()) {
-            LockingContext context = ras.readLockingContext(id);
+            LockingContext context = ras.readContext(id);
             TreeSet<Integer> ids = contextToId.get(context);
             if (ids == null) {
                 ids = new TreeSet<Integer>();

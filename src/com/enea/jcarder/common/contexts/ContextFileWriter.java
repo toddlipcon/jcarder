@@ -19,10 +19,9 @@ implements ContextWriterIfc {
     private int mNextFilePosition = 0;
     private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
 
-    public ContextFileWriter(File contextsDatabaseFile) throws IOException {
-        mLogger.info("Opening for writing: " + contextsDatabaseFile.getAbsolutePath());
-        RandomAccessFile raFile = new RandomAccessFile(contextsDatabaseFile,
-                                                       "rw");
+    public ContextFileWriter(File file) throws IOException {
+        mLogger.info("Opening for writing: " + file.getAbsolutePath());
+        RandomAccessFile raFile = new RandomAccessFile(file, "rw");
         raFile.setLength(0);
         mChannel = raFile.getChannel();
         writeHeader();
@@ -64,7 +63,7 @@ implements ContextWriterIfc {
         return startPosition;
     }
 
-    public int writeLockingContext(LockingContext context) throws IOException {
+    public int writeContext(LockingContext context) throws IOException {
         final int startPosition = mNextFilePosition;
         writeString(context.getThreadName());
         writeString(context.getLockReference());

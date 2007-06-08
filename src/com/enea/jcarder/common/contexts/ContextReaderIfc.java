@@ -4,6 +4,6 @@ import com.enea.jcarder.common.Lock;
 import com.enea.jcarder.common.LockingContext;
 
 public interface ContextReaderIfc {
-    LockingContext readLockingContext(int id);
+    LockingContext readContext(int id);
     Lock readLock(int id);
 }

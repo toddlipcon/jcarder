@@ -1,8 +1,11 @@
 package com.enea.jcarder.common;
 
+import net.jcip.annotations.ThreadSafe;
+
 /**
  * An instance of this class represent the context for the acquiring of a lock.
  */
+@ThreadSafe
 public final class LockingContext {
     /**
      * The name of the thread that acquired a lock.
@@ -31,11 +34,9 @@ public final class LockingContext {
     }
 
     public LockingContext(Thread thread,
-                          Object lockReference,
+                          String lockReference,
                           String methodWithClass) {
-        this(thread.getName(),
-             lockReference.toString(),
-             methodWithClass);
+        this(thread.getName(), lockReference, methodWithClass);
     }
 
     public String getLockReference() {

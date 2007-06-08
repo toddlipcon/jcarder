@@ -13,8 +13,8 @@ import net.jcip.annotations.ThreadSafe;
  */
 
 @ThreadSafe
-final class ThreadLocalEnteredMonitors extends ThreadLocal<ArrayList<EnteredMonitor>>
-{
+final class ThreadLocalEnteredMonitors
+extends ThreadLocal<ArrayList<EnteredMonitor>> {
 
     public ArrayList<EnteredMonitor> initialValue() {
         return new ArrayList<EnteredMonitor>();

@@ -23,10 +23,10 @@ public final class BtContextFile {
                                                     "myLockReference",
                                                     "myMethod");
         int lockId = writer.writeLock(lock);
-        int contextId = writer.writeLockingContext(context);
+        int contextId = writer.writeContext(context);
         writer.close();
         ContextFileReader reader = new ContextFileReader(file);
         Assert.assertEquals(lock, reader.readLock(lockId));
-        Assert.assertEquals(context, reader.readLockingContext(contextId));
+        Assert.assertEquals(context, reader.readContext(contextId));
     }
 }

@@ -12,22 +12,22 @@ import com.enea.jcarder.util.Logger;
  * This class is responsible for generating unique ids for objects.
  *
  * We can not use System.identityHashCode(o) since it returns random numbers
- * which is not guaranteed to be unique.
- *
- * This class is using a RandomAccessStoreWriterIfc as a backend for storing
- * the ids.
- *
+ * which are not guaranteed to be unique.
+ * 
  * TODO Add basic tests for this class.
  */
 @NotThreadSafe
-public final class LockIdGenerator implements LockIdAcquiringIfc {
-    private final IdentityWeakHashMap<Integer> mHashMap;
-    private final ContextWriterIfc mRas;
+final class LockIdGenerator {
+    private final IdentityWeakHashMap<Integer> mIdMap;
+    private final ContextWriterIfc mContextWriter;
     private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
 
-    public LockIdGenerator(ContextWriterIfc ras) {
-        mHashMap = new IdentityWeakHashMap<Integer>();
-        mRas = ras;
+    /**
+     * Create a LockIdGenerator backed by a ContextWriterIfc
+     */
+    public LockIdGenerator(ContextWriterIfc writer) {
+        mIdMap = new IdentityWeakHashMap<Integer>();
+        mContextWriter = writer;
     }
 
     /*
@@ -39,10 +39,10 @@ public final class LockIdGenerator implements LockIdAcquiringIfc {
      */
     public int acquireLockId(Object o) throws IOException {
         assert o != null;
-        Integer id = mHashMap.get(o);
+        Integer id = mIdMap.get(o);
         if (id == null) {
-            id = mRas.writeLock(new Lock(o));
-            mHashMap.put(o, id);
+            id = mContextWriter.writeLock(new Lock(o));
+            mIdMap.put(o, id);
             mLogger.finest("Created new LockId: " + id);
         }
         return id;

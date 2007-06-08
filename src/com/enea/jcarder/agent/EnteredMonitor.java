@@ -6,7 +6,7 @@ import java.lang.ref.WeakReference;
  * Each instance of this class represents an entered monitor.
  *
  * The reference to the monitor object is keept as a WeakReference interally
- * in this class and won't prevent the monitor from beeing garbage collected.
+ * in this class and won't prevent the monitor from being garbage collected.
  *
  * TODO Add basic test for the WeakReference handling.
  */

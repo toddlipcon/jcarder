@@ -17,10 +17,8 @@ import com.enea.jcarder.util.Logger;
 public final class ContextFileReader
 implements ContextReaderIfc {
     // TODO Make the directory of the database-files configurable?
-    public static final File EVENT_LOG_DB_FILE = 
-        new File("jcarder_events.db");
-    public static final File RANDOM_ACCESS_STORE_DB_FILE =
-        new File("jcarder_contexts.db");
+    public static final File EVENT_DB_FILE = new File("jcarder_events.db");
+    public static final File CONTEXTS_DB_FILE = new File("jcarder_contexts.db");
     static final long MAGIC_COOKIE = 3927194112434171438L;
     static final int MAJOR_VERSION = 1;
     static final int MINOR_VERSION = 0;
@@ -28,19 +26,19 @@ implements ContextReaderIfc {
     private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
     private final ByteBuffer mBuffer;
 
-    public ContextFileReader(File rasFile) throws IOException {
-        RandomAccessFile raFile = new RandomAccessFile(rasFile, "r");
-        mLogger.info("Opening for reading: " + rasFile.getAbsolutePath());
+    public ContextFileReader(File file) throws IOException {
+        RandomAccessFile raFile = new RandomAccessFile(file, "r");
+        mLogger.info("Opening for reading: " + file.getAbsolutePath());
         FileChannel roChannel = raFile.getChannel();
         if (roChannel.size() > Integer.MAX_VALUE) {
-            throw new IOException("File to large: " + rasFile.getAbsolutePath());
+            throw new IOException("File to large: " + file.getAbsolutePath());
         }
         mBuffer = roChannel.map(FileChannel.MapMode.READ_ONLY,
                                 0,
                                 (int) roChannel.size());
         roChannel.close();
         raFile.close();
-        validateHeader(rasFile.getAbsolutePath());
+        validateHeader(file.getAbsolutePath());
     }
 
     private void validateHeader(String filename) throws IOException {
@@ -65,7 +63,7 @@ implements ContextReaderIfc {
         return result;
     }
 
-    public LockingContext readLockingContext(int id) {
+    public LockingContext readContext(int id) {
         mBuffer.position(id);
         return new LockingContext(readString(),
                                   readString(),
