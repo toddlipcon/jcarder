@@ -9,11 +9,11 @@ import com.enea.jcarder.util.IdentityWeakHashMap;
 import com.enea.jcarder.util.Logger;
 
 /**
- * This class is responsible for generating unique ids for objects.
+ * This class is responsible for generating unique IDs for objects.
  *
- * We can not use System.identityHashCode(o) since it returns random numbers
+ * We cannot use System.identityHashCode(o) since it returns random numbers,
  * which are not guaranteed to be unique.
- * 
+ *
  * TODO Add basic tests for this class.
  */
 @NotThreadSafe
@@ -30,12 +30,12 @@ final class LockIdGenerator {
         mContextWriter = writer;
     }
 
-    /*
-     * Return an id for a given object.
+    /**
+     * Return an ID for a given object.
      *
-     * If the method is invoked witht the same object instance more than once
-     * this method will guarantee that they will get the same id. Two objects
-     * that are not identical (as compared with "==") will get different ids.
+     * If the method is invoked with the same object instance more than once
+     * it is guaranteed that the same ID is returned each time. Two objects
+     * that are not identical (as compared with "==") will get different IDs.
      */
     public int acquireLockId(Object o) throws IOException {
         assert o != null;

@@ -3,7 +3,7 @@ package com.enea.jcarder.common;
 import net.jcip.annotations.ThreadSafe;
 
 /**
- * A Lock instance represents a java monitor object.
+ * A Lock instance represents a Java monitor object.
  */
 @ThreadSafe
 public final class Lock {

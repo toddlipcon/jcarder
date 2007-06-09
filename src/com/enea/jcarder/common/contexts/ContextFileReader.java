@@ -16,7 +16,7 @@ import com.enea.jcarder.util.Logger;
 @NotThreadSafe
 public final class ContextFileReader
 implements ContextReaderIfc {
-    // TODO Make the directory of the database-files configurable?
+    // TODO Make the directory of the database files configurable?
     public static final File EVENT_DB_FILE = new File("jcarder_events.db");
     public static final File CONTEXTS_DB_FILE = new File("jcarder_contexts.db");
     static final long MAGIC_COOKIE = 3927194112434171438L;

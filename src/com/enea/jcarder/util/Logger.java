@@ -9,15 +9,15 @@ import java.io.PrintWriter;
  * We use our own simple Logging framework for several reasons:
  *
  *  - To avoid interfering with logging from the user application. Even if we
- *    were using Log4J instead of java.util.Logging.*, jcarder might interfere
+ *    were using Log4J instead of java.util.Logging.*, JCarder might interfere
  *    with for example Log4J system properties.
  *
  *  - The default java.util.logging.LogManager is reset by a shutdown hook
  *    and there is no fixed order in which the shutdown hooks are executed.
  *
- *  - Minimizing the usage of the java standard library improves performance and
- *    minimizes the risk for deadlock, if the standard library is instrumented
- *    by jcarder.
+ *  - Minimizing the usage of the Java standard library improves performance and
+ *    minimizes the risk of deadlock if the standard library is instrumented
+ *    by JCarder.
  */
 public final class Logger {
     public static final int SEVERE = 1;
@@ -31,7 +31,7 @@ public final class Logger {
 
     private static volatile int smMainFileLogLevel = FINE;
 
-    // The log level for a created logger object can not be changed for
+    // The log level for a created logger object cannot be changed for
     // performance reasons.
     private final int mFileLogLevel;
 

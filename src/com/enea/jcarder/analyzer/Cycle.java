@@ -10,7 +10,7 @@ import com.enea.jcarder.common.contexts.ContextReaderIfc;
 /**
  * An instance of this class represents a single cycle of edges. The edges
  * must form a single circle witout any alternative paths. If there are
- * alternative paths in a graph-cycle, those cycles shall be splitted into
+ * alternative paths in a graph cycle, those cycles will be split into
  * separate Cycle objects.
  *
  * TODO write basic tests.

@@ -3,12 +3,12 @@ package com.enea.jcarder.common;
 import net.jcip.annotations.ThreadSafe;
 
 /**
- * An instance of this class represent the context for the acquiring of a lock.
+ * An instance of this class represents the context for the acquiring of a lock.
  */
 @ThreadSafe
 public final class LockingContext {
     /**
-     * The name of the thread that acquired a lock.
+     * The name of the thread that acquired the lock.
      */
     private final String mThreadName;
 
@@ -20,7 +20,7 @@ public final class LockingContext {
 
     /**
      * The method that acquired a lock, on the
-     * format: "com.enea.jcarder.Foo.bar()".
+     * format "com.enea.jcarder.Foo.bar()".
      */
     private final String mMethodWithClass;
     // TODO include row number in MethodWithClass?

@@ -2,7 +2,7 @@ package com.enea.jcarder.agent;
 
 import com.enea.jcarder.common.LockingContext;
 
-/*
+/**
  * This class provides static methods that are supposed to be invoked directly
  * from the instrumented classes.
  */
@@ -18,16 +18,18 @@ public final class StaticEventListener {
     /**
      * This method is expected to be called from the instrumented classes.
      *
-     * @param monitor The monitor object that was acquired. This value is
-     *                allowed to be null.
+     * @param monitor
+     *            The monitor object that was acquired. This value is allowed to
+     *            be null.
      *
-     * @param lockReference A textual description of how the lock object was
-     *                      addressed. For example: "this",
-     *                      "com.enea.jcarder.Foo.mBar" or
-     *                      "com.enea.jcarder.Foo.getLock()".
+     * @param lockReference
+     *            A textual description of how the lock object was addressed.
+     *            For example: "this", "com.enea.jcarder.Foo.mBar" or
+     *            "com.enea.jcarder.Foo.getLock()".
      *
-     * @param methodWithClass the method that acquired a lock, on the format:
-     *                        "com.enea.jcarder.Foo.bar()"
+     * @param methodWithClass
+     *            The method that acquired the lock, on the format
+     *            "com.enea.jcarder.Foo.bar()".
      */
     public static void beforeMonitorEnter(Object monitor,
                                           String lockReference,

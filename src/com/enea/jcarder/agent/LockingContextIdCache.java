@@ -12,10 +12,9 @@ import com.enea.jcarder.common.contexts.ContextWriterIfc;
 import com.enea.jcarder.util.Logger;
 
 /**
- * This class is responsible for mapping LockingContext instances to
- * locking context ids. It maintains a cache to be able to return
- * the same id again if an id is requested for the same or equal LockingContext,
- * more than once.
+ * This class is responsible for mapping LockingContext instances to locking
+ * context IDs. It maintains a cache to be able to return the same ID again if
+ * an ID is requested for the same or equal LockingContext more than once.
  *
  * This class is similar to the java.util.WeakHashMap but uses soft references
  * instead of weak references in order to try to keep the entries in the cache
@@ -24,9 +23,9 @@ import com.enea.jcarder.util.Logger;
  * TODO An alternative implementation to consider could be to only store the
  *      hashCode in a map and perform a comparison with the Context file
  *      file (possibly memory mapped). I don't know how that would affect the
- *      performance? Another option to consider would be to use a plain HashMap
+ *      performance. Another option to consider would be to use a plain HashMap
  *      without SoftReferences and accept the potential memory problem as a
- *      trade of for better performance (?) and to avoid getting different ids
+ *      trade-of for better performance (?) and to avoid getting different IDs
  *      for duplicated LockingContexts.
  *
  * TODO Add basic tests for this class.
@@ -39,7 +38,7 @@ final class LockingContextIdCache {
     private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
 
     /**
-     * Create a LockingContextIdCache backed by a ContextWriterIfc
+     * Create a LockingContextIdCache backed by a ContextWriterIfc.
      */
     public LockingContextIdCache(ContextWriterIfc writer) {
         mCache = new HashMap<EqualsComparableKey, Integer>();
@@ -48,9 +47,9 @@ final class LockingContextIdCache {
     }
 
     /**
-     * Acquire an unique id for the provided LockingContext. The id will be
+     * Acquire a unique ID for the provided LockingContext. The ID will be
      * cached. If a provided LockingContext is equal to a previously
-     * provided LockingContext that is still in the cache, the same id will be
+     * provided LockingContext that is still in the cache, the same ID will be
      * returned.
      *
      * The equality is checked with the LockingContext.equals(Object other)

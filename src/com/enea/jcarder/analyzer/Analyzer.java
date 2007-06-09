@@ -1,5 +1,4 @@
 package com.enea.jcarder.analyzer;
-// TODO package name without camelcase?
 
 import java.io.File;
 import java.io.FileWriter;
@@ -30,10 +29,10 @@ public final class Analyzer {
 
     /*
      * Cycles with only one thread can never cause a deadlock, but it might be
-     * possible that basic tests of a single class is very simplified and
-     * uses only a single thread where a real program might invoke the methods
-     * from several different threads. Therefore single threaded cycles
-     * are also interesting to detect and included by default.
+     * possible that basic tests of a single class are very simplified and
+     * use only a single thread where a real program might invoke the methods
+     * from several different threads. Therefore single-threaded cycles
+     * are also interesting to detect and include by default.
      */
     private OutputMode mOutputMode = OutputMode.INCLUDE_CYCLES;
     private boolean mIncludePackages = false;
@@ -74,7 +73,7 @@ public final class Analyzer {
             //      objects in order to release as much memory as possible for
             //      the memory mapped file?
 
-            // It is not nessecary to use the DuplicateEdgeshandler since
+            // It is not necessary to use the DuplicateEdgeshandler since
             // those duplicates are removed anyway when cycles that
             // are alike are removed.
             cycleDetector.removeAlikeCycles(ras);
@@ -165,8 +164,8 @@ public final class Analyzer {
             }
         }
         // TODO Add parameters for filtering (including & excluding) specific
-        //      locks and edges for example by speficifying thread names
-        //      objekt classes, method names och packages?
+        //      locks and edges for example by specifying thread names,
+        //      object classes, method names or packages?
     }
 
 

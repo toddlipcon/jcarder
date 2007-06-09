@@ -7,7 +7,7 @@ import java.util.HashMap;
 import net.jcip.annotations.NotThreadSafe;
 
 /**
- * This class is similar to the java.util.WeakHashMap but compairs objects with
+ * This class is similar to the java.util.WeakHashMap but compares objects with
  * the == operator instead of with the Object.equals method.
  *
  * TODO Add basic tests for this class.

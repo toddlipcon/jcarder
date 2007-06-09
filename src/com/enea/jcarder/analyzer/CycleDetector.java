@@ -19,8 +19,8 @@ import com.enea.jcarder.util.MaxValueCounter;
  *
  * TODO Add possibility to ignore cycles guarded by a common lock.
  *
- * TODO Add posibility to ignore cycles created by two threads that can not
- *      possibly run at the same time. Is it possible to achive that by
+ * TODO Add possibility to ignore cycles created by two threads that cannot
+ *      possibly run at the same time. Is it possible to achieve that by
  *      tracking Thread.start() and Thread.join()?
  *
  * TODO Add more basic tests for this class.
@@ -103,10 +103,10 @@ class CycleDetector {
                 mCycles.add(new Cycle(edgesInCycle));
                 mNoOfCycles.set(mCycles.size());
                 // Keeping the first edge from the cycle in the visitedEdges
-                // list is an optimization that avoids unnecessary (as I beleve)
-                // repeaded checks. The other edges has to be removed, otherwise
-                // all cycles wont be found. See the testcases for examples of
-                // such cases.
+                // list is an optimization that avoids unnecessary (as I
+                // believe) repeated checks. The other edges have to be removed,
+                // otherwise all cycles won't be found. See the testcases for
+                // examples of such cases.
                 visitedEdges.removeAll(edgesInCycle.subList(1, edgesInCycle.size()));
             } else {
                 visitedEdges.add(edge);
@@ -198,14 +198,14 @@ class CycleDetector {
     }
 
     /**
-     * Find out which cycles consists of identical locks and group them
+     * Find out the cycles that consist of identical locks and group them
      * together. Then return all edges in each group.
      *
-     * The datastructure in the CycleDetector class in unaffected.
+     * The data structure in the CycleDetector class is unaffected.
      */
     Collection<HashSet<LockEdge>> mergeCyclesWithIdenticalLocks() {
-        // TODO Refactor this method? The temporary datastructure is too
-        //      complext?
+        // TODO Refactor this method? The temporary data structure is too
+        //      complex?
         HashMap<HashSet<LockNode>, HashSet<LockEdge>> setOfNodesToEdgesMap
         = new HashMap<HashSet<LockNode>, HashSet<LockEdge>>();
         for (Cycle cycle : mCycles) {

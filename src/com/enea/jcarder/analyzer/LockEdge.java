@@ -93,7 +93,7 @@ class LockEdge {
     }
 
     /**
-     * Translate the source and target context id according to a translation
+     * Translate the source and target context ID according to a translation
      * map.
      */
     void translateContextIds(Map<Integer, Integer> translation) {

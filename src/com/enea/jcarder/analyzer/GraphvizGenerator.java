@@ -6,17 +6,16 @@ import com.enea.jcarder.common.LockingContext;
 import com.enea.jcarder.common.contexts.ContextReaderIfc;
 
 /**
- * This class can be used to generate a Graphviz (www.graphviz.org) graph
+ * This class can be used to generate a Graphviz <http://www.graphviz.org> graph
  * as a string.
  *
  * TODO Add tooltips to the graph? The tooltips might for example contain
  *      the package names of classes.
  *
  * TODO If there are to many edges, merge them together in the graph
- *      and add a href-link to a html-page that describes them all?
+ *      and add an href link to an html page that describes them all?
  *
- * TODO Optionaly merge edges together which are identical except for the
- *      threads?
+ * TODO Optionaly merge edges that are identical except for the threads?
  */
 final class GraphvizGenerator {
     private static final String EDGE_LABEL_FORMAT = getEdgeLableFormat();

@@ -5,7 +5,7 @@ import java.lang.ref.WeakReference;
 /**
  * Each instance of this class represents an entered monitor.
  *
- * The reference to the monitor object is keept as a WeakReference interally
+ * The reference to the monitor object is kept as a WeakReference internally
  * in this class and won't prevent the monitor from being garbage collected.
  *
  * TODO Add basic test for the WeakReference handling.
@@ -27,7 +27,7 @@ final class EnteredMonitor {
         final Object monitor = mMonitorRef.get();
         // TODO the call to Thread.holdsLock takes long time. It would be
         //      interesting to test how the performance would be affected if
-        //      this code is removed and replaces by an event
+        //      this code is removed and replaced by an event
         //      for each MonitorExit and each finished synchronized method.
         if (monitor != null && Thread.holdsLock(monitor)) {
             return monitor;

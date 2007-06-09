@@ -9,13 +9,13 @@ import com.enea.jcarder.common.LockingContext;
 import com.enea.jcarder.common.contexts.ContextReaderIfc;
 
 /**
- * This class contains functionality for merging edges that has the same
- * source and target nodes and identical thread ids and locking contexts
- * content, but different locking context ids.
+ * This class contains functionality for merging edges that have the same
+ * source and target nodes and identical thread IDs and locking contexts
+ * content, but different locking context IDs.
  *
- * Such a merge might be desirable since the producer of the RandomAccessStore
- * is not required to guarantee that identical locking contexts always gets the
- * same ids.
+ * Such a merge might be desirable since the producer of the context file is
+ * not required to guarantee that identical locking contexts always get the
+ * same IDs.
  *
  * @TODO Add basic tests for this class.
  */
@@ -25,8 +25,8 @@ public final class DuplicatedEdgesHandler {
     private final Map<LockingContext, TreeSet<Integer>> mContextToIdMap;
 
     /**
-     * The constructor is made private to prevent that someone creats an
-     * instance of this class and then forget to release the reference to it.
+     * The constructor is made private to prevent that someone creates an
+     * instance of this class and then forgets to release the reference to it.
      * That would be undesirable since the mContextToIdMap structure in this
      * class might be very large and should be garbage collected as soon as
      * possible.
