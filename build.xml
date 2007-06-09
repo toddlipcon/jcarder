@@ -59,7 +59,12 @@
   </target>
 
   <target name="clean">
+    <delete dir="bin"/>
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
+    <delete file="jcarder_contexts.db"/>
+    <delete file="jcarder_events.db"/>
+    <delete file="jcarder_result_0.gv"/>
+    <delete file="jcarder.log"/>
   </target>
 </project>
