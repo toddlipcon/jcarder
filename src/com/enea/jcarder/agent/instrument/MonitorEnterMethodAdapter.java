@@ -10,13 +10,14 @@ import com.enea.jcarder.agent.StaticEventListener;
 import static com.enea.jcarder.agent.instrument.InstrumentationUtilities.getInternalName;
 
 @NotThreadSafe
-class DeadLockMethodAdapter extends MethodAdapter {
-    private static final String CALLBACK_CLASS_NAME = getInternalName(StaticEventListener.class);
+class MonitorEnterMethodAdapter extends MethodAdapter {
+    private static final String CALLBACK_CLASS_NAME =
+        getInternalName(StaticEventListener.class);
     private final String mClassAndMethodName;
     private final String mClassName;
     private StackAnalyzeMethodVisitor mStack;
 
-    DeadLockMethodAdapter(final MethodVisitor visitor,
+    MonitorEnterMethodAdapter(final MethodVisitor visitor,
                           final String className,
                           final String methodName) {
         super(visitor);

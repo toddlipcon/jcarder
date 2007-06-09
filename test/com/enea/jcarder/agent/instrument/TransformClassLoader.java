@@ -1,12 +1,13 @@
 package com.enea.jcarder.agent.instrument;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import com.enea.jcarder.agent.instrument.ClassTransformer;
 
 /**
  * This class loader is able to transform classes while they are loaded.
@@ -56,7 +57,7 @@ public final class TransformClassLoader extends ClassLoader {
     throws ClassNotFoundException,
            IllegalClassFormatException,
            ClassNotTransformedException {
-        byte[] classBuffer = ClassTransformer.getClassBytes(clazz);
+        byte[] classBuffer = getClassBytes(clazz);
         return createTransformedClass(clazz.getName(), classBuffer);
     }
 
@@ -65,7 +66,7 @@ public final class TransformClassLoader extends ClassLoader {
      * Load a new non-instrumented class with this class loader.
      */
     public Class<?> loadNew(Class clazz) throws ClassNotFoundException {
-        byte[] classBuffer = ClassTransformer.getClassBytes(clazz);
+        byte[] classBuffer = getClassBytes(clazz);
         return defineClass(clazz.getName(),
                            classBuffer,
                            0,
@@ -96,8 +97,7 @@ public final class TransformClassLoader extends ClassLoader {
 
     protected synchronized Class<?> findClass(String className)
     throws ClassNotFoundException {
-        byte[] classBuffer = ClassTransformer.getClassBytes(className,
-                                                            mParentClassLoader);
+        byte[] classBuffer = getClassBytes(className, mParentClassLoader);
         try {
             return createTransformedClass(className, classBuffer);
         } catch (IllegalClassFormatException e) {
@@ -131,4 +131,49 @@ public final class TransformClassLoader extends ClassLoader {
     public boolean hasBeenTransformed(String className) {
         return mTansformedClasses.contains(className);
     }
+    
+    public static String resourceNameForClass(String className) {
+        return className.replace(".", "/") + ".class";
+    }    
+    
+    /**
+    *
+    * @param className
+    * @param classLoader null if the system classloader should be used.
+    * @return
+    * @throws ClassNotFoundException
+    */
+   public static byte[] getClassBytes(String className,
+                                      ClassLoader classLoader)
+   throws ClassNotFoundException {
+       final String resourceName = resourceNameForClass(className);
+       final InputStream is;
+       if (classLoader == null) {
+           is = ClassLoader.getSystemResourceAsStream(resourceName);
+       } else {
+           is = classLoader.getResourceAsStream(resourceName);
+       }
+       if (is == null) {
+           throw new ClassNotFoundException("Resource not found: "
+                                            + resourceName);
+       }
+       final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+       final byte[] readBuffer = new byte[1024 * 4];
+       int readBytes;
+       try {
+           while ((readBytes = is.read(readBuffer)) != -1) {
+               baos.write(readBuffer, 0, readBytes);
+           }
+       } catch (IOException e) {
+           throw new
+              ClassNotFoundException("Failure while reading class contents", e);
+       }
+       return baos.toByteArray();
+
+   }
+
+   public static byte[] getClassBytes(Class clazz)
+   throws ClassNotFoundException {
+       return getClassBytes(clazz.getName(), clazz.getClassLoader());
+   }
 }

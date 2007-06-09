@@ -7,7 +7,8 @@ public final class InstrumentationUtilities {
 
     private InstrumentationUtilities() { }
 
-    public static void pushClassReferenceToStack(MethodVisitor mv, String className) {
+    public static void pushClassReferenceToStack(MethodVisitor mv,
+                                                 String className) {
         // It is not possible to use:
         //
         //    mv.visitLdcInsn(RuleType.getType(mClassName));
