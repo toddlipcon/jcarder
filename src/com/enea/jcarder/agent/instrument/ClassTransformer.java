@@ -14,7 +14,7 @@ import com.enea.jcarder.util.Logger;
 
 /**
  * This class is responsible for all instrumentations and handles related
- * issues with classloaders.
+ * issues with class loaders.
  *
  * TODO add basic test for this class.
  */
@@ -89,10 +89,10 @@ public class ClassTransformer implements ClassFileTransformer {
 
     /**
      * Instrumented classes must use the same static members in the
-     * com.ena.jcarder.agent.StaticEventListener class as the java agent
+     * com.ena.jcarder.agent.StaticEventListener class as the Java agent
      * and therefore they must be loaded with the same class loader
      * as the agent was loaded with, or with a class loader that has
-     * the agent's class loader as a parent or anchestor.
+     * the agent's class loader as a parent or ancestor.
      *
      * Note that the agentLoader may have been loaded with the bootstrap
      * class loader (null) and then "null" is a compatible class loader.
@@ -123,7 +123,7 @@ public class ClassTransformer implements ClassFileTransformer {
                || className.startsWith("javax.")
                || className.startsWith("sun.");
     }
-  
+
     private static boolean deleteDirRecursively(File dir) {
         if (dir.isDirectory()) {
             String[] children = dir.list();
@@ -136,11 +136,11 @@ public class ClassTransformer implements ClassFileTransformer {
         }
         return dir.delete();
     }
-    
+
     /**
-     * The dumped file can be decompiled with javap or with gnu.bytecode.dump
-     * which also prints detailed information about the constant pool, which
-     * javap does not.
+     * The dumped file can be decompiled with javap or with gnu.bytecode.dump.
+     * The latter also prints detailed information about the constant pool,
+     * something which javap does not.
      */
     private static void dumpClassToFile(byte[] content,
                                         File baseDir,

@@ -14,11 +14,12 @@ import com.enea.jcarder.util.Logger;
 
 /**
  * This class tries to keep track of what is currently on the operand stack. It
- * does not keep track of the actual values but from where the values orginates.
- * A value may for example orginate from a specific field member in the class,
- * a local variable, a return value from a specific method or something else.
+ * does not keep track of the actual values but from where the values
+ * originates. A value may for example originate from a specific field member in
+ * the class, a local variable, a return value from a specific method or
+ * something else.
  *
- * The analyze is done during the instrumentation.
+ * The analysis is done during the instrumentation.
  */
 @NotThreadSafe
 class StackAnalyzeMethodVisitor implements MethodVisitor {
@@ -48,8 +49,9 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
     }
 
     /**
-     * @return a textual desription of from where the current value of the stack
-     * orginates. The string "???" is returned if the orgin is unkown.
+     * @return A textual description of from where the current value of the
+     *         stack originates. The string "???" is returned if the origin is
+     *         unknown.
      */
     String peek() {
         if (mStack.isEmpty()) {

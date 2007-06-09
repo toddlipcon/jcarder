@@ -7,7 +7,7 @@ import com.enea.jcarder.util.BuildInformation;
 import com.enea.jcarder.util.Logger;
 
 /**
- * This is the main class of the jcarder java agent. It will initialize jcarder
+ * This is the main class of the JCarder Java agent. It will initialize JCarder
  * and register a ClassTransformer that is called by the JVM each time a class
  * is loaded.
  */

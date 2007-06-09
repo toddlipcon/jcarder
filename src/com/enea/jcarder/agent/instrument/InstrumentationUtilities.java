@@ -13,12 +13,11 @@ public final class InstrumentationUtilities {
         //
         //    mv.visitLdcInsn(RuleType.getType(mClassName));
         //
-        // for classe versions before 49.0 (introduced with java 1.5).
+        // for class versions before 49.0 (introduced with java 1.5).
         // Therefore we use Class.forName instead.
         //
         // TODO It might be possible to do this more efficiently
-        //      by caching the result from Class.forName. See the file
-        //      doc/AsmMailinglist.txt for more information.
+        //      by caching the result from Class.forName.
         //      But note that adding a new field (where the cached class
         //      object can be stored) is only possible if the class has
         //      not already been loaded by the JVM.

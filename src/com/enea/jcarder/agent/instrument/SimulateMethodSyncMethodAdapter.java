@@ -27,13 +27,16 @@ class SimulateMethodSyncMethodAdapter extends MethodAdapter {
 
     public void visitCode() {
         super.visitCode();
-        // This MethodAdapter will only be applied to synchronized methods,
-        // and constructors is not allowed to be declared synchronized,
-        // therefor we can add instructions at the begining of the method
-        // and does not have to find the place after the initial constructor
-        // byte codes:
-        //     ALOAD 0: this
-        //     INVOKESPECIAL Object.<init>() : void
+        /*
+         * This MethodAdapter will only be applied to synchronized methods, and
+         * constructors are not allowed to be declared synchronized. Therefore
+         * we can add instructions at the beginning of the method and do not
+         * have to find the place after the initial constructor byte codes:
+         *
+         *     ALOAD 0 : this
+         *     INVOKESPECIAL Object.<init>() : void
+         *
+         */
         putMonitorObjectReferenceOnStack();
         mv.visitInsn(Opcodes.MONITORENTER);
         mv.visitLabel(mTryLabel);
@@ -43,8 +46,10 @@ class SimulateMethodSyncMethodAdapter extends MethodAdapter {
      * This method is called just after the last code in the method.
      */
     public void visitMaxs(int arg0, int arg1) {
-        // This finally block is needed in order to exit the monitor
-        // even when the method is exited by throwing an exception.
+        /*
+         * This finally block is needed in order to exit the monitor even when
+         * the method exits by throwing an exception.
+         */
         mv.visitLabel(mFinallyLabel);
         putMonitorObjectReferenceOnStack();
         mv.visitInsn(Opcodes.MONITOREXIT);
