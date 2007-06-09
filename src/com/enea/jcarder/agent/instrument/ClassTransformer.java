@@ -13,10 +13,10 @@ import org.objectweb.asm.util.CheckClassAdapter;
 import com.enea.jcarder.util.Logger;
 
 /**
- * This class is responsible for all instrumentations and handles related
- * issues with class loaders.
+ * This class is responsible for all instrumentations and handles related issues
+ * with class loaders.
  *
- * TODO add basic test for this class.
+ * TODO Add basic test for this class.
  */
 public class ClassTransformer implements ClassFileTransformer {
     private static final File ORGINAL_CLASSES_DIR = new File("orginalClasses");
@@ -89,13 +89,13 @@ public class ClassTransformer implements ClassFileTransformer {
 
     /**
      * Instrumented classes must use the same static members in the
-     * com.ena.jcarder.agent.StaticEventListener class as the Java agent
-     * and therefore they must be loaded with the same class loader
-     * as the agent was loaded with, or with a class loader that has
-     * the agent's class loader as a parent or ancestor.
+     * com.ena.jcarder.agent.StaticEventListener class as the Java agent and
+     * therefore they must be loaded with the same class loader as the agent was
+     * loaded with, or with a class loader that has the agent's class loader as
+     * a parent or ancestor.
      *
-     * Note that the agentLoader may have been loaded with the bootstrap
-     * class loader (null) and then "null" is a compatible class loader.
+     * Note that the agentLoader may have been loaded with the bootstrap class
+     * loader (null) and then "null" is a compatible class loader.
      */
     private boolean isCompatibleClassLoader(final ClassLoader classLoader) {
         ClassLoader c = classLoader;

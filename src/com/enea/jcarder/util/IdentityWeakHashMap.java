@@ -27,8 +27,10 @@ public final class IdentityWeakHashMap<V> {
     }
 
     public V get(Object key) {
-        // Avoid calls to removeGarbageCollectedKeys in this method in order
-        // to improve performance.
+        /*
+         * Avoid calls to removeGarbageCollectedKeys in this method in order to
+         * improve performance.
+         */
         if (key == mLastKey) {
             return mLastValue;
         }

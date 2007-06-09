@@ -7,17 +7,14 @@ import java.io.PrintWriter;
 
 /**
  * We use our own simple Logging framework for several reasons:
- *
  *  - To avoid interfering with logging from the user application. Even if we
- *    were using Log4J instead of java.util.Logging.*, JCarder might interfere
- *    with for example Log4J system properties.
- *
- *  - The default java.util.logging.LogManager is reset by a shutdown hook
- *    and there is no fixed order in which the shutdown hooks are executed.
- *
+ * were using Log4J instead of java.util.Logging.*, JCarder might interfere with
+ * for example Log4J system properties.
+ *  - The default java.util.logging.LogManager is reset by a shutdown hook and
+ * there is no fixed order in which the shutdown hooks are executed.
  *  - Minimizing the usage of the Java standard library improves performance and
- *    minimizes the risk of deadlock if the standard library is instrumented
- *    by JCarder.
+ * minimizes the risk of deadlock if the standard library is instrumented by
+ * JCarder.
  */
 public final class Logger {
     public static final int SEVERE = 1;

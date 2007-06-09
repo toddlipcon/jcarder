@@ -33,9 +33,9 @@ final class LockIdGenerator {
     /**
      * Return an ID for a given object.
      *
-     * If the method is invoked with the same object instance more than once
-     * it is guaranteed that the same ID is returned each time. Two objects
-     * that are not identical (as compared with "==") will get different IDs.
+     * If the method is invoked with the same object instance more than once it
+     * is guaranteed that the same ID is returned each time. Two objects that
+     * are not identical (as compared with "==") will get different IDs.
      */
     public int acquireLockId(Object o) throws IOException {
         assert o != null;

@@ -8,12 +8,12 @@ import java.util.LinkedList;
 import com.enea.jcarder.common.contexts.ContextReaderIfc;
 
 /**
- * An instance of this class represents a single cycle of edges. The edges
- * must form a single circle witout any alternative paths. If there are
- * alternative paths in a graph cycle, those cycles will be split into
- * separate Cycle objects.
+ * An instance of this class represents a single cycle of edges. The edges must
+ * form a single circle witout any alternative paths. If there are alternative
+ * paths in a graph cycle, those cycles will be split into separate Cycle
+ * objects.
  *
- * TODO write basic tests.
+ * TODO Write basic tests.
  */
 class Cycle {
     final HashSet<LockEdge> mEdgesInCycle = new HashSet<LockEdge>();
@@ -30,8 +30,10 @@ class Cycle {
     HashSet<LockNode> getNodes() {
         HashSet<LockNode> nodes = new HashSet<LockNode>();
         for (LockEdge edge : mEdgesInCycle) {
-            // All sources will be included if we get all the targets, since
-            // it is a cycle.
+            /*
+             * All sources will be included if we get all the targets, since it
+             * is a cycle.
+             */
             nodes.add(edge.getTarget());
         }
         return nodes;

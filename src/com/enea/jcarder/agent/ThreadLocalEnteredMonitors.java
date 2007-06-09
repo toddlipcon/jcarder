@@ -5,11 +5,10 @@ import java.util.Iterator;
 import net.jcip.annotations.ThreadSafe;
 
 /**
- * Each instance of this class keeps a list of entered monitors for
- * a thread.
+ * Each instance of this class keeps a list of entered monitors for a thread.
  *
- * Note that this class is a ThreadLocal and therefore each thread will have
- * its own instance.
+ * Note that this class is a ThreadLocal and therefore each thread will have its
+ * own instance.
  */
 
 @ThreadSafe

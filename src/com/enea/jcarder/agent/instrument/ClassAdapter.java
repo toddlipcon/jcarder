@@ -60,15 +60,15 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
                 new StackAnalyzeMethodVisitor(dlma, isStatic);
             dlma.setStackAnalyzer(stackAnalyzer);
             if (isSynchronized) {
-                // We want to be able to get an event before a
-                // synchronized method is entered and BEFORE it
-                // has taken the lock in order to notice deadlocks
-                // before they actually happen. Therefore we replace
-                // the synchronized declaration of the method with
-                // explicit monitorEnter and monitorExit bytecodes
-                // in the beginning of the method and at each possible
-                // exit (by normal return and by exception) of the
-                // method.
+                /*
+                 * We want to be able to get an event before a synchronized
+                 * method is entered and BEFORE it has taken the lock in order
+                 * to notice deadlocks before they actually happen. Therefore we
+                 * replace the synchronized declaration of the method with
+                 * explicit monitorEnter and monitorExit bytecodes in the
+                 * beginning of the method and at each possible exit (by normal
+                 * return and by exception) of the method.
+                 */
                 return new SimulateMethodSyncMethodAdapter(stackAnalyzer,
                                                            mClassName,
                                                            isStatic);

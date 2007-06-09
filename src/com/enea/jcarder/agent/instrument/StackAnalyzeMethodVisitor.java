@@ -259,10 +259,12 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
             if (index == 0 && !mIsStatic) {
                 pushTextualDescription("this");
             } else {
-                // TODO Translate the index to a local variable name. To be able
-                //      to do that we probably have to analyze the class in two
-                //      steps since the visit method visitLocalVariable is
-                //      not called until after all calls to visitVarInsn.
+                /*
+                 * TODO Translate the index to a local variable name. To be able
+                 * to do that we probably have to analyze the class in two steps
+                 * since the visit method visitLocalVariable is not called until
+                 * after all calls to visitVarInsn.
+                 */
                 pushTextualDescription("<localVariable" + index + ">");
             }
             break;

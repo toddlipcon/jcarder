@@ -1,6 +1,6 @@
 package com.enea.jcarder.agent.instrument;
 
-// TODO is this config class needed?
+// TODO Is this config class needed?
 public final class InstrumentConfig {
 
     private final boolean mValidateTransfomedClasses = true;

@@ -43,8 +43,10 @@ class LockEdge {
     }
 
     boolean alike(LockEdge other, ContextReaderIfc ras) {
-        // TODO Some kind of cache to improve performance? Note that the
-        //      context IDs are not declared final.
+        /*
+         * TODO Some kind of cache to improve performance? Note that the context
+         * IDs are not declared final.
+         */
         LockingContext thisSourceContext = ras.readContext(mSourceContextId);
         LockingContext otherSourceContext = ras.readContext(other.mSourceContextId);
         LockingContext thisTargetContext = ras.readContext(mTargetContextId);
@@ -56,9 +58,10 @@ class LockEdge {
     }
 
     public boolean equals(Object obj) {
-        // TODO It might be a potential problem to use LockEdges in HashMaps
-        //      since they are mutable and this equals method depends
-        //      on them?
+        /*
+         * TODO It might be a potential problem to use LockEdges in HashMaps
+         * since they are mutable and this equals method depends on them?
+         */
         try {
             LockEdge other = (LockEdge) obj;
             return (mTarget.getLockId() == other.mTarget.getLockId())

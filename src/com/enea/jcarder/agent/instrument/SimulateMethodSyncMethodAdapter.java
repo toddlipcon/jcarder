@@ -7,8 +7,8 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 /**
- * This Method Adapter simulates a synchronized declaration on a method
- * by adding a MonitorEnter and MonitorExits.
+ * This Method Adapter simulates a synchronized declaration on a method by
+ * adding a MonitorEnter and MonitorExits.
  */
 @NotThreadSafe
 class SimulateMethodSyncMethodAdapter extends MethodAdapter {

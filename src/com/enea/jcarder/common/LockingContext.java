@@ -23,7 +23,7 @@ public final class LockingContext {
      * format "com.enea.jcarder.Foo.bar()".
      */
     private final String mMethodWithClass;
-    // TODO include row number in MethodWithClass?
+    // TODO Include row number in MethodWithClass?
 
     public LockingContext(String threadName,
                           String lockReference,

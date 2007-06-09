@@ -9,13 +9,13 @@ import com.enea.jcarder.common.LockingContext;
 import com.enea.jcarder.common.contexts.ContextReaderIfc;
 
 /**
- * This class contains functionality for merging edges that have the same
- * source and target nodes and identical thread IDs and locking contexts
- * content, but different locking context IDs.
+ * This class contains functionality for merging edges that have the same source
+ * and target nodes and identical thread IDs and locking contexts content, but
+ * different locking context IDs.
  *
- * Such a merge might be desirable since the producer of the context file is
- * not required to guarantee that identical locking contexts always get the
- * same IDs.
+ * Such a merge might be desirable since the producer of the context file is not
+ * required to guarantee that identical locking contexts always get the same
+ * IDs.
  *
  * @TODO Add basic tests for this class.
  */

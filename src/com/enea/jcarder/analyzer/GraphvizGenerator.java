@@ -9,11 +9,11 @@ import com.enea.jcarder.common.contexts.ContextReaderIfc;
  * This class can be used to generate a Graphviz <http://www.graphviz.org> graph
  * as a string.
  *
- * TODO Add tooltips to the graph? The tooltips might for example contain
- *      the package names of classes.
+ * TODO Add tooltips to the graph? The tooltips might for example contain the
+ * package names of classes.
  *
- * TODO If there are to many edges, merge them together in the graph
- *      and add an href link to an html page that describes them all?
+ * TODO If there are to many edges, merge them together in the graph and add an
+ * href link to an html page that describes them all?
  *
  * TODO Optionaly merge edges that are identical except for the threads?
  */

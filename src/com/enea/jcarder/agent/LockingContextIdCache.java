@@ -21,12 +21,12 @@ import com.enea.jcarder.util.Logger;
  * as long as there is enough memory available.
  *
  * TODO An alternative implementation to consider could be to only store the
- *      hashCode in a map and perform a comparison with the Context file
- *      file (possibly memory mapped). I don't know how that would affect the
- *      performance. Another option to consider would be to use a plain HashMap
- *      without SoftReferences and accept the potential memory problem as a
- *      trade-of for better performance (?) and to avoid getting different IDs
- *      for duplicated LockingContexts.
+ * hashCode in a map and perform a comparison with the Context file file
+ * (possibly memory mapped). I don't know how that would affect the performance.
+ * Another option to consider would be to use a plain HashMap without
+ * SoftReferences and accept the potential memory problem as a trade-of for
+ * better performance (?) and to avoid getting different IDs for duplicated
+ * LockingContexts.
  *
  * TODO Add basic tests for this class.
  */
@@ -48,9 +48,8 @@ final class LockingContextIdCache {
 
     /**
      * Acquire a unique ID for the provided LockingContext. The ID will be
-     * cached. If a provided LockingContext is equal to a previously
-     * provided LockingContext that is still in the cache, the same ID will be
-     * returned.
+     * cached. If a provided LockingContext is equal to a previously provided
+     * LockingContext that is still in the cache, the same ID will be returned.
      *
      * The equality is checked with the LockingContext.equals(Object other)
      * method.

@@ -19,7 +19,7 @@ import static com.enea.jcarder.common.contexts.ContextFileReader.EVENT_DB_FILE;
 import static com.enea.jcarder.common.contexts.ContextFileReader.CONTEXTS_DB_FILE;
 
 /**
- * The main class of the jcarder analyzer.
+ * The main class of the JCarder analyzer.
  */
 public final class Analyzer {
 
@@ -29,10 +29,10 @@ public final class Analyzer {
 
     /*
      * Cycles with only one thread can never cause a deadlock, but it might be
-     * possible that basic tests of a single class are very simplified and
-     * use only a single thread where a real program might invoke the methods
-     * from several different threads. Therefore single-threaded cycles
-     * are also interesting to detect and include by default.
+     * possible that basic tests of a single class are very simplified and use
+     * only a single thread where a real program might invoke the methods from
+     * several different threads. Therefore single-threaded cycles are also
+     * interesting to detect and include by default.
      */
     private OutputMode mOutputMode = OutputMode.INCLUDE_CYCLES;
     private boolean mIncludePackages = false;
@@ -68,14 +68,16 @@ public final class Analyzer {
                 return;
             }
             graphBuilder.clear(); // Help GC.
-            // TODO Also clear all references in LockNode.mOutgoingEdges to
-            //      avoid keeping references to a lot of LockEdge and LockNode
-            //      objects in order to release as much memory as possible for
-            //      the memory mapped file?
-
-            // It is not necessary to use the DuplicateEdgeshandler since
-            // those duplicates are removed anyway when cycles that
-            // are alike are removed.
+            /*
+             * TODO Also clear all references in LockNode.mOutgoingEdges to
+             * avoid keeping references to a lot of LockEdge and LockNode
+             * objects in order to release as much memory as possible for the
+             * memory mapped file?
+             *
+             * It is not necessary to use the DuplicateEdgeshandler since those
+             * duplicates are removed anyway when cycles that are alike are
+             * removed.
+             */
             cycleDetector.removeAlikeCycles(ras);
 
             printDetailsIfEnabled(cycleDetector.getCycles(), ras);
@@ -121,7 +123,7 @@ public final class Analyzer {
     throws IOException {
         DuplicatedEdgesHandler.mergeDuplicatedEdges(graphBuilder.getAllLocks(),
                                                     ras);
-        // TODO print statistics about removed duplicates?
+        // TODO Print statistics about removed duplicates?
         LinkedList<LockEdge> allEdges = new LinkedList<LockEdge>();
         for (LockNode node : graphBuilder.getAllLocks()) {
             allEdges.addAll(node.getOutgoingEdges());
@@ -163,9 +165,11 @@ public final class Analyzer {
                 System.exit(-1);
             }
         }
-        // TODO Add parameters for filtering (including & excluding) specific
-        //      locks and edges for example by specifying thread names,
-        //      object classes, method names or packages?
+        /*
+         * TODO Add parameters for filtering (including & excluding) specific
+         * locks and edges for example by specifying thread names, object
+         * classes, method names or packages?
+         */
     }
 
 
