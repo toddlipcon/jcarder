@@ -19,7 +19,7 @@ public final class Counter {
         mValue++;
         if ((mValue % mLogIntervall) == 0) {
             mLogger.fine(mName + ": " + mValue);
-        } else {
+        } else if (mLogger.isFinestEnabled()) {
             mLogger.finest(mName + ": " + mValue);
         }
     }
