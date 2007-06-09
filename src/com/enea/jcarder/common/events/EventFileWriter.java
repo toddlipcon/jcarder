@@ -11,11 +11,11 @@ import net.jcip.annotations.NotThreadSafe;
 import com.enea.jcarder.util.Counter;
 import com.enea.jcarder.util.Logger;
 
-import static com.enea.jcarder.common.events.EventFileReader.LOCK_EVENT_LENGTH;
+import static com.enea.jcarder.common.events.EventFileReader.EVENT_LENGTH;
 
 @NotThreadSafe
 public final class EventFileWriter implements LockEventListenerIfc {
-    private final ByteBuffer mBuffer = ByteBuffer.allocate(LOCK_EVENT_LENGTH);
+    private final ByteBuffer mBuffer = ByteBuffer.allocateDirect(EVENT_LENGTH);
     private final FileChannel mFileChannel;
     private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
     private final Counter mWrittenLockEvents;
