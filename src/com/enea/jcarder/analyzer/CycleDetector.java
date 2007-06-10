@@ -210,8 +210,8 @@ class CycleDetector {
          * TODO Refactor this method? The temporary data structure is too
          * complex?
          */
-        HashMap<HashSet<LockNode>, HashSet<LockEdge>> setOfNodesToEdgesMap
-        = new HashMap<HashSet<LockNode>, HashSet<LockEdge>>();
+        HashMap<HashSet<LockNode>, HashSet<LockEdge>> setOfNodesToEdgesMap =
+            new HashMap<HashSet<LockNode>, HashSet<LockEdge>>();
         for (Cycle cycle : mCycles) {
             final HashSet<LockNode> nodes = cycle.getNodes();
             HashSet<LockEdge> edges = setOfNodesToEdgesMap.get(nodes);

@@ -26,10 +26,10 @@ public final class MonitorWithContext {
     public static MonitorWithContext[] create(Object monitor,
                                               String method,
                                               String lockReference) {
-        MonitorWithContext context
-        = new MonitorWithContext(monitor,
-                                 method,
-                                 lockReference,
+        MonitorWithContext context =
+            new MonitorWithContext(monitor,
+                                   method,
+                                   lockReference,
                                  Thread.currentThread());
         return new MonitorWithContext[] { context };
 

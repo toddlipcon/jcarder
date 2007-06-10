@@ -36,10 +36,10 @@ public final class StaticEventListener {
                                           String methodWithClass) {
         try {
             if (smListener != null) {
-                final LockingContext lockingContext
-                = new LockingContext(Thread.currentThread(),
-                                     lockReference,
-                                     methodWithClass);
+                final LockingContext lockingContext =
+                    new LockingContext(Thread.currentThread(),
+                                       lockReference,
+                                       methodWithClass);
                 smListener.beforeMonitorEnter(monitor,
                                               lockingContext);
             }

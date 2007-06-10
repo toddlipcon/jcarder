@@ -43,11 +43,11 @@ public final class BtLockNode {
         node1.addOutgoingEdge(new LockEdge(node1, node2, 1, 4, 6));
         node1.addOutgoingEdge(new LockEdge(node1, node3, 1, 4, 6));
         node1.addOutgoingEdge(new LockEdge(node1, node3, 1, 7, 8));
-        final HashMap<Integer, Integer> translationMap
-        = new HashMap<Integer, Integer>();
+        final HashMap<Integer, Integer> translationMap =
+            new HashMap<Integer, Integer>();
         node1.populateContextIdTranslationMap(translationMap);
-        final HashMap<Integer, Integer> expectedTranslationMap
-        = new HashMap<Integer, Integer>();
+        final HashMap<Integer, Integer> expectedTranslationMap =
+            new HashMap<Integer, Integer>();
         expectedTranslationMap.put(2, 2);
         expectedTranslationMap.put(3, 3);
         expectedTranslationMap.put(4, 4);
@@ -68,8 +68,8 @@ public final class BtLockNode {
         node1.addOutgoingEdge(new LockEdge(node1, node3, 1, 2, 3));
         assertEquals(1L, node1.numberOfDuplicatedEdges());
         assertEquals(5L, node1.numberOfUniqueEdges());
-        final HashMap<Integer, Integer> translationMap
-        = new HashMap<Integer, Integer>();
+        final HashMap<Integer, Integer> translationMap =
+            new HashMap<Integer, Integer>();
         translationMap.put(2, 12);
         translationMap.put(3, 13);
         translationMap.put(4, 12);

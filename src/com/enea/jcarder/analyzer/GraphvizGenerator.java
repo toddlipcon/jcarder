@@ -79,10 +79,10 @@ final class GraphvizGenerator {
     private String createEdgeLabel(ContextReaderIfc ras,
                                    LockEdge edge,
                                    boolean includePackages) {
-        final LockingContext sourceContext
-        = ras.readContext(edge.getSourceLockingContextId());
-        final LockingContext targetContext
-        = ras.readContext(edge.getTargetLockingContextId());
+        final LockingContext sourceContext =
+            ras.readContext(edge.getSourceLockingContextId());
+        final LockingContext targetContext =
+            ras.readContext(edge.getTargetLockingContextId());
         return String.format(EDGE_LABEL_FORMAT,
                              escape(handlePackage(targetContext.getThreadName(),
                                                   includePackages)),

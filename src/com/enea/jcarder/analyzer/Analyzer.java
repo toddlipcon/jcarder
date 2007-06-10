@@ -46,8 +46,7 @@ public final class Analyzer {
         parseArguments(args);
         LockGraphBuilder graphBuilder = new LockGraphBuilder();
 
-        ContextReaderIfc ras
-        = new ContextFileReader(CONTEXTS_DB_FILE);
+        ContextReaderIfc ras = new ContextFileReader(CONTEXTS_DB_FILE);
 
         EventFileReader.parseFile(EVENT_DB_FILE, graphBuilder);
         printInitiallyLoadedStatistics(graphBuilder.getAllLocks());

@@ -55,8 +55,8 @@ public final class DuplicatedEdgesHandler {
     }
 
     private Map<Integer, Integer> populateTranslationMap() {
-        final HashMap<Integer, Integer> contextIds
-        = new HashMap<Integer, Integer>();
+        final HashMap<Integer, Integer> contextIds =
+            new HashMap<Integer, Integer>();
         for (LockNode node : mLockNodes) {
             node.populateContextIdTranslationMap(contextIds);
         }
@@ -65,8 +65,8 @@ public final class DuplicatedEdgesHandler {
 
     private Map<LockingContext, TreeSet<Integer>>
     createContextToIdMap(ContextReaderIfc ras) {
-        final Map<LockingContext, TreeSet<Integer>> contextToId
-        = new HashMap<LockingContext, TreeSet<Integer>>();
+        final Map<LockingContext, TreeSet<Integer>> contextToId =
+            new HashMap<LockingContext, TreeSet<Integer>>();
         for (Integer id : mContextIdTranslation.values()) {
             LockingContext context = ras.readContext(id);
             TreeSet<Integer> ids = contextToId.get(context);
