@@ -66,13 +66,13 @@ final class GraphvizGenerator {
         final HashSet<LockNode> alreadyAppendedNodes = new HashSet<LockNode>();
         for (LockEdge edge : edgesToBePrinted) {
             appendNodeIfNotAppended(ras,
-                                            sb,
-                                            alreadyAppendedNodes,
-                                            edge.getSource());
+                                    sb,
+                                    alreadyAppendedNodes,
+                                    edge.getSource());
             appendNodeIfNotAppended(ras,
-                                            sb,
-                                            alreadyAppendedNodes,
-                                            edge.getTarget());
+                                    sb,
+                                    alreadyAppendedNodes,
+                                    edge.getTarget());
             sb.append("  " + edge.getSource().toString() + "");
             sb.append(" -> " + edge.getTarget().toString() + "");
             sb.append(createEdgeLabel(ras, edge, includePackages));

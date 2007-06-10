@@ -99,9 +99,9 @@ public final class Analyzer {
             }
             GraphvizGenerator graphvizGenerator = new GraphvizGenerator();
             createGraphvizFile(graphvizGenerator.generate(edges,
-                                                  ras,
-                                                  mIncludePackages),
-                                                  index++);
+                                                          ras,
+                                                          mIncludePackages),
+                                                          index++);
         }
     }
 
