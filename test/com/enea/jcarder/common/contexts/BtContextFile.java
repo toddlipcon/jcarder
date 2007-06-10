@@ -28,5 +28,6 @@ public final class BtContextFile {
         ContextFileReader reader = new ContextFileReader(file);
         Assert.assertEquals(lock, reader.readLock(lockId));
         Assert.assertEquals(context, reader.readContext(contextId));
+        file.delete();
     }
 }

@@ -43,5 +43,6 @@ public final class BtEventFile {
         replay(listenerMock);
         EventFileReader.parseFile(file, listenerMock);
         verify(listenerMock);
+        file.delete();
     }
 }
