@@ -32,7 +32,8 @@ public final class BtEventFile {
                                threadId);
         }
         writer.close();
-        LockEventListenerIfc listenerMock = createStrictMock(LockEventListenerIfc.class);
+        LockEventListenerIfc listenerMock =
+            createStrictMock(LockEventListenerIfc.class);
         for (int i = 0; i < nrOfLogEvents; i++) {
             listenerMock.onLockEvent(lockId,
                                      lockingContextId,

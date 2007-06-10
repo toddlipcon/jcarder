@@ -5,7 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import com.enea.jcarder.agent.instrument.MonitorWithContext;
 
-public final class SynchronizedFromLocalVariable implements SynchronizationTestIfc {
+public final class SynchronizedFromLocalVariable
+implements SynchronizationTestIfc {
     public Object mDummy;
     private final Object mSync = new Object();
 

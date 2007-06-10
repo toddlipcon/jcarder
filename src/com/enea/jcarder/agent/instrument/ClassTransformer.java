@@ -128,7 +128,8 @@ public class ClassTransformer implements ClassFileTransformer {
         if (dir.isDirectory()) {
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {
-                boolean success = deleteDirRecursively(new File(dir, children[i]));
+                boolean success =
+                    deleteDirRecursively(new File(dir, children[i]));
                 if (!success) {
                     return false;
                 }

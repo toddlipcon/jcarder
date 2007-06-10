@@ -6,7 +6,8 @@ import static org.junit.Assert.fail;
 
 import com.enea.jcarder.agent.instrument.MonitorWithContext;
 
-public final class SynchronizedStaticMethodWithException implements SynchronizationTestIfc {
+public final class SynchronizedStaticMethodWithException
+implements SynchronizationTestIfc {
 
     public void go() {
         try {
@@ -19,11 +20,12 @@ public final class SynchronizedStaticMethodWithException implements Synchronizat
     }
 
     public static synchronized void help() {
-        assertTrue(Thread.holdsLock(SynchronizedStaticMethodWithException.class));
+        Class clazz = SynchronizedStaticMethodWithException.class;
+        assertTrue(Thread.holdsLock(clazz));
         try {
             throw new RuntimeException("test");
         } catch (RuntimeException e) {
-            assertTrue(Thread.holdsLock(SynchronizedStaticMethodWithException.class));
+            assertTrue(Thread.holdsLock(clazz));
             throw e;
         }
     }

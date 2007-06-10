@@ -6,7 +6,8 @@ import static org.junit.Assert.assertEquals;
 
 import com.enea.jcarder.agent.instrument.MonitorWithContext;
 
-public final class SynchronizedStaticMethodWithMultipleIntReturns implements SynchronizationTestIfc {
+public final class SynchronizedStaticMethodWithMultipleIntReturns
+implements SynchronizationTestIfc {
 
     public void go() {
         assertFalse(Thread.holdsLock(this));
@@ -19,7 +20,8 @@ public final class SynchronizedStaticMethodWithMultipleIntReturns implements Syn
     }
 
     public static synchronized int help(int foo) {
-        assertTrue(Thread.holdsLock(SynchronizedStaticMethodWithMultipleIntReturns.class));
+        Class clazz = SynchronizedStaticMethodWithMultipleIntReturns.class;
+        assertTrue(Thread.holdsLock(clazz));
         if (foo < 0) {
             return -1;
         } else {

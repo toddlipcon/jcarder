@@ -56,7 +56,8 @@ class CycleDetector {
         HashSet<LockEdge> visitedEdges = new HashSet<LockEdge>();
         for (LockNode lock : nodes) {
             if (!visitedNodes.contains(lock)) {
-                analyzeNode(lock, nodesOnStack, edgesOnStack, visitedNodes, visitedEdges);
+                analyzeNode(lock, nodesOnStack, edgesOnStack, visitedNodes,
+                            visitedEdges);
             }
         }
         for (Cycle cycle : mCycles) {
@@ -81,7 +82,8 @@ class CycleDetector {
         nodesOnStack.add(node);
         for (LockEdge edge : node.getOutgoingEdges()) {
             edgesOnStack.add(edge);
-            analyzeEdge(edge, nodesOnStack, edgesOnStack, visitedNodes, visitedEdges);
+            analyzeEdge(edge, nodesOnStack, edgesOnStack, visitedNodes,
+                        visitedEdges);
             edgesOnStack.remove(edgesOnStack.size() - 1);
         }
         nodesOnStack.remove(nodesOnStack.size() - 1);
@@ -96,8 +98,8 @@ class CycleDetector {
             mMaxDepth.set(nodesOnStack.size());
             final int index = nodesOnStack.indexOf(edge.getTarget());
             if (index >= 0) {
-                final List<LockEdge> edgesInCycle = edgesOnStack.subList(index,
-                                                                         edgesOnStack.size());
+                final List<LockEdge> edgesInCycle =
+                    edgesOnStack.subList(index, edgesOnStack.size());
                 mNoOfCreatedCycleObjects.increment();
                 mMaxCycleDepth.set(edgesInCycle.size());
                 mCycles.add(new Cycle(edgesInCycle));
@@ -109,7 +111,9 @@ class CycleDetector {
                  * otherwise all cycles won't be found. See the testcases for
                  * examples of such cases.
                  */
-                visitedEdges.removeAll(edgesInCycle.subList(1, edgesInCycle.size()));
+                List<LockEdge> edgesToRemove =
+                    edgesInCycle.subList(1, edgesInCycle.size());
+                visitedEdges.removeAll(edgesToRemove);
             } else {
                 visitedEdges.add(edge);
                 analyzeNode(edge.getTarget(),
@@ -171,7 +175,9 @@ class CycleDetector {
                 removedCycles++;
             }
         }
-        mLogger.info("Ignoring " + removedCycles + " single threaded cycle(s).");
+        mLogger.info("Ignoring "
+                     + removedCycles
+                     + " single threaded cycle(s).");
     }
 
     /**

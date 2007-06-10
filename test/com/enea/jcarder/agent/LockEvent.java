@@ -7,7 +7,7 @@ public final class LockEvent {
     private final Lock mLock;
     private final LockingContext mLockingContext;
     private final Lock mLastTakenLock;
-    private final LockingContext mLastTakenLockingContext;
+    private final LockingContext mLastLockingContext;
 
     public LockEvent(final Lock lock,
                      final LockingContext lockingContext,
@@ -16,7 +16,7 @@ public final class LockEvent {
         mLock = lock;
         mLockingContext = lockingContext;
         mLastTakenLock = lastTakenLock;
-        mLastTakenLockingContext = lastTakenLockingContext;
+        mLastLockingContext = lastTakenLockingContext;
     }
 
     public int hashCode() {
@@ -39,10 +39,10 @@ public final class LockEvent {
                 return false;
         } else if (!this.mLastTakenLock.equals(other.mLastTakenLock))
             return false;
-        if (this.mLastTakenLockingContext == null) {
-            if (other.mLastTakenLockingContext != null)
+        if (this.mLastLockingContext == null) {
+            if (other.mLastLockingContext != null)
                 return false;
-        } else if (!this.mLastTakenLockingContext.equals(other.mLastTakenLockingContext))
+        } else if (!this.mLastLockingContext.equals(other.mLastLockingContext))
             return false;
         if (this.mLock == null) {
             if (other.mLock != null)
@@ -58,6 +58,7 @@ public final class LockEvent {
     }
 
     public String toString() {
-        return "Locking:" + mLock.toString() + " LastLocked:" + mLastTakenLock.toString();
+        return ("Locking:" + mLock.toString()
+                + " LastLocked:" + mLastTakenLock.toString());
     }
 }

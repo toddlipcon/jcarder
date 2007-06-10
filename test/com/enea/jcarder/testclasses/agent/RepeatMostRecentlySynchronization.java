@@ -7,7 +7,8 @@ import com.enea.jcarder.common.LockingContext;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public final class RepeatMostRecentlySynchronization implements SynchronizationTestIfc {
+public final class RepeatMostRecentlySynchronization
+implements SynchronizationTestIfc {
     private final Object mSync0 = new Object();
     private final Object mSync1 = new Object();
 
@@ -31,14 +32,16 @@ public final class RepeatMostRecentlySynchronization implements SynchronizationT
         final Lock lockSync1 = new Lock(mSync1);
         final String threadName = Thread.currentThread().getName();
         final String method = getClass().getName() + ".go()";
-        LockingContext contextSync0 = new LockingContext(threadName,
-                                                         getClass().getName() + ".mSync0",
-                                                         method);
-        LockingContext contextSync1 = new LockingContext(threadName,
-                                                         getClass().getName() + ".mSync1",
-                                                         method);
+        LockingContext contextSync0 =
+            new LockingContext(threadName,
+                               getClass().getName() + ".mSync0",
+                               method);
+        LockingContext contextSync1 =
+            new LockingContext(threadName,
+                               getClass().getName() + ".mSync1",
+                               method);
         return new LockEvent[] {
-                new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0)
+            new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0)
         };
     }
 }

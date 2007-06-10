@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 public final class TwoThreadSynchronization extends Thread
-                                      implements SynchronizationTestIfc {
+implements SynchronizationTestIfc {
     private final Object mSync0 = new Object();
     private final Object mSync1 = new Object();
     private final Object mSync2 = new Object();
@@ -51,22 +51,27 @@ public final class TwoThreadSynchronization extends Thread
         final Lock lockSync2 = new Lock(mSync2);
         final String threadName = Thread.currentThread().getName();
         final String method = getClass().getName() + ".go()";
-        LockingContext contextSync0 = new LockingContext(threadName,
-                                                         getClass().getName() + ".mSync0",
-                                                         method);
-        LockingContext contextSync1 = new LockingContext(threadName,
-                                                         getClass().getName() + ".mSync1",
-                                                         method);
-        LockingContext contextSync1Thread = new LockingContext(getName(),
-                                                               getClass().getName() + ".mSync1",
-                                                               getClass().getName() + ".run()");
+        LockingContext contextSync0 =
+            new LockingContext(threadName,
+                               getClass().getName() + ".mSync0",
+                               method);
+        LockingContext contextSync1 =
+            new LockingContext(threadName,
+                               getClass().getName() + ".mSync1",
+                               method);
+        LockingContext contextSync1Thread =
+            new LockingContext(getName(),
+                               getClass().getName() + ".mSync1",
+                               getClass().getName() + ".run()");
 
-        LockingContext contextSync2Thread = new LockingContext(getName(),
-                                                               getClass().getName() + ".mSync2",
-                                                               getClass().getName() + ".run()");
+        LockingContext contextSync2Thread =
+            new LockingContext(getName(),
+                               getClass().getName() + ".mSync2",
+                               getClass().getName() + ".run()");
         return new LockEvent[] {
-                 new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0),
-                 new LockEvent(lockSync1, contextSync1Thread, lockSync2, contextSync2Thread),
+             new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0),
+             new LockEvent(lockSync1, contextSync1Thread, lockSync2,
+                           contextSync2Thread),
         };
     }
 }

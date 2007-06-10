@@ -14,7 +14,8 @@ import com.enea.jcarder.common.events.LockEventListenerIfc;
  */
 @NotThreadSafe
 class LockGraphBuilder implements LockEventListenerIfc {
-    private HashMap<Integer, LockNode> mLocks = new HashMap<Integer, LockNode>();
+    private HashMap<Integer, LockNode> mLocks =
+        new HashMap<Integer, LockNode>();
 
     LockNode getLockNode(int lockId) {
         LockNode lockNode = mLocks.get(lockId);

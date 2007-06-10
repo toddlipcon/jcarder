@@ -46,14 +46,16 @@ implements SynchronizationTestIfc {
         final Lock lockSync1 = new Lock(mSync1);
         final String threadName = Thread.currentThread().getName();
         final String method = getClass().getName() + ".go()";
-        final LockingContext contextSync0 = new LockingContext(threadName,
-                                                              getClass().getName() + ".mSync0",
-                                                              method);
-        final LockingContext contextSync1 = new LockingContext(threadName,
-                                                               getClass().getName() + ".mSync1",
-                                                               getClass().getName() + ".foo()");
+        final LockingContext contextSync0 =
+            new LockingContext(threadName,
+                               getClass().getName() + ".mSync0",
+                               method);
+        final LockingContext contextSync1 =
+            new LockingContext(threadName,
+                               getClass().getName() + ".mSync1",
+                               getClass().getName() + ".foo()");
         return new LockEvent[] {
-                new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0)
+            new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0)
         };
     }
 }

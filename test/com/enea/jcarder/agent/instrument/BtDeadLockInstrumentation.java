@@ -50,12 +50,15 @@ public final class BtDeadLockInstrumentation implements EventListenerIfc {
     private final TransformClassLoader mClassLoader;
 
     public BtDeadLockInstrumentation() {
-        mClassLoader = new TransformClassLoader(new ClassTransformer(new InstrumentConfig()));
+        ClassTransformer classTransformer =
+            new ClassTransformer(new InstrumentConfig());
+        mClassLoader = new TransformClassLoader(classTransformer);
         StaticEventListener.setListener(this);
         mEnteredMonitors = new ArrayList<MonitorWithContext>();
     }
 
-    private SynchronizationTestIfc transformAsSynchronizationTest(Class clazz) throws Exception {
+    private SynchronizationTestIfc transformAsSynchronizationTest(Class clazz)
+    throws Exception {
         Class c = mClassLoader.transform(clazz);
         return (SynchronizationTestIfc) c.newInstance();
     }
@@ -174,12 +177,14 @@ public final class BtDeadLockInstrumentation implements EventListenerIfc {
     }
 
     @Test
-    public void testSynchronizedStaticMethodWithMultipleIntReturns() throws Exception {
+    public void testSynchronizedStaticMethodWithMultipleIntReturns()
+    throws Exception {
         testClass(SynchronizedStaticMethodWithMultipleIntReturns.class);
     }
 
     @Test
-    public void testSynchronizedMethodWithMultipleFloatReturns() throws Exception {
+    public void testSynchronizedMethodWithMultipleFloatReturns()
+    throws Exception {
         testClass(SynchronizedMethodWithMultipleFloatReturns.class);
     }
 
@@ -219,11 +224,13 @@ public final class BtDeadLockInstrumentation implements EventListenerIfc {
         assertEquals(expected.getContext(), acctual.getContext());
     }
 
-    public void accessField(Object owner, int fieldId, boolean isVolatile, boolean writeAccess) {
+    public void accessField(Object owner, int fieldId, boolean isVolatile,
+                            boolean writeAccess) {
         // TODO Auto-generated method stub
     }
 
-    public void accessStaticField(Class owner, int fieldId, boolean isVolatile, boolean writeAccess) {
+    public void accessStaticField(Class owner, int fieldId, boolean isVolatile,
+                                  boolean writeAccess) {
         // TODO Auto-generated method stub
     }
 

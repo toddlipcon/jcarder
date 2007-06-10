@@ -23,17 +23,15 @@ public final class BuildInformation {
 
     public static void printLongBuildInformation() {
         try {
-            System.out.println("\nJCarder by Ulrik Svensson <ulriksv@gmail.com>, Enea");
             Properties props = loadBuildProperties();
-            System.out.println("  \nVersion: "
-                               + props.getProperty("build.version")
-                               + "\nBuild  : " + props.getProperty("build.number")
-                               + "\nAt     : "
-                               + props.getProperty("build.timestamp")
-                               + "\nBy     : "
-                               + props.getProperty("build.user.name")
-                               + "\nWith   : "
-                               + props.getProperty("build.os.name"));
+            StringBuffer sb = new StringBuffer();
+            sb.append("\nJCarder by Ulrik Svensson <ulriksv@gmail.com>, Enea");
+            sb.append("\nVersion: " + props.getProperty("build.version"));
+            sb.append("\nBuild  : " + props.getProperty("build.number"));
+            sb.append("\nAt     : " + props.getProperty("build.timestamp"));
+            sb.append("\nBy     : " + props.getProperty("build.user.name"));
+            sb.append("\nOn     : " + props.getProperty("build.os.name"));
+            System.out.println(sb.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

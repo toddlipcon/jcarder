@@ -47,10 +47,14 @@ class LockEdge {
          * TODO Some kind of cache to improve performance? Note that the context
          * IDs are not declared final.
          */
-        LockingContext thisSourceContext = ras.readContext(mSourceContextId);
-        LockingContext otherSourceContext = ras.readContext(other.mSourceContextId);
-        LockingContext thisTargetContext = ras.readContext(mTargetContextId);
-        LockingContext otherTargetContext = ras.readContext(other.mTargetContextId);
+        LockingContext thisSourceContext =
+            ras.readContext(mSourceContextId);
+        LockingContext otherSourceContext =
+            ras.readContext(other.mSourceContextId);
+        LockingContext thisTargetContext =
+            ras.readContext(mTargetContextId);
+        LockingContext otherTargetContext =
+            ras.readContext(other.mTargetContextId);
         return thisSourceContext.alike(otherSourceContext)
                && thisTargetContext.alike(otherTargetContext)
                && mSource.alike(other.mSource, ras)

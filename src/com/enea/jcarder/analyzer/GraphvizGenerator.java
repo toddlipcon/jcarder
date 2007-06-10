@@ -18,7 +18,44 @@ import com.enea.jcarder.common.contexts.ContextReaderIfc;
  * TODO Optionaly merge edges that are identical except for the threads?
  */
 final class GraphvizGenerator {
-    private static final String EDGE_LABEL_FORMAT = getEdgeLableFormat();
+    private static final String EDGE_LABEL_FORMAT =
+        " [label=<\n" +
+        "     <table align=\"left\" border=\"0\" cellborder=\"0\"" +
+        "            cellspacing=\"0\" cellpadding=\"0\">\n" +
+        "       <tr>\n" +
+        "         <td align=\"left\">  </td>\n" +
+        "         <td align=\"left\" colspan=\"2\">" +
+        "Thread: %1$s<br align=\"left\"/>" +
+        "</td>\n" +
+        "       </tr>\n" +
+        "       <tr>\n" +
+        "         <td align=\"left\">  </td>\n" +
+        "         <td align=\"left\" colspan=\"2\">" +
+        "holding: %2$s<br align=\"left\"/>" +
+        "</td>\n" +
+        "       </tr>\n" +
+        "       <tr>\n" +
+        "         <td align=\"left\">  </td>\n" +
+        "         <td align=\"left\">  </td>\n" +
+        "         <td align=\"left\">" +
+        "in: %3$s<br align=\"left\"/>" +
+        "</td>\n" +
+        "       </tr>\n" +
+        "       <tr>\n" +
+        "         <td align=\"left\">  </td>\n" +
+        "         <td align=\"left\" colspan=\"2\">" +
+        "taking: %4$s<br align=\"left\"/>" +
+        "</td>\n" +
+        "       </tr> \n" +
+        "       <tr>\n" +
+        "         <td align=\"left\">  </td>\n" +
+        "         <td align=\"left\">  </td>\n" +
+        "         <td align=\"left\">" +
+        "in: %5$s<br align=\"left\"/>" +
+        "</td>\n" +
+        "       </tr>\n" +
+        "     </table>\n" +
+        "    >]";
 
     public String generate(Iterable<LockEdge> edgesToBePrinted,
                            ContextReaderIfc ras,
@@ -45,54 +82,23 @@ final class GraphvizGenerator {
         return sb.toString();
     }
 
-    private static String getEdgeLableFormat() {
-        StringBuffer formatString = new StringBuffer();
-        formatString.append(" [label=<\n");
-        formatString.append("     <table align=\"left\" border=\"0\" cellborder=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
-        formatString.append("       <tr>\n");
-        formatString.append("         <td align=\"left\">  </td>\n");
-        formatString.append("         <td align=\"left\" colspan=\"2\">Thread: %1$s<br align=\"left\"/></td>\n");
-        formatString.append("       </tr>\n");
-        formatString.append("       <tr>\n");
-        formatString.append("         <td align=\"left\">  </td>\n");
-        formatString.append("         <td align=\"left\" colspan=\"2\">holding: %2$s<br align=\"left\"/></td>\n");
-        formatString.append("       </tr>\n");
-        formatString.append("       <tr>\n");
-        formatString.append("         <td align=\"left\">  </td>\n");
-        formatString.append("         <td align=\"left\">  </td>\n");
-        formatString.append("         <td align=\"left\">in: %3$s<br align=\"left\"/></td>\n");
-        formatString.append("       </tr>\n");
-        formatString.append("       <tr>\n");
-        formatString.append("         <td align=\"left\">  </td>\n");
-        formatString.append("         <td align=\"left\" colspan=\"2\">taking: %4$s<br align=\"left\"/></td>\n");
-        formatString.append("       </tr> \n");
-        formatString.append("       <tr>\n");
-        formatString.append("         <td align=\"left\">  </td>\n");
-        formatString.append("         <td align=\"left\">  </td>\n");
-        formatString.append("         <td align=\"left\">in: %5$s<br align=\"left\"/></td>\n");
-        formatString.append("       </tr>\n");
-        formatString.append("     </table>\n");
-        formatString.append("    >]");
-        return formatString.toString();
-    }
-
     private String createEdgeLabel(ContextReaderIfc ras,
                                    LockEdge edge,
                                    boolean includePackages) {
-        final LockingContext sourceContext =
+        final LockingContext source =
             ras.readContext(edge.getSourceLockingContextId());
-        final LockingContext targetContext =
+        final LockingContext target =
             ras.readContext(edge.getTargetLockingContextId());
         return String.format(EDGE_LABEL_FORMAT,
-                             escape(handlePackage(targetContext.getThreadName(),
+                             escape(handlePackage(target.getThreadName(),
                                                   includePackages)),
-                             escape(handlePackage(sourceContext.getLockReference(),
+                             escape(handlePackage(source.getLockReference(),
                                                   includePackages)),
-                             escape(handlePackage(sourceContext.getMethodWithClass(),
+                             escape(handlePackage(source.getMethodWithClass(),
                                                   includePackages)),
-                             escape(handlePackage(targetContext.getLockReference(),
+                             escape(handlePackage(target.getLockReference(),
                                                   includePackages)),
-                             escape(handlePackage(targetContext.getMethodWithClass(),
+                             escape(handlePackage(target.getMethodWithClass(),
                                                   includePackages)));
     }
 
@@ -134,9 +140,9 @@ final class GraphvizGenerator {
     }
 
     private void appendNodeIfNotAppended(ContextReaderIfc ras,
-                                                StringBuffer sb,
-                                                HashSet<LockNode> alreadyAppendedNodes,
-                                                LockNode node) {
+                                         StringBuffer sb,
+                                         HashSet<LockNode> alreadyAppendedNodes,
+                                         LockNode node) {
         if (!alreadyAppendedNodes.contains(node)) {
             alreadyAppendedNodes.add(node);
             sb.append(getLockNodeString(node, ras));

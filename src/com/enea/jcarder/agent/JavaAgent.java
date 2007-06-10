@@ -52,8 +52,10 @@ public final class JavaAgent {
                 } else {
                     System.err.println("Invalid jcarder parameter: " + allArgs);
                     System.err.println("Valid arguments are:"
-                                       + "\n  =dump (Dump transformed classes to file)"
-                                       + "\n  =finer or =finest (file log threshold)");
+                                       + "\n  =dump"
+                                       + " (dump transformed classes to file)"
+                                       + "\n  =finer or =finest"
+                                       + " (file log threshold)");
                     System.exit(-1);
                 }
             }

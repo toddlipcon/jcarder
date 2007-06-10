@@ -6,7 +6,8 @@ import static org.junit.Assert.assertEquals;
 
 import com.enea.jcarder.agent.instrument.MonitorWithContext;
 
-public final class SynchronizedMethodWithMultipleFloatReturns implements SynchronizationTestIfc {
+public final class SynchronizedMethodWithMultipleFloatReturns
+implements SynchronizationTestIfc {
     public void go() {
         assertFalse(Thread.holdsLock(this));
         assertEquals(-1.0F, runHelp(-5));

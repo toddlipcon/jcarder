@@ -4,7 +4,8 @@ import static org.junit.Assert.*;
 
 import com.enea.jcarder.agent.instrument.MonitorWithContext;
 
-public final class SynchronizedMethodWithException implements SynchronizationTestIfc {
+public final class SynchronizedMethodWithException
+implements SynchronizationTestIfc {
 
     public void go() {
         try {

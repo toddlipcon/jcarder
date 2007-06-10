@@ -89,20 +89,23 @@ implements SynchronizationTestIfc {
         final Lock lockSync2 = new Lock(mSync2);
         final String threadName = Thread.currentThread().getName();
         final String method = getClass().getName() + ".go()";
-        LockingContext contextSync0 = new LockingContext(threadName,
-                                                         getClass().getName() + ".mSync0",
-                                                         method);
-        LockingContext contextSync1 = new LockingContext(threadName,
-                                                         getClass().getName() + ".mSync1",
-                                                         method);
-        LockingContext contextSync2 = new LockingContext(threadName,
-                                                         getClass().getName() + ".mSync2",
-                                                         method);
+        LockingContext contextSync0 =
+            new LockingContext(threadName,
+                               getClass().getName() + ".mSync0",
+                               method);
+        LockingContext contextSync1 =
+            new LockingContext(threadName,
+                               getClass().getName() + ".mSync1",
+                               method);
+        LockingContext contextSync2 =
+            new LockingContext(threadName,
+                               getClass().getName() + ".mSync2",
+                               method);
 
         return new LockEvent[] {
-                new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0),
-                new LockEvent(lockSync2, contextSync2, lockSync1, contextSync1),
-                new LockEvent(lockSync2, contextSync2, lockSync0, contextSync0),
+            new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0),
+            new LockEvent(lockSync2, contextSync2, lockSync1, contextSync1),
+            new LockEvent(lockSync2, contextSync2, lockSync0, contextSync0),
         };
     }
 }

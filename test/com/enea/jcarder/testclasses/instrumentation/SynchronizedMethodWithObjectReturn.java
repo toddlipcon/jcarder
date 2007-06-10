@@ -5,7 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import com.enea.jcarder.agent.instrument.MonitorWithContext;
 
-public final class SynchronizedMethodWithObjectReturn implements SynchronizationTestIfc {
+public final class SynchronizedMethodWithObjectReturn
+implements SynchronizationTestIfc {
 
     public void go() {
         assertFalse(Thread.holdsLock(this));

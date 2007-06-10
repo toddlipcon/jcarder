@@ -76,7 +76,8 @@ class Cycle {
         if (isSingleThreaded() != other.isSingleThreaded()) {
             return false;
         }
-        LinkedList<LockEdge> otherEdges = new LinkedList<LockEdge>(other.mEdgesInCycle);
+        LinkedList<LockEdge> otherEdges =
+            new LinkedList<LockEdge>(other.mEdgesInCycle);
         // TODO Refactor the following code?
         outerLoop:
         for (LockEdge edge : mEdgesInCycle) {

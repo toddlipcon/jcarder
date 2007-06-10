@@ -1,13 +1,13 @@
 package com.enea.jcarder.agent;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import org.junit.Before;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-import com.enea.jcarder.agent.StaticEventListener;
-import com.enea.jcarder.agent.EventListener;
+import java.io.IOException;
+import java.util.LinkedList;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.enea.jcarder.agent.instrument.ClassTransformer;
 import com.enea.jcarder.agent.instrument.InstrumentConfig;
 import com.enea.jcarder.agent.instrument.TransformClassLoader;
@@ -36,7 +36,8 @@ public final class BtMonitorEventListener implements LockEventListenerIfc {
     private final LinkedList<LockEvent> mEvents = new LinkedList<LockEvent>();
 
     public BtMonitorEventListener() {
-        ClassTransformer transformer = new ClassTransformer(new InstrumentConfig());
+        ClassTransformer transformer =
+            new ClassTransformer(new InstrumentConfig());
         mClassLoader = new TransformClassLoader(transformer);
     }
 
@@ -51,16 +52,17 @@ public final class BtMonitorEventListener implements LockEventListenerIfc {
         SynchronizationTestIfc test = transformAsSynchronizationTest(clazz);
         test.go();
 
-        /*
-        System.out.println(" Acctual: " + Arrays.deepToString(mEvents.toArray()));
-        System.out.println("Expected: " + Arrays.deepToString(test.getExpectedLockEvents()));
-        */
+//        String actual = Arrays.deepToString(mEvents.toArray());
+//        System.out.println("  Actual: " + actual);
+//        String expected = Arrays.deepToString(test.getExpectedLockEvents());
+//        System.out.println("Expected: " + expected);
 
         assertEquals(test.getExpectedLockEvents(),
                      mEvents.toArray());
     }
 
-    private SynchronizationTestIfc transformAsSynchronizationTest(Class clazz) throws Exception {
+    private SynchronizationTestIfc transformAsSynchronizationTest(Class clazz)
+    throws Exception {
         Class c = mClassLoader.transform(clazz);
         return (SynchronizationTestIfc) c.newInstance();
     }
@@ -69,11 +71,15 @@ public final class BtMonitorEventListener implements LockEventListenerIfc {
                             int lockingContextId,
                             int lastTakenLockId,
                             int lastTakenLockingContextId,
-                            long threadId) throws IOException {
-        mEvents.add(new LockEvent(mContextMemory.readLock(lockId),
-                                  mContextMemory.readContext(lockingContextId),
-                                  mContextMemory.readLock(lastTakenLockId),
-                                  mContextMemory.readContext(lastTakenLockingContextId)));
+                            long threadId)
+    throws IOException {
+        ContextMemory cm = mContextMemory;
+        LockEvent event =
+            new LockEvent(cm.readLock(lockId),
+                          cm.readContext(lockingContextId),
+                          cm.readLock(lastTakenLockId),
+                          cm.readContext(lastTakenLockingContextId));
+        mEvents.add(event);
     }
 
     @Test
@@ -87,7 +93,8 @@ public final class BtMonitorEventListener implements LockEventListenerIfc {
     }
 
     @Test
-    public void testComparableAlternativeSynchronizationRoutes() throws Exception {
+    public void testComparableAlternativeSynchronizationRoutes()
+    throws Exception {
         testClass(ComparableAlternativeSynchronizationRoutes.class);
     }
 

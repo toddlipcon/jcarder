@@ -3,6 +3,7 @@ package com.enea.jcarder.analyzer;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.SortedSet;
@@ -89,7 +90,9 @@ public final class Analyzer {
     throws IOException {
         System.out.println();
         int index = 0;
-        for (HashSet<LockEdge> edges : cycleDetector.mergeCyclesWithIdenticalLocks()) {
+        Collection<HashSet<LockEdge>> cycles =
+            cycleDetector.mergeCyclesWithIdenticalLocks();
+        for (HashSet<LockEdge> edges : cycles) {
             if (index >= 100) {
                 System.out.println("Aborting. Too many cycles!");
                 break;
@@ -181,8 +184,10 @@ public final class Analyzer {
         SortedSet<String> methods = new TreeSet<String>();
         for (Cycle cycle : cycles) {
             for (LockEdge edge : cycle.getEdges()) {
-                LockingContext source = ras.readContext(edge.getSourceLockingContextId());
-                LockingContext target = ras.readContext(edge.getTargetLockingContextId());
+                LockingContext source =
+                    ras.readContext(edge.getSourceLockingContextId());
+                LockingContext target =
+                    ras.readContext(edge.getTargetLockingContextId());
                 threads.add(source.getThreadName());
                 threads.add(target.getThreadName());
                 methods.add(source.getMethodWithClass());
