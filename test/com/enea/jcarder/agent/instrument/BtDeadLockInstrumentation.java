@@ -240,20 +240,20 @@ public final class BtDeadLockInstrumentation implements EventListenerIfc {
         // TODO Auto-generated method stub
     }
 
-    // TODO Add test case for instrumentating a non-anonymous inner class.
+    // TODO Add test case for instrumenting a non-anonymous inner class.
 
-    // TODO Add test case for instrumentating a non-anonymous static inner class.
+    // TODO Add test case for instrumenting a non-anonymous static inner class.
 
-    // TODO Add test case for instrumentating an anonymous inner class
+    // TODO Add test case for instrumenting an anonymous inner class
 
-    // TODO Add test case for instrumentating an anonymous method.
+    // TODO Add test case for instrumenting an anonymous method.
 
-    // TODO Add test case for instrumentating a class file version < 49
-    //      (before java 1.5) with a static synchronized method.
+    // TODO Add test case for instrumenting a class file version < 49
+    //      (before Java 1.5) with a static synchronized method.
 
-    // TODO Add test case for instrumentating a synchronized block in
+    // TODO Add test case for instrumenting a synchronized block in
     //      constructor.
 
-    // TODO Add test case for what happening with native methods.
+    // TODO Add test case for what's happening with native methods.
 }
 
