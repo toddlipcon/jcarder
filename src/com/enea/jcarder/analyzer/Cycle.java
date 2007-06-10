@@ -66,7 +66,7 @@ class Cycle {
         return true;
     }
 
-    boolean alike(Cycle other, ContextReaderIfc ras) {
+    boolean alike(Cycle other, ContextReaderIfc reader) {
         if (this.equals(other)) {
             return true;
         }
@@ -83,7 +83,7 @@ class Cycle {
         for (LockEdge edge : mEdgesInCycle) {
             Iterator<LockEdge> iter = otherEdges.iterator();
             while (iter.hasNext()) {
-                if (edge.alike(iter.next(), ras)) {
+                if (edge.alike(iter.next(), reader)) {
                     iter.remove();
                     continue outerLoop;
                 }

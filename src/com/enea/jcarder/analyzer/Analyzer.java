@@ -47,7 +47,7 @@ public final class Analyzer {
         parseArguments(args);
         LockGraphBuilder graphBuilder = new LockGraphBuilder();
 
-        ContextReaderIfc ras = new ContextFileReader(CONTEXTS_DB_FILE);
+        ContextReaderIfc reader = new ContextFileReader(CONTEXTS_DB_FILE);
 
         EventFileReader.parseFile(EVENT_DB_FILE, graphBuilder);
         printInitiallyLoadedStatistics(graphBuilder.getAllLocks());
@@ -57,8 +57,8 @@ public final class Analyzer {
         printCycleAnalysisStatistics(cycleDetector);
 
         if (mOutputMode == OutputMode.INCLUDE_ALL) {
-            printDetailsIfEnabled(cycleDetector.getCycles(), ras);
-            generatGraphvizFileForAllNodes(graphBuilder, ras);
+            printDetailsIfEnabled(cycleDetector.getCycles(), reader);
+            generatGraphvizFileForAllNodes(graphBuilder, reader);
         } else {
             if (mOutputMode == OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES) {
                 cycleDetector.removeSingleThreadedCycles();
@@ -78,14 +78,14 @@ public final class Analyzer {
              * duplicates are removed anyway when cycles that are alike are
              * removed.
              */
-            cycleDetector.removeAlikeCycles(ras);
+            cycleDetector.removeAlikeCycles(reader);
 
-            printDetailsIfEnabled(cycleDetector.getCycles(), ras);
-            generateGraphvizFilesForCycles(ras, cycleDetector);
+            printDetailsIfEnabled(cycleDetector.getCycles(), reader);
+            generateGraphvizFilesForCycles(reader, cycleDetector);
         }
     }
 
-    private void generateGraphvizFilesForCycles(ContextReaderIfc ras,
+    private void generateGraphvizFilesForCycles(ContextReaderIfc reader,
                                                 CycleDetector cycleDetector)
     throws IOException {
         System.out.println();
@@ -99,7 +99,7 @@ public final class Analyzer {
             }
             GraphvizGenerator graphvizGenerator = new GraphvizGenerator();
             createGraphvizFile(graphvizGenerator.generate(edges,
-                                                          ras,
+                                                          reader,
                                                           mIncludePackages),
                                                           index++);
         }
@@ -121,10 +121,10 @@ public final class Analyzer {
     }
 
     private void generatGraphvizFileForAllNodes(LockGraphBuilder graphBuilder,
-                                                ContextReaderIfc ras)
+                                                ContextReaderIfc reader)
     throws IOException {
         DuplicatedEdgesHandler.mergeDuplicatedEdges(graphBuilder.getAllLocks(),
-                                                    ras);
+                                                    reader);
         // TODO Print statistics about removed duplicates?
         LinkedList<LockEdge> allEdges = new LinkedList<LockEdge>();
         for (LockNode node : graphBuilder.getAllLocks()) {
@@ -132,7 +132,7 @@ public final class Analyzer {
         }
         GraphvizGenerator graphvizGenerator = new GraphvizGenerator();
         createGraphvizFile(graphvizGenerator.generate(allEdges,
-                                                      ras,
+                                                      reader,
                                                       mIncludePackages),
                                                       0);
     }
@@ -176,7 +176,7 @@ public final class Analyzer {
 
 
     private void printDetailsIfEnabled(Iterable<Cycle> cycles,
-                                       ContextReaderIfc ras) {
+                                       ContextReaderIfc reader) {
         if (!mPrintDetails) {
             return;
         }
@@ -185,9 +185,9 @@ public final class Analyzer {
         for (Cycle cycle : cycles) {
             for (LockEdge edge : cycle.getEdges()) {
                 LockingContext source =
-                    ras.readContext(edge.getSourceLockingContextId());
+                    reader.readContext(edge.getSourceLockingContextId());
                 LockingContext target =
-                    ras.readContext(edge.getTargetLockingContextId());
+                    reader.readContext(edge.getTargetLockingContextId());
                 threads.add(source.getThreadName());
                 threads.add(target.getThreadName());
                 methods.add(source.getMethodWithClass());

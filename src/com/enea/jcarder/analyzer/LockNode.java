@@ -85,10 +85,10 @@ class LockNode {
         return numberOfDuplicatedEdges;
     }
 
-    boolean alike(LockNode other, ContextReaderIfc ras) {
+    boolean alike(LockNode other, ContextReaderIfc reader) {
         // TODO Maybe introduce some kind of cache to improve performance?
-        String thisClassName = ras.readLock(mLockId).getClassName();
-        String otherClassName = ras.readLock(other.mLockId).getClassName();
+        String thisClassName = reader.readLock(mLockId).getClassName();
+        String otherClassName = reader.readLock(other.mLockId).getClassName();
         return thisClassName.equals(otherClassName);
     }
 }

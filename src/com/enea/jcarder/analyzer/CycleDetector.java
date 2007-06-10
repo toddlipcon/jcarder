@@ -131,9 +131,9 @@ class CycleDetector {
     }
 
     private static boolean containsAlike(Cycle cycle, Iterable<Cycle> others,
-                                         ContextReaderIfc ras) {
+                                         ContextReaderIfc reader) {
         for (Cycle other : others) {
-            if (cycle.alike(other, ras)) {
+            if (cycle.alike(other, reader)) {
                 return true;
             }
         }
@@ -144,13 +144,13 @@ class CycleDetector {
      * Reducing the number of cycles by ignoring those that are duplicates (very
      * similar) to another cycle.
      */
-    void removeAlikeCycles(ContextReaderIfc ras) {
+    void removeAlikeCycles(ContextReaderIfc reader) {
         int removedCycles = 0;
         ArrayList<Cycle> uniqueCycles = new ArrayList<Cycle>();
         Iterator<Cycle> iter = mCycles.iterator();
         while (iter.hasNext()) {
             final Cycle cycle = iter.next();
-            if (containsAlike(cycle, uniqueCycles, ras)) {
+            if (containsAlike(cycle, uniqueCycles, reader)) {
                 iter.remove();
                 removedCycles++;
             } else {

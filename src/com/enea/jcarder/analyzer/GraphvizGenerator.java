@@ -58,37 +58,37 @@ final class GraphvizGenerator {
         "    >]";
 
     public String generate(Iterable<LockEdge> edgesToBePrinted,
-                           ContextReaderIfc ras,
+                           ContextReaderIfc reader,
                            boolean includePackages) {
         StringBuffer sb = new StringBuffer();
         sb.append("digraph G {\n");
         sb.append("  node [shape=ellipse, style=filled];\n");
         final HashSet<LockNode> alreadyAppendedNodes = new HashSet<LockNode>();
         for (LockEdge edge : edgesToBePrinted) {
-            appendNodeIfNotAppended(ras,
+            appendNodeIfNotAppended(reader,
                                     sb,
                                     alreadyAppendedNodes,
                                     edge.getSource());
-            appendNodeIfNotAppended(ras,
+            appendNodeIfNotAppended(reader,
                                     sb,
                                     alreadyAppendedNodes,
                                     edge.getTarget());
             sb.append("  " + edge.getSource().toString() + "");
             sb.append(" -> " + edge.getTarget().toString() + "");
-            sb.append(createEdgeLabel(ras, edge, includePackages));
+            sb.append(createEdgeLabel(reader, edge, includePackages));
             sb.append(";\n");
         }
         sb.append("}\n");
         return sb.toString();
     }
 
-    private String createEdgeLabel(ContextReaderIfc ras,
+    private String createEdgeLabel(ContextReaderIfc reader,
                                    LockEdge edge,
                                    boolean includePackages) {
         final LockingContext source =
-            ras.readContext(edge.getSourceLockingContextId());
+            reader.readContext(edge.getSourceLockingContextId());
         final LockingContext target =
-            ras.readContext(edge.getTargetLockingContextId());
+            reader.readContext(edge.getTargetLockingContextId());
         return String.format(EDGE_LABEL_FORMAT,
                              escape(handlePackage(target.getThreadName(),
                                                   includePackages)),
@@ -122,7 +122,7 @@ final class GraphvizGenerator {
     }
 
     private String getLockNodeString(LockNode node,
-                                     ContextReaderIfc ras) {
+                                     ContextReaderIfc reader) {
         final String color;
         switch (node.getCycleType()) {
         case CYCLE:
@@ -135,17 +135,17 @@ final class GraphvizGenerator {
             color = "white";
         }
         return "  " + node.toString() + " [label = \""
-               + escape(ras.readLock(node.getLockId()).toString())
+               + escape(reader.readLock(node.getLockId()).toString())
                + "\" , fillcolor=" + color + "];\n";
     }
 
-    private void appendNodeIfNotAppended(ContextReaderIfc ras,
+    private void appendNodeIfNotAppended(ContextReaderIfc reader,
                                          StringBuffer sb,
                                          HashSet<LockNode> alreadyAppendedNodes,
                                          LockNode node) {
         if (!alreadyAppendedNodes.contains(node)) {
             alreadyAppendedNodes.add(node);
-            sb.append(getLockNodeString(node, ras));
+            sb.append(getLockNodeString(node, reader));
         }
     }
 }

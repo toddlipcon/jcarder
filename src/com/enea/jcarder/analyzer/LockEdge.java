@@ -42,23 +42,23 @@ class LockEdge {
         return mNumberOfDuplicates;
     }
 
-    boolean alike(LockEdge other, ContextReaderIfc ras) {
+    boolean alike(LockEdge other, ContextReaderIfc reader) {
         /*
          * TODO Some kind of cache to improve performance? Note that the context
          * IDs are not declared final.
          */
         LockingContext thisSourceContext =
-            ras.readContext(mSourceContextId);
+            reader.readContext(mSourceContextId);
         LockingContext otherSourceContext =
-            ras.readContext(other.mSourceContextId);
+            reader.readContext(other.mSourceContextId);
         LockingContext thisTargetContext =
-            ras.readContext(mTargetContextId);
+            reader.readContext(mTargetContextId);
         LockingContext otherTargetContext =
-            ras.readContext(other.mTargetContextId);
+            reader.readContext(other.mTargetContextId);
         return thisSourceContext.alike(otherSourceContext)
                && thisTargetContext.alike(otherTargetContext)
-               && mSource.alike(other.mSource, ras)
-               && mTarget.alike(other.mTarget, ras);
+               && mSource.alike(other.mSource, reader)
+               && mTarget.alike(other.mTarget, reader);
     }
 
     public boolean equals(Object obj) {

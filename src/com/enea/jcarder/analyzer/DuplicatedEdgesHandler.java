@@ -34,16 +34,16 @@ public final class DuplicatedEdgesHandler {
      * @see DuplicatedEdgesHandler.mergeDuplicatedEdges() instead.
      */
     private DuplicatedEdgesHandler(Iterable<LockNode> lockNodes,
-                                   ContextReaderIfc ras) {
+                                   ContextReaderIfc reader) {
         mLockNodes = lockNodes;
         mContextIdTranslation = populateTranslationMap();
-        mContextToIdMap = createContextToIdMap(ras);
+        mContextToIdMap = createContextToIdMap(reader);
     }
 
     public static void mergeDuplicatedEdges(Iterable<LockNode> lockNodes,
-                                            ContextReaderIfc ras) {
+                                            ContextReaderIfc reader) {
         DuplicatedEdgesHandler handler = new DuplicatedEdgesHandler(lockNodes,
-                                                                    ras);
+                                                                    reader);
         handler.updateContextIdTranslationMap();
         handler.updateEdgesWithTranslationMap();
     }
@@ -64,11 +64,11 @@ public final class DuplicatedEdgesHandler {
     }
 
     private Map<LockingContext, TreeSet<Integer>>
-    createContextToIdMap(ContextReaderIfc ras) {
+    createContextToIdMap(ContextReaderIfc reader) {
         final Map<LockingContext, TreeSet<Integer>> contextToId =
             new HashMap<LockingContext, TreeSet<Integer>>();
         for (Integer id : mContextIdTranslation.values()) {
-            LockingContext context = ras.readContext(id);
+            LockingContext context = reader.readContext(id);
             TreeSet<Integer> ids = contextToId.get(context);
             if (ids == null) {
                 ids = new TreeSet<Integer>();
