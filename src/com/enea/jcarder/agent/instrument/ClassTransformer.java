@@ -19,7 +19,8 @@ import com.enea.jcarder.util.Logger;
  * TODO Add basic test for this class.
  */
 public class ClassTransformer implements ClassFileTransformer {
-    private static final File ORGINAL_CLASSES_DIR = new File("orginalClasses");
+    private static final File ORIGINAL_CLASSES_DIR =
+        new File("originalClasses");
     private static final File INSTRUMENTED_CLASSES_DIR =
         new File("instrumentedClasses");
     private static final Logger LOGGER =
@@ -33,27 +34,29 @@ public class ClassTransformer implements ClassFileTransformer {
         LOGGER.fine("jcarder loaded with "
                     + getClassLoaderName(mAgentClassLoader) + ".");
         deleteDirRecursively(INSTRUMENTED_CLASSES_DIR);
-        deleteDirRecursively(ORGINAL_CLASSES_DIR);
+        deleteDirRecursively(ORIGINAL_CLASSES_DIR);
     }
 
     public byte[] transform(final ClassLoader classLoader,
                             final String jvmInternalClassName,
                             final Class<?> classBeingRedefined,
                             final ProtectionDomain protectionDomain,
-                            final byte[] orginalClassBuffer)
+                            final byte[] originalClassBuffer)
     throws IllegalClassFormatException {
         String className = jvmInternalClassName.replace('/', '.');
         try {
-            return instrument(classLoader, orginalClassBuffer, className);
+            return instrument(classLoader, originalClassBuffer, className);
         } catch (Throwable t) {
             LOGGER.severe("Failed to transform the class: " + className,  t);
-            dumpClassToFile(orginalClassBuffer, ORGINAL_CLASSES_DIR, className);
+            dumpClassToFile(originalClassBuffer,
+                            ORIGINAL_CLASSES_DIR,
+                            className);
             return null;
         }
     }
 
     private byte[] instrument(final ClassLoader classLoader,
-                              final byte[] orginalClassBuffer,
+                              final byte[] originalClassBuffer,
                               final String className) {
         if (className.startsWith("com.enea.jcarder")
             && !className.startsWith("com.enea.jcarder.testclasses")) {
@@ -69,7 +72,7 @@ public class ClassTransformer implements ClassFileTransformer {
                           + getClassLoaderName(classLoader) + ": " + className);
             return null;
         }
-        final ClassReader reader = new ClassReader(orginalClassBuffer);
+        final ClassReader reader = new ClassReader(originalClassBuffer);
         final ClassWriter writer = new ClassWriter(true);
         ClassVisitor visitor = writer;
         if (mInstrumentConfig.getValidateTransfomedClasses()) {
@@ -79,7 +82,9 @@ public class ClassTransformer implements ClassFileTransformer {
         reader.accept(visitor, false);
         byte[] instrumentedClassfileBuffer = writer.toByteArray();
         if (mInstrumentConfig.getDumpClassFiles()) {
-            dumpClassToFile(orginalClassBuffer, ORGINAL_CLASSES_DIR, className);
+            dumpClassToFile(originalClassBuffer,
+                            ORIGINAL_CLASSES_DIR,
+                            className);
             dumpClassToFile(instrumentedClassfileBuffer,
                             INSTRUMENTED_CLASSES_DIR,
                             className);
