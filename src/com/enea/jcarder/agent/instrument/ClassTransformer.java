@@ -31,7 +31,7 @@ public class ClassTransformer implements ClassFileTransformer {
     public ClassTransformer(InstrumentConfig config) {
         mInstrumentConfig = config;
         mAgentClassLoader = getClass().getClassLoader();
-        LOGGER.fine("jcarder loaded with "
+        LOGGER.fine("JCarder loaded with "
                     + getClassLoaderName(mAgentClassLoader) + ".");
         deleteDirRecursively(INSTRUMENTED_CLASSES_DIR);
         deleteDirRecursively(ORIGINAL_CLASSES_DIR);
@@ -63,13 +63,13 @@ public class ClassTransformer implements ClassFileTransformer {
             return null; // Don't instrument ourself.
         }
         if (isFromStandardLibrary(className)) {
-            LOGGER.finest("Won't instrument class from standard library: "
+            LOGGER.finest("Won't instrument standard library class "
                           + className);
             return null;
         }
         if (!isCompatibleClassLoader(classLoader)) {
-            LOGGER.finest("Can't instrument class loaded with "
-                          + getClassLoaderName(classLoader) + ": " + className);
+            LOGGER.finest("Can't instrument class " + className
+                          + " loaded with " + getClassLoaderName(classLoader));
             return null;
         }
         final ClassReader reader = new ClassReader(originalClassBuffer);

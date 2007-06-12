@@ -22,7 +22,7 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
     ClassAdapter(ClassVisitor visitor, String className) {
         super(visitor);
         mClassName = className;
-        mLogger.fine("Instrumenting the class: " + mClassName);
+        mLogger.fine("Instrumenting class " + mClassName);
     }
 
     public void visit(int arg0, int arg1, String arg2, String arg3, String arg4,
@@ -41,7 +41,7 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
         final boolean isStatic = (arg & ACC_STATIC) != 0;
         final int manipulatedArg = arg & ~ACC_SYNCHRONIZED;
         if (isNative) {
-            mLogger.finer("Can't instrument native method:"
+            mLogger.finer("Can't instrument native method "
                           + mClassName + "." + methodName);
             return super.visitMethod(arg,
                                      methodName,

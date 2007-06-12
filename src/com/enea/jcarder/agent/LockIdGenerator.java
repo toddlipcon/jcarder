@@ -43,7 +43,7 @@ final class LockIdGenerator {
         if (id == null) {
             id = mContextWriter.writeLock(new Lock(o));
             mIdMap.put(o, id);
-            mLogger.finest("Created new LockId: " + id);
+            mLogger.finest("Created new lock ID: " + id);
         }
         return id;
     }

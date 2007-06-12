@@ -59,7 +59,7 @@ final class LockingContextIdCache {
         removeGarbageCollectedKeys();
         Integer id = mCache.get(new StrongKey(context));
         if (id == null) {
-            mLogger.finest("Creating new ContextId");
+            mLogger.finest("Creating new context ID");
             id = mContextWriter.writeContext(context);
             mCache.put((new SoftKey(context, mReferenceQueue)), id);
         }
@@ -69,7 +69,7 @@ final class LockingContextIdCache {
     private void removeGarbageCollectedKeys() {
         Reference e;
         while ((e = mReferenceQueue.poll()) != null) {
-            mLogger.finest("Removing GarbageCollected Cached Context");
+            mLogger.finest("Removing garbage-collected cached context");
             mCache.remove(e);
         }
     }
