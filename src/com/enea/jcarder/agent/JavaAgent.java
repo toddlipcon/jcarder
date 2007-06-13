@@ -44,9 +44,9 @@ public final class JavaAgent {
         if (allArgs != null) {
             for (String arg : allArgs.split("=")) {
                 if (arg.equals("finer")) {
-                    Logger.setFileLogLevel(Logger.FINER);
+                    Logger.setFileLogLevel(Logger.Level.FINER);
                 } else if (arg.equals("finest")) {
-                    Logger.setFileLogLevel(Logger.FINEST);
+                    Logger.setFileLogLevel(Logger.Level.FINEST);
                 } else if (arg.equals("dump")) {
                     smConfig.setDumpClassFiles(true);
                 } else {

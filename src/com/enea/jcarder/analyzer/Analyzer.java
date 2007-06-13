@@ -144,9 +144,9 @@ public final class Analyzer {
             } else if (arg.equals("--exclude-single-threaded-cycles")) {
                 mOutputMode = OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES;
             } else if (arg.equals("finer")) {
-                Logger.setFileLogLevel(Logger.FINER);
+                Logger.setFileLogLevel(Logger.Level.FINER);
             } else if (arg.equals("finest")) {
-                Logger.setFileLogLevel(Logger.FINEST);
+                Logger.setFileLogLevel(Logger.Level.FINEST);
             } else if (arg.equals("--include-packages")) {
                 mIncludePackages = true;
             } else if (arg.equals("--print-details")) {

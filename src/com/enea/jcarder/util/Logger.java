@@ -17,20 +17,37 @@ import java.io.PrintWriter;
  * JCarder.
  */
 public final class Logger {
-    public static final int SEVERE = 1;
-    public static final int WARNING = 2;
-    public static final int INFO = 3;
-    public static final int FINE = 4;
-    public static final int FINER = 5;
-    public static final int FINEST = 6;
+    public static enum Level {
+        SEVERE,
+        WARNING,
+        INFO,
+        FINE,
+        FINER,
+        FINEST;
+
+        /**
+         * Parse a string and return the corresponding log level.
+         *
+         * @param string The string to parse.
+         * @return
+         */
+        public static Level fromString(String string) {
+            for (Level level : values()) {
+                if (string.equalsIgnoreCase(level.toString())) {
+                    return level;
+                }
+            }
+            return null;
+        }
+    };
 
     private static PrintWriter smWriter;
 
-    private static volatile int smMainFileLogLevel = FINE;
+    private static volatile Level smMainFileLogLevel = Level.FINE;
 
     // The log level for a created logger object cannot be changed for
     // performance reasons.
-    private final int mFileLogLevel;
+    private final Level mFileLogLevel;
 
     static {
         Thread hook = new Thread() {
@@ -71,45 +88,45 @@ public final class Logger {
 
     public void severe(String msg, Throwable t) {
         handleConsoleLog(msg);
-        handleFileLog(SEVERE, "SEVERE", msg, t);
+        handleFileLog(Level.SEVERE, "SEVERE", msg, t);
     }
 
     public void severe(String msg) {
         handleConsoleLog(msg);
-        handleFileLog(SEVERE, "SEVERE", msg);
+        handleFileLog(Level.SEVERE, "SEVERE", msg);
     }
 
     public void warning(String msg) {
         handleConsoleLog(msg);
-        handleFileLog(WARNING, "WARNING", msg);
+        handleFileLog(Level.WARNING, "WARNING", msg);
     }
 
     public void info(String msg) {
         handleConsoleLog(msg);
-        handleFileLog(INFO, "INFO", msg);
+        handleFileLog(Level.INFO, "INFO", msg);
     }
 
     public void fine(String msg) {
-        handleFileLog(FINE, "FINE", msg);
+        handleFileLog(Level.FINE, "FINE", msg);
     }
 
     public void finer(String msg) {
-        handleFileLog(FINER, "FINER", msg);
+        handleFileLog(Level.FINER, "FINER", msg);
     }
 
     public void finest(String msg) {
-        handleFileLog(FINEST, "FINEST", msg);
+        handleFileLog(Level.FINEST, "FINEST", msg);
     }
 
     public boolean isFinerEnabled() {
-        return shouldHandleFileLog(FINER);
+        return shouldHandleFileLog(Level.FINER);
     }
 
     public boolean isFinestEnabled() {
-        return shouldHandleFileLog(FINEST);
+        return shouldHandleFileLog(Level.FINEST);
     }
 
-    public static void setFileLogLevel(int logLevel) {
+    public static void setFileLogLevel(Level logLevel) {
         smMainFileLogLevel = logLevel;
     }
 
@@ -117,7 +134,7 @@ public final class Logger {
         System.err.println(msg);
     }
 
-    private void handleFileLog(int logLevel, String prefix, String msg) {
+    private void handleFileLog(Level logLevel, String prefix, String msg) {
         if (shouldHandleFileLog(logLevel)) {
             synchronized (smWriter) {
                 smWriter.println(prefix + ": " + msg);
@@ -125,7 +142,7 @@ public final class Logger {
         }
     }
 
-    private void handleFileLog(int logLevel,
+    private void handleFileLog(Level logLevel,
                                String prefix,
                                String msg,
                                Throwable t) {
@@ -137,8 +154,8 @@ public final class Logger {
         }
     }
 
-    private boolean shouldHandleFileLog(int logLevel) {
-        return (mFileLogLevel >= logLevel) && smWriter != null;
+    private boolean shouldHandleFileLog(Level logLevel) {
+        return (mFileLogLevel.compareTo(logLevel) >= 0) && smWriter != null;
     }
 
     public static void flush() {
