@@ -1,6 +1,7 @@
 package com.enea.jcarder.agent;
 
 import java.lang.instrument.Instrumentation;
+
 import com.enea.jcarder.agent.instrument.ClassTransformer;
 import com.enea.jcarder.agent.instrument.InstrumentConfig;
 import com.enea.jcarder.util.BuildInformation;
@@ -12,6 +13,9 @@ import com.enea.jcarder.util.Logger;
  * is loaded.
  */
 public final class JavaAgent {
+
+    private static final String DUMP_PROPERTY = "jcarder.dump";
+    private static final String LOGLEVEL_PROPERTY = "jcarder.loglevel";
 
     private final static InstrumentConfig smConfig = new InstrumentConfig();
     private final Logger mLogger = Logger.getLogger(this);
@@ -26,13 +30,13 @@ public final class JavaAgent {
                                final Instrumentation instrumentation)
     throws Exception {
         JavaAgent javaAgent = new JavaAgent();
-        javaAgent.init(args, instrumentation);
+        javaAgent.init(instrumentation);
     }
 
-    private void init(String args, Instrumentation instrumentation)
+    private void init(Instrumentation instrumentation)
     throws Exception {
         mLogger.info("Starting " + BuildInformation.getShortInfo() + ".");
-        handleArguments(args);
+        handleProperties();
         EventListener listener = EventListener.create();
         ClassTransformer classTransformer = new ClassTransformer(smConfig);
         instrumentation.addTransformer(classTransformer);
@@ -40,25 +44,28 @@ public final class JavaAgent {
         StaticEventListener.setListener(listener);
     }
 
-    private static void handleArguments(final String allArgs) {
-        if (allArgs != null) {
-            for (String arg : allArgs.split("=")) {
-                if (arg.equals("finer")) {
-                    Logger.setFileLogLevel(Logger.Level.FINER);
-                } else if (arg.equals("finest")) {
-                    Logger.setFileLogLevel(Logger.Level.FINEST);
-                } else if (arg.equals("dump")) {
-                    smConfig.setDumpClassFiles(true);
+    private static void handleProperties() {
+        // jcarder.loglevel
+        String logLevelValue = System.getProperty(LOGLEVEL_PROPERTY, "fine");
+        Logger.Level logLevel = Logger.Level.fromString(logLevelValue);
+        if (logLevel != null) {
+            Logger.setFileLogLevel(logLevel);
+        } else {
+            System.err.print("Bad loglevel; should be one of ");
+            boolean first = true;
+            for (Logger.Level level : Logger.Level.values()) {
+                if (first) {
+                    first = false;
                 } else {
-                    System.err.println("Invalid jcarder parameter: " + allArgs);
-                    System.err.println("Valid arguments are:"
-                                       + "\n  =dump"
-                                       + " (dump transformed classes to file)"
-                                       + "\n  =finer or =finest"
-                                       + " (file log threshold)");
-                    System.exit(-1);
+                    System.err.print(", ");
                 }
+                System.err.print(level.toString());
             }
+            System.err.println();
+            System.exit(1);
         }
+
+        // jcarder.dump
+        smConfig.setDumpClassFiles(Boolean.getBoolean(DUMP_PROPERTY));
     }
 }
