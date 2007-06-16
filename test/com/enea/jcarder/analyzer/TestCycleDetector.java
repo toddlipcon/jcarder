@@ -19,7 +19,7 @@ import com.enea.jcarder.analyzer.LockNode;
  *
  * TODO Some important methods in CycleDetector are not tested yet.
  */
-public final class BtCycleDetector {
+public final class TestCycleDetector {
     LockGraphBuilder mBuilder;
     CycleDetector mCycleDetector;
     LinkedList<LockNode> mNodes;

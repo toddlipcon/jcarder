@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.enea.jcarder.analyzer.LockEdge;
 import com.enea.jcarder.analyzer.LockNode;
 
-public final class BtLockNode {
+public final class TestLockNode {
     private LockNode node1;
     private LockNode node2;
     private LockNode node3;

@@ -44,12 +44,12 @@ import com.enea.jcarder.testclasses.instrumentation.SynchronizedThis;
  *
  *  TODO StackAnalyzeMethodVisitor is not fully tested by this junit class.
  */
-public final class BtDeadLockInstrumentation implements EventListenerIfc {
+public final class TestDeadLockInstrumentation implements EventListenerIfc {
     private final ArrayList<MonitorWithContext> mEnteredMonitors;
 
     private final TransformClassLoader mClassLoader;
 
-    public BtDeadLockInstrumentation() {
+    public TestDeadLockInstrumentation() {
         ClassTransformer classTransformer =
             new ClassTransformer(new InstrumentConfig());
         mClassLoader = new TransformClassLoader(classTransformer);

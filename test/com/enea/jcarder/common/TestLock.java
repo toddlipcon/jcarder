@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import com.enea.jcarder.common.Lock;
 
-public final class BtLock {
+public final class TestLock {
 
     @Test
     public void testGetClassName() {

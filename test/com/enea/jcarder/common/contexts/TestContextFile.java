@@ -11,11 +11,11 @@ import com.enea.jcarder.common.contexts.ContextFileReader;
 import com.enea.jcarder.common.contexts.ContextFileWriter;
 
 
-public final class BtContextFile {
+public final class TestContextFile {
 
     @Test
     public void writeReadTest() throws IOException {
-        File file = File.createTempFile(BtContextFile.class.getName(),
+        File file = File.createTempFile(TestContextFile.class.getName(),
                                         null);
         ContextFileWriter writer = new ContextFileWriter(file);
         Lock lock = new Lock("myClassName", 5);

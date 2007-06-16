@@ -30,12 +30,12 @@ import com.enea.jcarder.testclasses.agent.TwoThreadSynchronization;
  * integration is that MonitorEventListener/EnteredMonitor depends on that
  * the monitor events are sent BEFORE instead of AFTER the monitor is entered.
  */
-public final class BtMonitorEventListener implements LockEventListenerIfc {
+public final class TestMonitorEventListener implements LockEventListenerIfc {
     private ContextMemory mContextMemory;
     private final TransformClassLoader mClassLoader;
     private final LinkedList<LockEvent> mEvents = new LinkedList<LockEvent>();
 
-    public BtMonitorEventListener() {
+    public TestMonitorEventListener() {
         ClassTransformer transformer =
             new ClassTransformer(new InstrumentConfig());
         mClassLoader = new TransformClassLoader(transformer);

@@ -11,11 +11,11 @@ import com.enea.jcarder.common.events.LockEventListenerIfc;
 import static org.easymock.EasyMock.createStrictMock;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-public final class BtEventFile {
+public final class TestEventFile {
 
     @Test
     public void writeReadTest() throws IOException {
-        File file = File.createTempFile(BtEventFile.class.getName(),
+        File file = File.createTempFile(TestEventFile.class.getName(),
                                         null);
         EventFileWriter writer = new EventFileWriter(file);
         final int lockId = 5476;

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class BtLoggerLevel {
+public class TestLoggerLevel {
 
     @Test
     public final void testFromString() {
