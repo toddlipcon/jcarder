@@ -11,7 +11,7 @@ import net.jcip.annotations.NotThreadSafe;
 
 import com.enea.jcarder.common.Lock;
 import com.enea.jcarder.common.LockingContext;
-import com.enea.jcarder.util.Logger;
+import com.enea.jcarder.util.logging.Logger;
 
 @NotThreadSafe
 public final class ContextFileReader
@@ -23,10 +23,11 @@ implements ContextReaderIfc {
     static final int MAJOR_VERSION = 1;
     static final int MINOR_VERSION = 0;
     static final Charset CHARSET = Charset.forName("UTF-8");
-    private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
+    private final Logger mLogger;
     private final ByteBuffer mBuffer;
 
-    public ContextFileReader(File file) throws IOException {
+    public ContextFileReader(Logger logger, File file) throws IOException {
+        mLogger = logger;
         RandomAccessFile raFile = new RandomAccessFile(file, "r");
         mLogger.info("Opening for reading: " + file.getAbsolutePath());
         FileChannel roChannel = raFile.getChannel();

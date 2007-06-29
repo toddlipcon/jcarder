@@ -1,5 +1,7 @@
 package com.enea.jcarder.util;
 
+import com.enea.jcarder.util.logging.Logger;
+
 import net.jcip.annotations.NotThreadSafe;
 
 @NotThreadSafe

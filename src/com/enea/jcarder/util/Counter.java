@@ -1,5 +1,7 @@
 package com.enea.jcarder.util;
 
+import com.enea.jcarder.util.logging.Logger;
+
 import net.jcip.annotations.NotThreadSafe;
 
 @NotThreadSafe
@@ -19,7 +21,7 @@ public final class Counter {
         mValue++;
         if ((mValue % mLogIntervall) == 0) {
             mLogger.fine(mName + ": " + mValue);
-        } else if (mLogger.isFinestEnabled()) {
+        } else if (mLogger.isLoggable(Logger.Level.FINEST)) {
             mLogger.finest(mName + ": " + mValue);
         }
     }

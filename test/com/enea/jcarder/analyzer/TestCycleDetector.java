@@ -13,6 +13,7 @@ import com.enea.jcarder.analyzer.CycleDetector;
 import com.enea.jcarder.analyzer.LockEdge;
 import com.enea.jcarder.analyzer.LockGraphBuilder;
 import com.enea.jcarder.analyzer.LockNode;
+import com.enea.jcarder.util.logging.Logger;
 
 /*
  * The purpose of this junit class is to test the class CycleDetector.
@@ -28,7 +29,7 @@ public final class TestCycleDetector {
     @Before
     public void setUp() throws Exception {
         mBuilder = new LockGraphBuilder();
-        mCycleDetector = new CycleDetector();
+        mCycleDetector = new CycleDetector(new Logger(null));
         mNodes = new LinkedList<LockNode>();
         mExpectedCycles = new HashSet<Cycle>();
     }

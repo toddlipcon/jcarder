@@ -7,6 +7,7 @@ import org.junit.Test;
 import com.enea.jcarder.common.events.EventFileReader;
 import com.enea.jcarder.common.events.EventFileWriter;
 import com.enea.jcarder.common.events.LockEventListenerIfc;
+import com.enea.jcarder.util.logging.Logger;
 
 import static org.easymock.EasyMock.createStrictMock;
 import static org.easymock.EasyMock.replay;
@@ -17,7 +18,7 @@ public final class TestEventFile {
     public void writeReadTest() throws IOException {
         File file = File.createTempFile(TestEventFile.class.getName(),
                                         null);
-        EventFileWriter writer = new EventFileWriter(file);
+        EventFileWriter writer = new EventFileWriter(new Logger(null), file);
         final int lockId = 5476;
         final int lockingContextId = 523;
         final int lastTakenLockId = 21;
@@ -42,7 +43,7 @@ public final class TestEventFile {
                                      threadId);
         }
         replay(listenerMock);
-        EventFileReader.parseFile(file, listenerMock);
+        new EventFileReader(new Logger(null)).parseFile(file, listenerMock);
         verify(listenerMock);
         file.delete();
     }

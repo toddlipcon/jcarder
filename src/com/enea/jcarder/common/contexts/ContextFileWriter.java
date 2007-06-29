@@ -10,16 +10,17 @@ import net.jcip.annotations.NotThreadSafe;
 
 import com.enea.jcarder.common.Lock;
 import com.enea.jcarder.common.LockingContext;
-import com.enea.jcarder.util.Logger;
+import com.enea.jcarder.util.logging.Logger;
 
 @NotThreadSafe
 public final class ContextFileWriter
 implements ContextWriterIfc {
     private final FileChannel mChannel;
     private int mNextFilePosition = 0;
-    private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
+    private final Logger mLogger;
 
-    public ContextFileWriter(File file) throws IOException {
+    public ContextFileWriter(Logger logger, File file) throws IOException {
+        mLogger = logger;
         mLogger.info("Opening for writing: " + file.getAbsolutePath());
         RandomAccessFile raFile = new RandomAccessFile(file, "rw");
         raFile.setLength(0);

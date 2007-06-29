@@ -14,7 +14,7 @@ import com.enea.jcarder.common.contexts.ContextWriterIfc;
 import com.enea.jcarder.common.events.EventFileWriter;
 import com.enea.jcarder.common.events.LockEventListenerIfc;
 import com.enea.jcarder.util.Counter;
-import com.enea.jcarder.util.Logger;
+import com.enea.jcarder.util.logging.Logger;
 
 @ThreadSafe
 final class EventListener implements EventListenerIfc {
@@ -25,18 +25,22 @@ final class EventListener implements EventListenerIfc {
     private final Logger mLogger;
     private final Counter mNumberOfEnteredMonitors;
 
-    public static EventListener create() throws IOException {
-        return new EventListener(new EventFileWriter(EVENT_DB_FILE),
-                                 new ContextFileWriter(CONTEXTS_DB_FILE));
+    public static EventListener create(Logger logger) throws IOException {
+        EventFileWriter eventWriter =
+            new EventFileWriter(logger, EVENT_DB_FILE);
+        ContextFileWriter contextWriter =
+            new ContextFileWriter(logger, CONTEXTS_DB_FILE);
+        return new EventListener(logger, eventWriter, contextWriter);
     }
 
-    public EventListener(LockEventListenerIfc lockEventListener,
+    public EventListener(Logger logger,
+                         LockEventListenerIfc lockEventListener,
                          ContextWriterIfc contextWriter) {
+        mLogger = logger;
         mEnteredMonitors = new ThreadLocalEnteredMonitors();
         mLockEventListener = lockEventListener;
-        mLockIdGenerator = new LockIdGenerator(contextWriter);
-        mContextCache = new LockingContextIdCache(contextWriter);
-        mLogger = Logger.getLogger("com.enea.jcarder");
+        mLockIdGenerator = new LockIdGenerator(mLogger, contextWriter);
+        mContextCache = new LockingContextIdCache(mLogger, contextWriter);
         mNumberOfEnteredMonitors =
             new Counter("Entered Monitors", mLogger, 100000);
     }

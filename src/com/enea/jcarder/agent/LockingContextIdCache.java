@@ -9,7 +9,7 @@ import net.jcip.annotations.NotThreadSafe;
 
 import com.enea.jcarder.common.LockingContext;
 import com.enea.jcarder.common.contexts.ContextWriterIfc;
-import com.enea.jcarder.util.Logger;
+import com.enea.jcarder.util.logging.Logger;
 
 /**
  * This class is responsible for mapping LockingContext instances to locking
@@ -35,12 +35,13 @@ final class LockingContextIdCache {
     private final HashMap<EqualsComparableKey, Integer> mCache;
     private final ReferenceQueue<Object> mReferenceQueue;
     private final ContextWriterIfc mContextWriter;
-    private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
+    private final Logger mLogger;
 
     /**
      * Create a LockingContextIdCache backed by a ContextWriterIfc.
      */
-    public LockingContextIdCache(ContextWriterIfc writer) {
+    public LockingContextIdCache(Logger logger, ContextWriterIfc writer) {
+        mLogger = logger;
         mCache = new HashMap<EqualsComparableKey, Integer>();
         mReferenceQueue = new ReferenceQueue<Object>();
         mContextWriter = writer;

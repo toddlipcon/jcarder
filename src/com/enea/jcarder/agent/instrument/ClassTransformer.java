@@ -10,7 +10,8 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.util.CheckClassAdapter;
-import com.enea.jcarder.util.Logger;
+
+import com.enea.jcarder.util.logging.Logger;
 
 /**
  * This class is responsible for all instrumentations and handles related issues
@@ -23,16 +24,16 @@ public class ClassTransformer implements ClassFileTransformer {
         new File("originalClasses");
     private static final File INSTRUMENTED_CLASSES_DIR =
         new File("instrumentedClasses");
-    private static final Logger LOGGER =
-        Logger.getLogger(ClassTransformer.class);
+    private final Logger mLogger;
     private final ClassLoader mAgentClassLoader;
     private final InstrumentConfig mInstrumentConfig;
 
-    public ClassTransformer(InstrumentConfig config) {
+    public ClassTransformer(Logger logger, InstrumentConfig config) {
+        mLogger = logger;
         mInstrumentConfig = config;
         mAgentClassLoader = getClass().getClassLoader();
-        LOGGER.fine("JCarder loaded with "
-                    + getClassLoaderName(mAgentClassLoader) + ".");
+        mLogger.fine("JCarder loaded with "
+                     + getClassLoaderName(mAgentClassLoader) + ".");
         deleteDirRecursively(INSTRUMENTED_CLASSES_DIR);
         deleteDirRecursively(ORIGINAL_CLASSES_DIR);
     }
@@ -47,7 +48,8 @@ public class ClassTransformer implements ClassFileTransformer {
         try {
             return instrument(classLoader, originalClassBuffer, className);
         } catch (Throwable t) {
-            LOGGER.severe("Failed to transform the class: " + className,  t);
+            mLogger.severe("Failed to transform the class "
+                           + className + ": " + t.getMessage());
             dumpClassToFile(originalClassBuffer,
                             ORIGINAL_CLASSES_DIR,
                             className);
@@ -63,13 +65,13 @@ public class ClassTransformer implements ClassFileTransformer {
             return null; // Don't instrument ourself.
         }
         if (isFromStandardLibrary(className)) {
-            LOGGER.finest("Won't instrument standard library class "
-                          + className);
+            mLogger.finest("Won't instrument standard library class "
+                           + className);
             return null;
         }
         if (!isCompatibleClassLoader(classLoader)) {
-            LOGGER.finest("Can't instrument class " + className
-                          + " loaded with " + getClassLoaderName(classLoader));
+            mLogger.finest("Can't instrument class " + className
+                           + " loaded with " + getClassLoaderName(classLoader));
             return null;
         }
         final ClassReader reader = new ClassReader(originalClassBuffer);
@@ -78,7 +80,7 @@ public class ClassTransformer implements ClassFileTransformer {
         if (mInstrumentConfig.getValidateTransfomedClasses()) {
             visitor = new CheckClassAdapter(visitor);
         }
-        visitor = new ClassAdapter(visitor, className);
+        visitor = new ClassAdapter(mLogger, visitor, className);
         reader.accept(visitor, false);
         byte[] instrumentedClassfileBuffer = writer.toByteArray();
         if (mInstrumentConfig.getDumpClassFiles()) {
@@ -148,9 +150,9 @@ public class ClassTransformer implements ClassFileTransformer {
      * The latter also prints detailed information about the constant pool,
      * something which javap does not.
      */
-    private static void dumpClassToFile(byte[] content,
-                                        File baseDir,
-                                        String className) {
+    private void dumpClassToFile(byte[] content,
+                                 File baseDir,
+                                 String className) {
         try {
             String separator = System.getProperty("file.separator");
             File file = new File(baseDir + separator
@@ -161,7 +163,7 @@ public class ClassTransformer implements ClassFileTransformer {
             fos.write(content);
             fos.close();
         } catch (IOException e) {
-            LOGGER.severe("Failed to dump class to file", e);
+            mLogger.severe("Failed to dump class to file: " + e.getMessage());
         }
     }
 }

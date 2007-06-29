@@ -8,7 +8,7 @@ import net.jcip.annotations.NotThreadSafe;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-import com.enea.jcarder.util.Logger;
+import com.enea.jcarder.util.logging.Logger;
 
 /**
  * Each instance of this class is responsible for instrumenting a class. It uses
@@ -17,10 +17,11 @@ import com.enea.jcarder.util.Logger;
 @NotThreadSafe
 class ClassAdapter extends org.objectweb.asm.ClassAdapter {
     private final String mClassName;
-    private final Logger mLogger = Logger.getLogger(this);
+    private final Logger mLogger;
 
-    ClassAdapter(ClassVisitor visitor, String className) {
+    ClassAdapter(Logger logger, ClassVisitor visitor, String className) {
         super(visitor);
+        mLogger = logger;
         mClassName = className;
         mLogger.fine("Instrumenting class " + mClassName);
     }
@@ -57,7 +58,7 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
             final MonitorEnterMethodAdapter dlma =
                 new MonitorEnterMethodAdapter(mv, mClassName, methodName);
             final StackAnalyzeMethodVisitor stackAnalyzer =
-                new StackAnalyzeMethodVisitor(dlma, isStatic);
+                new StackAnalyzeMethodVisitor(mLogger, dlma, isStatic);
             dlma.setStackAnalyzer(stackAnalyzer);
             if (isSynchronized) {
                 /*

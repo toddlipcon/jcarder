@@ -10,7 +10,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-import com.enea.jcarder.util.Logger;
+import com.enea.jcarder.util.logging.Logger;
 
 /**
  * This class tries to keep track of what is currently on the operand stack. It
@@ -25,13 +25,15 @@ import com.enea.jcarder.util.Logger;
 class StackAnalyzeMethodVisitor implements MethodVisitor {
     private static final TextualDescription UNKOWN_VALUE =
         new TextualDescription("???");
-    private final Logger mLogger = Logger.getLogger(this);
+    private final Logger mLogger;
     private final Stack<Object> mStack = new Stack<Object>();
     private final MethodVisitor mMethodVisitor;
     private final boolean mIsStatic;
 
-    StackAnalyzeMethodVisitor(final MethodVisitor methodVisitor,
+    StackAnalyzeMethodVisitor(final Logger logger,
+                              final MethodVisitor methodVisitor,
                               final boolean isStatic) {
+        mLogger = logger;
         mMethodVisitor = methodVisitor;
         mIsStatic = isStatic;
     }

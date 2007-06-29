@@ -19,6 +19,7 @@ import com.enea.jcarder.testclasses.agent.RepeatOlderSynchronization;
 import com.enea.jcarder.testclasses.agent.SingleSynchronization;
 import com.enea.jcarder.testclasses.agent.SynchronizationTestIfc;
 import com.enea.jcarder.testclasses.agent.TwoThreadSynchronization;
+import com.enea.jcarder.util.logging.Logger;
 
 /**
  * The purpose of this junit class is to test the classes:
@@ -37,14 +38,15 @@ public final class TestMonitorEventListener implements LockEventListenerIfc {
 
     public TestMonitorEventListener() {
         ClassTransformer transformer =
-            new ClassTransformer(new InstrumentConfig());
+            new ClassTransformer(new Logger(null), new InstrumentConfig());
         mClassLoader = new TransformClassLoader(transformer);
     }
 
     @Before
     public void setUp() throws Exception {
         mContextMemory = new ContextMemory();
-        StaticEventListener.setListener(new EventListener(this,
+        StaticEventListener.setListener(new EventListener(new Logger(null),
+                                                          this,
                                                           mContextMemory));
     }
 

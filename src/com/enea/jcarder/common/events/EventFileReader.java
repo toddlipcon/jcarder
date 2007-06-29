@@ -6,25 +6,27 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.enea.jcarder.util.Logger;
+import com.enea.jcarder.util.logging.Logger;
 
 public final class EventFileReader {
     private static final int INT_LENGTH = 4;
     private static final int LONG_LENGTH = 8;
-    private static final Logger LOGGER = Logger.getLogger("com.enea.jcarder");
+    private final Logger mLogger;
     static final int EVENT_LENGTH = (INT_LENGTH * 4) + LONG_LENGTH;
     static final long MAGIC_COOKIE = 2153191828159737167L;
     static final int MAJOR_VERSION = 1;
     static final int MINOR_VERSION = 0;
 
-    private EventFileReader() { }
+    public EventFileReader(Logger logger) {
+        mLogger = logger;
+    }
 
-    public static void parseFile(File file,
-                                 LockEventListenerIfc eventReceiver)
+    public void parseFile(File file,
+                          LockEventListenerIfc eventReceiver)
     throws IOException {
         int numberOfParsedEvents = 0;
         FileInputStream fis = new FileInputStream(file);
-        LOGGER.info("Opening for reading: " + file.getAbsolutePath());
+        mLogger.info("Opening for reading: " + file.getAbsolutePath());
         FileChannel fileChannel = fis.getChannel();
         validateHeader(fileChannel, file.getAbsolutePath());
         final ByteBuffer buffer = ByteBuffer.allocate(EVENT_LENGTH);
@@ -34,12 +36,12 @@ public final class EventFileReader {
             buffer.rewind();
             numberOfParsedEvents++;
         }
-        LOGGER.fine("Loaded " + numberOfParsedEvents
-                      + " lock events from file.");
+        mLogger.fine("Loaded " + numberOfParsedEvents
+                     + " lock events from file.");
     }
 
-    private static void validateHeader(FileChannel channel,
-                                       String filename) throws IOException {
+    private void validateHeader(FileChannel channel,
+                                String filename) throws IOException {
         final ByteBuffer buffer = ByteBuffer.allocate(8 + 4 + 4);
         channel.read(buffer);
         buffer.flip();

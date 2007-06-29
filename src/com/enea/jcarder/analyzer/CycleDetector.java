@@ -11,8 +11,8 @@ import net.jcip.annotations.NotThreadSafe;
 
 import com.enea.jcarder.common.contexts.ContextReaderIfc;
 import com.enea.jcarder.util.Counter;
-import com.enea.jcarder.util.Logger;
 import com.enea.jcarder.util.MaxValueCounter;
+import com.enea.jcarder.util.logging.Logger;
 
 /**
  * This class is responsible for finding and managing cycles.
@@ -34,9 +34,9 @@ class CycleDetector {
     private final MaxValueCounter mNoOfCycles;
     private final Counter mNoOfCreatedCycleObjects;
 
-    CycleDetector() {
+    CycleDetector(Logger logger) {
+        mLogger = logger;
         mCycles = new HashSet<Cycle>();
-        mLogger = Logger.getLogger("com.enea.jcarder.agent.analyzer");
         mMaxDepth = new MaxValueCounter("Graph Depth", mLogger);
         mMaxCycleDepth = new MaxValueCounter("Cycle Depth", mLogger);
         mNoOfCycles = new MaxValueCounter("Found cycles", mLogger);

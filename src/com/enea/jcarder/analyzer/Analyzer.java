@@ -1,8 +1,12 @@
 package com.enea.jcarder.analyzer;
 
+import static com.enea.jcarder.common.contexts.ContextFileReader.CONTEXTS_DB_FILE;
+import static com.enea.jcarder.common.contexts.ContextFileReader.EVENT_DB_FILE;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,10 +18,10 @@ import com.enea.jcarder.common.contexts.ContextFileReader;
 import com.enea.jcarder.common.contexts.ContextReaderIfc;
 import com.enea.jcarder.common.events.EventFileReader;
 import com.enea.jcarder.util.BuildInformation;
-import com.enea.jcarder.util.Logger;
-
-import static com.enea.jcarder.common.contexts.ContextFileReader.EVENT_DB_FILE;
-import static com.enea.jcarder.common.contexts.ContextFileReader.CONTEXTS_DB_FILE;
+import com.enea.jcarder.util.logging.AppendableHandler;
+import com.enea.jcarder.util.logging.Handler;
+import com.enea.jcarder.util.logging.Logger;
+import com.enea.jcarder.util.logging.Logger.Level;
 
 /**
  * The main class of the JCarder analyzer.
@@ -38,6 +42,8 @@ public final class Analyzer {
     private OutputMode mOutputMode = OutputMode.INCLUDE_CYCLES;
     private boolean mIncludePackages = false;
     private boolean mPrintDetails = false;
+    private Logger mLogger;
+    private Level mLogLevel = Logger.Level.INFO;
 
     public static void main(String[] args) throws Exception {
         new Analyzer().start(args);
@@ -45,20 +51,23 @@ public final class Analyzer {
 
     public void start(String[] args) throws Exception {
         parseArguments(args);
+        initLogger();
         LockGraphBuilder graphBuilder = new LockGraphBuilder();
 
-        ContextReaderIfc reader = new ContextFileReader(CONTEXTS_DB_FILE);
+        ContextReaderIfc contextReader =
+            new ContextFileReader(mLogger, CONTEXTS_DB_FILE);
 
-        EventFileReader.parseFile(EVENT_DB_FILE, graphBuilder);
+        EventFileReader eventReader = new EventFileReader(mLogger);
+        eventReader.parseFile(EVENT_DB_FILE, graphBuilder);
         printInitiallyLoadedStatistics(graphBuilder.getAllLocks());
 
-        CycleDetector cycleDetector = new CycleDetector();
+        CycleDetector cycleDetector = new CycleDetector(mLogger);
         cycleDetector.analyzeLockNodes(graphBuilder.getAllLocks());
         printCycleAnalysisStatistics(cycleDetector);
 
         if (mOutputMode == OutputMode.INCLUDE_ALL) {
-            printDetailsIfEnabled(cycleDetector.getCycles(), reader);
-            generatGraphvizFileForAllNodes(graphBuilder, reader);
+            printDetailsIfEnabled(cycleDetector.getCycles(), contextReader);
+            generatGraphvizFileForAllNodes(graphBuilder, contextReader);
         } else {
             if (mOutputMode == OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES) {
                 cycleDetector.removeSingleThreadedCycles();
@@ -78,11 +87,17 @@ public final class Analyzer {
              * duplicates are removed anyway when cycles that are alike are
              * removed.
              */
-            cycleDetector.removeAlikeCycles(reader);
+            cycleDetector.removeAlikeCycles(contextReader);
 
-            printDetailsIfEnabled(cycleDetector.getCycles(), reader);
-            generateGraphvizFilesForCycles(reader, cycleDetector);
+            printDetailsIfEnabled(cycleDetector.getCycles(), contextReader);
+            generateGraphvizFilesForCycles(contextReader, cycleDetector);
         }
+    }
+
+    private void initLogger() {
+        Collection<Handler> handlers = new ArrayList<Handler>();
+        handlers.add(new AppendableHandler(System.out));
+        mLogger = new Logger(handlers, mLogLevel);
     }
 
     private void generateGraphvizFilesForCycles(ContextReaderIfc reader,
@@ -144,9 +159,9 @@ public final class Analyzer {
             } else if (arg.equals("--exclude-single-threaded-cycles")) {
                 mOutputMode = OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES;
             } else if (arg.equals("finer")) {
-                Logger.setFileLogLevel(Logger.Level.FINER);
+                mLogLevel = Logger.Level.FINER;
             } else if (arg.equals("finest")) {
-                Logger.setFileLogLevel(Logger.Level.FINEST);
+                mLogLevel = Logger.Level.FINEST;
             } else if (arg.equals("--include-packages")) {
                 mIncludePackages = true;
             } else if (arg.equals("--print-details")) {

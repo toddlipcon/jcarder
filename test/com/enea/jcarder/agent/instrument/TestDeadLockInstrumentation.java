@@ -1,6 +1,7 @@
 package com.enea.jcarder.agent.instrument;
 
 import java.util.ArrayList;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,7 @@ import com.enea.jcarder.testclasses.instrumentation.SynchronizedStaticMethod;
 import com.enea.jcarder.testclasses.instrumentation.SynchronizedStaticMethodWithException;
 import com.enea.jcarder.testclasses.instrumentation.SynchronizedStaticMethodWithMultipleIntReturns;
 import com.enea.jcarder.testclasses.instrumentation.SynchronizedThis;
+import com.enea.jcarder.util.logging.Logger;
 
 /*
  * The purpose of this junit class is to test the classes:
@@ -51,7 +53,7 @@ public final class TestDeadLockInstrumentation implements EventListenerIfc {
 
     public TestDeadLockInstrumentation() {
         ClassTransformer classTransformer =
-            new ClassTransformer(new InstrumentConfig());
+            new ClassTransformer(new Logger(null), new InstrumentConfig());
         mClassLoader = new TransformClassLoader(classTransformer);
         StaticEventListener.setListener(this);
         mEnteredMonitors = new ArrayList<MonitorWithContext>();

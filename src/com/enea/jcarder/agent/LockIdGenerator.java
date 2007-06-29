@@ -6,7 +6,7 @@ import net.jcip.annotations.NotThreadSafe;
 import com.enea.jcarder.common.Lock;
 import com.enea.jcarder.common.contexts.ContextWriterIfc;
 import com.enea.jcarder.util.IdentityWeakHashMap;
-import com.enea.jcarder.util.Logger;
+import com.enea.jcarder.util.logging.Logger;
 
 /**
  * This class is responsible for generating unique IDs for objects.
@@ -20,12 +20,13 @@ import com.enea.jcarder.util.Logger;
 final class LockIdGenerator {
     private final IdentityWeakHashMap<Integer> mIdMap;
     private final ContextWriterIfc mContextWriter;
-    private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
+    private final Logger mLogger;
 
     /**
      * Create a LockIdGenerator backed by a ContextWriterIfc
      */
-    public LockIdGenerator(ContextWriterIfc writer) {
+    public LockIdGenerator(Logger logger, ContextWriterIfc writer) {
+        mLogger = logger;
         mIdMap = new IdentityWeakHashMap<Integer>();
         mContextWriter = writer;
     }

@@ -8,7 +8,7 @@ import java.nio.channels.FileChannel;
 import net.jcip.annotations.ThreadSafe;
 
 import com.enea.jcarder.util.Counter;
-import com.enea.jcarder.util.Logger;
+import com.enea.jcarder.util.logging.Logger;
 
 import static com.enea.jcarder.common.events.EventFileReader.EVENT_LENGTH;
 
@@ -17,11 +17,12 @@ public final class EventFileWriter implements LockEventListenerIfc {
     private final ByteBuffer mBuffer =
         ByteBuffer.allocateDirect(EVENT_LENGTH * 1024);
     private final FileChannel mFileChannel;
-    private final Logger mLogger = Logger.getLogger("com.enea.jcarder");
+    private final Logger mLogger;
     private final Counter mWrittenLockEvents;
     private boolean mShutdownHookExecuted = false;
 
-    public EventFileWriter(File file) throws IOException {
+    public EventFileWriter(Logger logger, File file) throws IOException {
+        mLogger = logger;
         mLogger.info("Opening for writing: " + file.getAbsolutePath());
         RandomAccessFile raFile = new RandomAccessFile(file, "rw");
         raFile.setLength(0);
