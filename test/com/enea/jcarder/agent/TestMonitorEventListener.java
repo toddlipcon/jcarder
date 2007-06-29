@@ -2,6 +2,7 @@ package com.enea.jcarder.agent;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -38,7 +39,9 @@ public final class TestMonitorEventListener implements LockEventListenerIfc {
 
     public TestMonitorEventListener() {
         ClassTransformer transformer =
-            new ClassTransformer(new Logger(null), new InstrumentConfig());
+            new ClassTransformer(new Logger(null),
+                                 new File("."),
+                                 new InstrumentConfig());
         mClassLoader = new TransformClassLoader(transformer);
     }
 

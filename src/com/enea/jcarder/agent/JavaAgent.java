@@ -30,7 +30,9 @@ public final class JavaAgent {
     private final static InstrumentConfig smConfig = new InstrumentConfig();
     private Logger mLogger;
     PrintWriter mLogWriter;
+    private File mOutputDir;
     private Logger.Level mLogLevel;
+    private static final String OUTPUTDIR_PROPERTY = "jcarder.outputdir";
 
     private JavaAgent() { }
 
@@ -50,16 +52,16 @@ public final class JavaAgent {
         handleProperties();
         initLogger();
         mLogger.info("Starting " + BuildInformation.getShortInfo() + ".");
-        EventListener listener = EventListener.create(mLogger);
+        EventListener listener = EventListener.create(mLogger, mOutputDir);
         ClassTransformer classTransformer =
-            new ClassTransformer(mLogger, smConfig);
+            new ClassTransformer(mLogger, mOutputDir, smConfig);
         instrumentation.addTransformer(classTransformer);
         mLogger.info("Dead Lock Agent initialized\n");
         StaticEventListener.setListener(listener);
     }
 
     private void initLogger() {
-        File logFile = new File(LOG_FILENAME);
+        File logFile = new File(mOutputDir, LOG_FILENAME);
         if (logFile.exists()) {
             logFile.delete();
         }
@@ -90,7 +92,16 @@ public final class JavaAgent {
     }
 
     private void handleProperties() {
-        // jcarder.loglevel
+        handleDumpProperty();
+        handleLogLevelProperty();
+        handleOutputDirProperty();
+    }
+
+    private void handleDumpProperty() {
+        smConfig.setDumpClassFiles(Boolean.getBoolean(DUMP_PROPERTY));
+    }
+
+    private void handleLogLevelProperty() {
         String logLevelValue = System.getProperty(LOGLEVEL_PROPERTY, "fine");
         Logger.Level logLevel = Logger.Level.fromString(logLevelValue);
         if (logLevel != null) {
@@ -109,8 +120,12 @@ public final class JavaAgent {
             System.err.println();
             System.exit(1);
         }
+    }
 
-        // jcarder.dump
-        smConfig.setDumpClassFiles(Boolean.getBoolean(DUMP_PROPERTY));
+    private void handleOutputDirProperty() {
+        mOutputDir = new File(System.getProperty(OUTPUTDIR_PROPERTY, "."));
+        if (!mOutputDir.isDirectory()) {
+            mOutputDir.mkdirs();
+        }
     }
 }

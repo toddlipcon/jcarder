@@ -1,7 +1,7 @@
 package com.enea.jcarder.analyzer;
 
-import static com.enea.jcarder.common.contexts.ContextFileReader.CONTEXTS_DB_FILE;
-import static com.enea.jcarder.common.contexts.ContextFileReader.EVENT_DB_FILE;
+import static com.enea.jcarder.common.contexts.ContextFileReader.CONTEXTS_DB_FILENAME;
+import static com.enea.jcarder.common.contexts.ContextFileReader.EVENT_DB_FILENAME;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -55,10 +55,10 @@ public final class Analyzer {
         LockGraphBuilder graphBuilder = new LockGraphBuilder();
 
         ContextReaderIfc contextReader =
-            new ContextFileReader(mLogger, CONTEXTS_DB_FILE);
+            new ContextFileReader(mLogger, new File(CONTEXTS_DB_FILENAME));
 
         EventFileReader eventReader = new EventFileReader(mLogger);
-        eventReader.parseFile(EVENT_DB_FILE, graphBuilder);
+        eventReader.parseFile(new File(EVENT_DB_FILENAME), graphBuilder);
         printInitiallyLoadedStatistics(graphBuilder.getAllLocks());
 
         CycleDetector cycleDetector = new CycleDetector(mLogger);

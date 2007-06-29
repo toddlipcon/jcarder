@@ -20,22 +20,30 @@ import com.enea.jcarder.util.logging.Logger;
  * TODO Add basic test for this class.
  */
 public class ClassTransformer implements ClassFileTransformer {
-    private static final File ORIGINAL_CLASSES_DIR =
-        new File("originalClasses");
-    private static final File INSTRUMENTED_CLASSES_DIR =
-        new File("instrumentedClasses");
+    private static final String ORIGINAL_CLASSES_DIRNAME =
+        "originalClasses";
+    private static final String INSTRUMENTED_CLASSES_DIRNAME =
+        "instrumentedClasses";
     private final Logger mLogger;
     private final ClassLoader mAgentClassLoader;
     private final InstrumentConfig mInstrumentConfig;
+    private File mOriginalClassesDir;
+    private File mInstrumentedClassesDir;
 
-    public ClassTransformer(Logger logger, InstrumentConfig config) {
+    public ClassTransformer(Logger logger,
+                            File outputDirectory,
+                            InstrumentConfig config) {
         mLogger = logger;
+        mOriginalClassesDir =
+            new File(outputDirectory, ORIGINAL_CLASSES_DIRNAME);
+        mInstrumentedClassesDir =
+            new File(outputDirectory, INSTRUMENTED_CLASSES_DIRNAME);
         mInstrumentConfig = config;
         mAgentClassLoader = getClass().getClassLoader();
         mLogger.fine("JCarder loaded with "
                      + getClassLoaderName(mAgentClassLoader) + ".");
-        deleteDirRecursively(INSTRUMENTED_CLASSES_DIR);
-        deleteDirRecursively(ORIGINAL_CLASSES_DIR);
+        deleteDirRecursively(mInstrumentedClassesDir);
+        deleteDirRecursively(mOriginalClassesDir);
     }
 
     public byte[] transform(final ClassLoader classLoader,
@@ -51,7 +59,7 @@ public class ClassTransformer implements ClassFileTransformer {
             mLogger.severe("Failed to transform the class "
                            + className + ": " + t.getMessage());
             dumpClassToFile(originalClassBuffer,
-                            ORIGINAL_CLASSES_DIR,
+                            mOriginalClassesDir,
                             className);
             return null;
         }
@@ -85,10 +93,10 @@ public class ClassTransformer implements ClassFileTransformer {
         byte[] instrumentedClassfileBuffer = writer.toByteArray();
         if (mInstrumentConfig.getDumpClassFiles()) {
             dumpClassToFile(originalClassBuffer,
-                            ORIGINAL_CLASSES_DIR,
+                            mOriginalClassesDir,
                             className);
             dumpClassToFile(instrumentedClassfileBuffer,
-                            INSTRUMENTED_CLASSES_DIR,
+                            mInstrumentedClassesDir,
                             className);
         }
         return instrumentedClassfileBuffer;

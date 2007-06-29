@@ -1,16 +1,17 @@
 package com.enea.jcarder.agent.instrument;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+import java.io.File;
 import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
-import com.enea.jcarder.agent.StaticEventListener;
 import com.enea.jcarder.agent.EventListenerIfc;
-import com.enea.jcarder.agent.instrument.InstrumentConfig;
+import com.enea.jcarder.agent.StaticEventListener;
 import com.enea.jcarder.common.LockingContext;
 import com.enea.jcarder.testclasses.instrumentation.SynchronizationTestIfc;
 import com.enea.jcarder.testclasses.instrumentation.SynchronizedArray;
@@ -53,7 +54,9 @@ public final class TestDeadLockInstrumentation implements EventListenerIfc {
 
     public TestDeadLockInstrumentation() {
         ClassTransformer classTransformer =
-            new ClassTransformer(new Logger(null), new InstrumentConfig());
+            new ClassTransformer(new Logger(null),
+                                 new File("."),
+                                 new InstrumentConfig());
         mClassLoader = new TransformClassLoader(classTransformer);
         StaticEventListener.setListener(this);
         mEnteredMonitors = new ArrayList<MonitorWithContext>();

@@ -1,8 +1,9 @@
 package com.enea.jcarder.agent;
 
-import static com.enea.jcarder.common.contexts.ContextFileReader.EVENT_DB_FILE;
-import static com.enea.jcarder.common.contexts.ContextFileReader.CONTEXTS_DB_FILE;
+import static com.enea.jcarder.common.contexts.ContextFileReader.EVENT_DB_FILENAME;
+import static com.enea.jcarder.common.contexts.ContextFileReader.CONTEXTS_DB_FILENAME;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -25,11 +26,14 @@ final class EventListener implements EventListenerIfc {
     private final Logger mLogger;
     private final Counter mNumberOfEnteredMonitors;
 
-    public static EventListener create(Logger logger) throws IOException {
+    public static EventListener create(Logger logger, File outputdir)
+    throws IOException {
         EventFileWriter eventWriter =
-            new EventFileWriter(logger, EVENT_DB_FILE);
+            new EventFileWriter(logger,
+                                new File(outputdir, EVENT_DB_FILENAME));
         ContextFileWriter contextWriter =
-            new ContextFileWriter(logger, CONTEXTS_DB_FILE);
+            new ContextFileWriter(logger,
+                                  new File(outputdir, CONTEXTS_DB_FILENAME));
         return new EventListener(logger, eventWriter, contextWriter);
     }
 
