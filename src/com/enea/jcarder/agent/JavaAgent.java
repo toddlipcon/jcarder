@@ -108,15 +108,7 @@ public final class JavaAgent {
             mLogLevel = logLevel;
         } else {
             System.err.print("Bad loglevel; should be one of ");
-            boolean first = true;
-            for (Logger.Level level : Logger.Level.values()) {
-                if (first) {
-                    first = false;
-                } else {
-                    System.err.print(", ");
-                }
-                System.err.print(level.toString());
-            }
+            System.err.println(Logger.Level.getEnumeration());
             System.err.println();
             System.exit(1);
         }

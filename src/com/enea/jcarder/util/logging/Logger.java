@@ -40,6 +40,20 @@ public final class Logger {
             }
             return null;
         }
+
+        public static String getEnumeration() {
+            StringBuffer sb = new StringBuffer();
+            boolean first = true;
+            for (Level level : values()) {
+                if (first) {
+                    first = false;
+                } else {
+                    sb.append(", ");
+                }
+                sb.append(level.toString());
+            }
+            return sb.toString();
+        }
     }
 
     final Collection<Handler> mHandlers;
