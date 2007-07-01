@@ -16,6 +16,7 @@ public class TestAppendableHandler {
     public void testConstruction() {
         new AppendableHandler(null);
         new AppendableHandler(null, Logger.Level.SEVERE);
+        new AppendableHandler(null, Logger.Level.SEVERE, "");
     }
 
     @Test
@@ -45,5 +46,28 @@ public class TestAppendableHandler {
         logger.severe("foo");
         logger.warning("bar");
         verify(streamMock);
+    }
+
+    @Test
+    public void testMessageFormat() throws IOException {
+        Appendable streamMock = createStrictMock(Appendable.class);
+        Collection<Handler> handlers = new ArrayList<Handler>();
+        AppendableHandler handler1 =
+            new AppendableHandler(streamMock,
+                                  Logger.Level.WARNING,
+                                  "[{level}] --> {{message}}.");
+        AppendableHandler handler2 =
+            new AppendableHandler(streamMock,
+                                  Logger.Level.WARNING,
+                                  "{message} {message");
+        handlers.add(handler1);
+        handlers.add(handler2);
+        Logger logger = new Logger(handlers);
+
+        expect(streamMock.append("[WARNING] --> {foo}.")).andReturn(streamMock);
+        expect(streamMock.append("foo {message")).andReturn(streamMock);
+        replay(streamMock);
+
+        logger.warning("foo");
     }
 }
