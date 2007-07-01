@@ -5,7 +5,8 @@ import java.io.IOException;
 import com.enea.jcarder.util.logging.Logger.Level;
 
 /**
- * Log handler that publishes log messages via an Appendable.
+ * This class acts as a log handler for classes that that implement the
+ * Appendable interface.
  *
  * The Appendable does not need to be thread-safe; AppendableHandler
  * synchronizes calls to Appendable's methods.
