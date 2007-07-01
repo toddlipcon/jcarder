@@ -21,9 +21,9 @@ import com.enea.jcarder.util.logging.Logger;
  */
 public class ClassTransformer implements ClassFileTransformer {
     private static final String ORIGINAL_CLASSES_DIRNAME =
-        "originalClasses";
+        "jcarder_original_classes";
     private static final String INSTRUMENTED_CLASSES_DIRNAME =
-        "instrumentedClasses";
+        "jcarder_instrumented_classes";
     private final Logger mLogger;
     private final ClassLoader mAgentClassLoader;
     private final InstrumentConfig mInstrumentConfig;
