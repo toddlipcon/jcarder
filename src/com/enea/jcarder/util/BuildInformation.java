@@ -10,14 +10,14 @@ public final class BuildInformation {
     public static String getShortInfo() {
         try {
             Properties props = loadBuildProperties();
-            return "jcarder ("
+            return "JCarder ("
                    + props.getProperty("build.version")
                    + "/"
                    + props.getProperty("build.number")
                    + ")";
         } catch (IOException e) {
             e.printStackTrace();
-            return "jcarder";
+            return "JCarder";
         }
     }
 

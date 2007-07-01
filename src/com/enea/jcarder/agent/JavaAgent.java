@@ -51,12 +51,12 @@ public final class JavaAgent {
     throws Exception {
         handleProperties();
         initLogger();
-        mLogger.info("Starting " + BuildInformation.getShortInfo() + ".");
+        mLogger.info("Starting " + BuildInformation.getShortInfo() + " agent");
         EventListener listener = EventListener.create(mLogger, mOutputDir);
         ClassTransformer classTransformer =
             new ClassTransformer(mLogger, mOutputDir, smConfig);
         instrumentation.addTransformer(classTransformer);
-        mLogger.info("Dead Lock Agent initialized\n");
+        mLogger.info("JCarder agent initialized\n");
         StaticEventListener.setListener(listener);
     }
 
@@ -76,7 +76,7 @@ public final class JavaAgent {
         mLogWriter = new PrintWriter(new BufferedWriter(fileWriter));
         AppendableHandler fileHandler = new AppendableHandler(mLogWriter);
         AppendableHandler consoleHandler =
-            new AppendableHandler(System.err, Logger.Level.INFO);
+            new AppendableHandler(System.err, Logger.Level.INFO, "{message}\n");
 
         Thread hook = new Thread() {
             public void run() {
