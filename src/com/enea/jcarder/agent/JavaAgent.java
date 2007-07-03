@@ -27,7 +27,7 @@ public final class JavaAgent {
     private static final String LOGLEVEL_PROPERTY = "jcarder.loglevel";
     private static final String LOG_FILENAME = "jcarder.log";
 
-    private final static InstrumentConfig smConfig = new InstrumentConfig();
+    private final InstrumentConfig mConfig = new InstrumentConfig();
     private Logger mLogger;
     PrintWriter mLogWriter;
     private File mOutputDir;
@@ -54,7 +54,7 @@ public final class JavaAgent {
         mLogger.info("Starting " + BuildInformation.getShortInfo() + " agent");
         EventListener listener = EventListener.create(mLogger, mOutputDir);
         ClassTransformer classTransformer =
-            new ClassTransformer(mLogger, mOutputDir, smConfig);
+            new ClassTransformer(mLogger, mOutputDir, mConfig);
         instrumentation.addTransformer(classTransformer);
         mLogger.info("JCarder agent initialized\n");
         StaticEventListener.setListener(listener);
@@ -98,7 +98,7 @@ public final class JavaAgent {
     }
 
     private void handleDumpProperty() {
-        smConfig.setDumpClassFiles(Boolean.getBoolean(DUMP_PROPERTY));
+        mConfig.setDumpClassFiles(Boolean.getBoolean(DUMP_PROPERTY));
     }
 
     private void handleLogLevelProperty() {
