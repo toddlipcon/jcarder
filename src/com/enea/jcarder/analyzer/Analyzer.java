@@ -48,6 +48,7 @@ public final class Analyzer {
     private boolean mPrintDetails = false;
     private Logger mLogger;
     private Level mLogLevel = Logger.Level.INFO;
+    private String mInputDirectory = ".";
 
     public static void main(String[] args) throws Exception {
         new Analyzer().start(args);
@@ -59,10 +60,12 @@ public final class Analyzer {
         LockGraphBuilder graphBuilder = new LockGraphBuilder();
 
         ContextReaderIfc contextReader =
-            new ContextFileReader(mLogger, new File(CONTEXTS_DB_FILENAME));
+            new ContextFileReader(mLogger, new File(mInputDirectory,
+                                                    CONTEXTS_DB_FILENAME));
 
         EventFileReader eventReader = new EventFileReader(mLogger);
-        eventReader.parseFile(new File(EVENT_DB_FILENAME), graphBuilder);
+        eventReader.parseFile(new File(mInputDirectory, EVENT_DB_FILENAME),
+                              graphBuilder);
         printInitiallyLoadedStatistics(graphBuilder.getAllLocks());
 
         CycleDetector cycleDetector = new CycleDetector(mLogger);
@@ -178,6 +181,9 @@ public final class Analyzer {
 
         op.addOption("-help",
                      "Print this help text");
+        op.addOption("-i <directory>",
+                     "Read results to analyze from <directory> (default:"
+                     + " current directory)");
         op.addOption("-includepackages",
                      "Include packages (not only class names) in graph");
         op.addOption("-loglevel <level>",
@@ -201,6 +207,8 @@ public final class Analyzer {
             if (option.equals("-help")) {
                 printHelpText(System.out, op);
                 System.exit(0);
+            } else if (option.equals("-i")) {
+                mInputDirectory = options.get(option);
             } else if (option.equals("-includepackages")) {
                 mIncludePackages = true;
             } else if (option.equals("-loglevel")) {
