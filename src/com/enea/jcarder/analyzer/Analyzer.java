@@ -6,10 +6,12 @@ import static com.enea.jcarder.common.contexts.ContextFileReader.EVENT_DB_FILENA
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -18,6 +20,8 @@ import com.enea.jcarder.common.contexts.ContextFileReader;
 import com.enea.jcarder.common.contexts.ContextReaderIfc;
 import com.enea.jcarder.common.events.EventFileReader;
 import com.enea.jcarder.util.BuildInformation;
+import com.enea.jcarder.util.InvalidOptionException;
+import com.enea.jcarder.util.OptionParser;
 import com.enea.jcarder.util.logging.AppendableHandler;
 import com.enea.jcarder.util.logging.Handler;
 import com.enea.jcarder.util.logging.Logger;
@@ -153,42 +157,88 @@ public final class Analyzer {
     }
 
     private void parseArguments(String[] args) {
-        for (String arg : args) {
-            if (arg.equals("-all")) {
-                mOutputMode = OutputMode.INCLUDE_ALL;
-            } else if (arg.equals("--exclude-single-threaded-cycles")) {
-                mOutputMode = OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES;
-            } else if (arg.equals("finer")) {
-                mLogLevel = Logger.Level.FINER;
-            } else if (arg.equals("finest")) {
-                mLogLevel = Logger.Level.FINEST;
-            } else if (arg.equals("--include-packages")) {
-                mIncludePackages = true;
-            } else if (arg.equals("--print-details")) {
-                mPrintDetails = true;
-            } else if (arg.equals("-ver")) {
-                BuildInformation.printLongBuildInformation();
-                System.exit(0);
-            } else {
-                // TODO Explain each command line option in more detail.
-                System.err.println("Invalid command line argument: " + arg);
-                System.err.println("Valid arguments are:"
-                                   + "\n  -all "
-                                   + "\n  --exclude-single-threaded-cycles"
-                                   + "\n  --include-packages"
-                                   + "\n  --print-details"
-                                   + "\n  -ver"
-                                   + "\n  -finer -finest (file log levelbug");
-                System.exit(-1);
-            }
+        OptionParser op = new OptionParser();
+        configureOptionParser(op);
+
+        try {
+            op.parse(args);
+        } catch (InvalidOptionException e) {
+            handleBadOption(op, e.getMessage());
         }
+
+        handleOptions(op);
+    }
+
+    private void configureOptionParser(OptionParser op) {
         /*
          * TODO Add parameters for filtering (including & excluding) specific
          * locks and edges for example by specifying thread names, object
          * classes, method names or packages?
          */
+
+        op.addOption("-help",
+                     "Print this help text");
+        op.addOption("-includepackages",
+                     "Include packages (not only class names) in graph");
+        op.addOption("-loglevel <level>",
+                     "Set log level to <level> (one of "
+                     + Logger.Level.getEnumeration()
+                     + ")");
+        op.addOption("-outputmode <mode>",
+                     "Set output mode to <mode> (one of ALL, CYCLES, MTCYCLES);"
+                     + " ALL: include everything;"
+                     + " CYCLES: only include cycles (this is the default);"
+                     + " MTCYCLES: only include multi-thread cycles");
+        op.addOption("-printdetails",
+                     "Print details");
+        op.addOption("-version",
+                     "Print program version");
     }
 
+    private void handleOptions(OptionParser op) {
+        Map<String, String> options = op.getOptions();
+        for (String option : options.keySet()) {
+            if (option.equals("-help")) {
+                printHelpText(System.out, op);
+                System.exit(0);
+            } else if (option.equals("-includepackages")) {
+                mIncludePackages = true;
+            } else if (option.equals("-loglevel")) {
+                mLogLevel = Logger.Level.fromString(options.get(option));
+                if (mLogLevel == null) {
+                    handleBadOption(op, "bad log level");
+                }
+            } else if (option.equals("-outputmode")) {
+                String value = options.get(option);
+                if (value.equalsIgnoreCase("all")) {
+                    mOutputMode = OutputMode.INCLUDE_ALL;
+                } else if (value.equalsIgnoreCase("cycles")) {
+                    mOutputMode = OutputMode.INCLUDE_CYCLES;
+                } else if (value.equalsIgnoreCase("mtcycles")) {
+                    mOutputMode = OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES;
+                } else {
+                    handleBadOption(op, "bad output mode");
+                }
+            } else if (option.equals("-printdetails")) {
+                mPrintDetails = true;
+            } else if (option.equals("-version")) {
+                BuildInformation.printLongBuildInformation();
+                System.exit(0);
+            }
+        }
+    }
+
+    private void printHelpText(PrintStream stream, OptionParser op) {
+        stream.print("Usage: java -jar jcarder.jar [options]\n\n");
+        stream.print("Options:\n");
+        stream.print(op.getOptionHelp());
+    }
+
+    private void handleBadOption(OptionParser optionParser, String message) {
+        System.err.println("JCarder: " + message);
+        printHelpText(System.err, optionParser);
+        System.exit(1);
+    }
 
     private void printDetailsIfEnabled(Iterable<Cycle> cycles,
                                        ContextReaderIfc reader) {
