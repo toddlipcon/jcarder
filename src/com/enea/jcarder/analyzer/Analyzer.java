@@ -103,7 +103,9 @@ public final class Analyzer {
 
     private void initLogger() {
         Collection<Handler> handlers = new ArrayList<Handler>();
-        handlers.add(new AppendableHandler(System.out));
+        handlers.add(new AppendableHandler(System.out,
+                                           Logger.Level.CONFIG,
+                                           "{message}\n"));
         mLogger = new Logger(handlers, mLogLevel);
     }
 
