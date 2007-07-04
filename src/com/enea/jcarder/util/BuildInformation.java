@@ -37,19 +37,25 @@ public final class BuildInformation {
     }
 
     public static void printLongBuildInformation() {
+        Properties props;
         try {
-            Properties props = loadBuildProperties();
-            StringBuffer sb = new StringBuffer();
-            sb.append("\nJCarder by Ulrik Svensson <ulriksv@gmail.com>, Enea");
-            sb.append("\nVersion: " + props.getProperty("build.version"));
-            sb.append("\nBuild  : " + props.getProperty("build.number"));
-            sb.append("\nAt     : " + props.getProperty("build.timestamp"));
-            sb.append("\nBy     : " + props.getProperty("build.user.name"));
-            sb.append("\nOn     : " + props.getProperty("build.os.name"));
-            System.out.println(sb.toString());
+            props = loadBuildProperties();
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }
+        StringBuffer sb = new StringBuffer();
+        sb.append("JCarder -- cards Java programs to keep threads"
+                  + " disentangled\n");
+        sb.append("\nCopyright (C) 2006-2007 Enea AB\n");
+        sb.append("Copyright (C) 2007 Ulrik Svensson\n");
+        sb.append("Copyright (C) 2007 Joel Rosdahl\n");
+        sb.append("\nVersion: " + props.getProperty("build.version"));
+        sb.append("\nBuild  : " + props.getProperty("build.number"));
+        sb.append("\nAt     : " + props.getProperty("build.timestamp"));
+        sb.append("\nBy     : " + props.getProperty("build.user.name"));
+        sb.append("\nOn     : " + props.getProperty("build.os.name"));
+        System.out.println(sb.toString());
     }
 
     private static Properties loadBuildProperties() throws IOException {
