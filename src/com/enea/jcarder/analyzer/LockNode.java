@@ -47,9 +47,9 @@ class LockNode {
         return mCycleType;
     }
 
-    void raiseCycleType(CycleType newCycleype) {
-        if (newCycleype.compareTo(mCycleType) > 0) {
-            mCycleType = newCycleype;
+    void raiseCycleType(CycleType newCycleType) {
+        if (newCycleType.compareTo(mCycleType) > 0) {
+            mCycleType = newCycleType;
         }
     }
 
