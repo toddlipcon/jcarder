@@ -51,9 +51,11 @@ implements ContextWriterIfc {
 
     private synchronized void shutdownHook() {
         try {
-            close();
+            if (mChannel.isOpen()) {
+                writeBuffer();
+            }
         } catch (IOException e) {
-            // Ignore.
+            e.printStackTrace();
         }
         mShutdownHookExecuted = true;
     }
@@ -106,6 +108,7 @@ implements ContextWriterIfc {
         final int startPosition = mNextFilePosition;
         writeString(lock.getClassName());
         writeInteger(lock.getObjectId());
+        flushBufferIfNeeded();
         return startPosition;
     }
 
@@ -115,6 +118,13 @@ implements ContextWriterIfc {
         writeString(context.getThreadName());
         writeString(context.getLockReference());
         writeString(context.getMethodWithClass());
+        flushBufferIfNeeded();
         return startPosition;
+    }
+
+    private void flushBufferIfNeeded() throws IOException {
+        if (mShutdownHookExecuted) {
+            writeBuffer();
+        }
     }
 }
