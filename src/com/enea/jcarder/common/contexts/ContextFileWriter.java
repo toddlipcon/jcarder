@@ -21,18 +21,20 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import net.jcip.annotations.NotThreadSafe;
+import net.jcip.annotations.ThreadSafe;
 
 import com.enea.jcarder.common.Lock;
 import com.enea.jcarder.common.LockingContext;
 import com.enea.jcarder.util.logging.Logger;
 
-@NotThreadSafe
+@ThreadSafe
 public final class ContextFileWriter
 implements ContextWriterIfc {
     private final FileChannel mChannel;
     private int mNextFilePosition = 0;
     private final Logger mLogger;
+    private ByteBuffer mBuffer = ByteBuffer.allocateDirect(8192);
+    private boolean mShutdownHookExecuted = false;
 
     public ContextFileWriter(Logger logger, File file) throws IOException {
         mLogger = logger;
@@ -41,45 +43,74 @@ implements ContextWriterIfc {
         raFile.setLength(0);
         mChannel = raFile.getChannel();
         writeHeader();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() { shutdownHook(); }
+        });
+    }
+
+    private synchronized void shutdownHook() {
+        try {
+            close();
+        } catch (IOException e) {
+            // Ignore.
+        }
+        mShutdownHookExecuted = true;
+    }
+
+    private void writeBuffer() throws IOException {
+        mBuffer.flip();
+        mChannel.write(mBuffer);
+        mBuffer.clear();
     }
 
     private void writeHeader() throws IOException {
-        ByteBuffer header = ByteBuffer.allocate(8 + 4 + 4);
-        header.putLong(ContextFileReader.MAGIC_COOKIE);
-        header.putInt(ContextFileReader.MAJOR_VERSION);
-        header.putInt(ContextFileReader.MINOR_VERSION);
-        header.flip();
-        mNextFilePosition += mChannel.write(header);
+        mBuffer.putLong(ContextFileReader.MAGIC_COOKIE);
+        mBuffer.putInt(ContextFileReader.MAJOR_VERSION);
+        mBuffer.putInt(ContextFileReader.MINOR_VERSION);
+        mNextFilePosition += 8 + 4 + 4;
     }
 
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
+        writeBuffer();
         mChannel.close();
     }
 
     private void writeString(String s) throws IOException {
         ByteBuffer encodedString = ContextFileReader.CHARSET.encode(s);
-        ByteBuffer encodedStringLength = ByteBuffer.allocate(4);
-        encodedStringLength.putInt(encodedString.remaining());
-        encodedStringLength.flip();
-        mNextFilePosition += mChannel.write(encodedStringLength);
-        mNextFilePosition += mChannel.write(encodedString);
+        final int length = encodedString.remaining();
+        assureBufferCapacity(4 + length);
+        mBuffer.putInt(length);
+        mBuffer.put(encodedString);
+        mNextFilePosition += 4 + length;
     }
 
     private void writeInteger(int i) throws IOException {
-        ByteBuffer integerBuffer = ByteBuffer.allocate(4);
-        integerBuffer.putInt(i);
-        integerBuffer.flip();
-        mNextFilePosition += mChannel.write(integerBuffer);
+        assureBufferCapacity(4);
+        mBuffer.putInt(i);
+        mNextFilePosition += 4;
     }
 
-    public int writeLock(Lock lock) throws IOException {
+    private void assureBufferCapacity(int size) throws IOException {
+        if (mBuffer.remaining() < size || mShutdownHookExecuted) {
+            writeBuffer();
+        }
+
+        // Grow buffer if it can't hold the requested size.
+        while (mBuffer.capacity() < size) {
+            mBuffer = ByteBuffer.allocateDirect(2 * mBuffer.capacity());
+        }
+    }
+
+    public synchronized int writeLock(Lock lock) throws IOException {
         final int startPosition = mNextFilePosition;
         writeString(lock.getClassName());
         writeInteger(lock.getObjectId());
         return startPosition;
     }
 
-    public int writeContext(LockingContext context) throws IOException {
+    public synchronized int writeContext(LockingContext context)
+    throws IOException {
         final int startPosition = mNextFilePosition;
         writeString(context.getThreadName());
         writeString(context.getLockReference());
