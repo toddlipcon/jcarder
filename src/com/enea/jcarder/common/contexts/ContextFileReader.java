@@ -47,7 +47,7 @@ implements ContextReaderIfc {
         mLogger.info("Opening for reading: " + file.getAbsolutePath());
         FileChannel roChannel = raFile.getChannel();
         if (roChannel.size() > Integer.MAX_VALUE) {
-            throw new IOException("File to large: " + file.getAbsolutePath());
+            throw new IOException("File too large: " + file.getAbsolutePath());
         }
         mBuffer = roChannel.map(FileChannel.MapMode.READ_ONLY,
                                 0,
