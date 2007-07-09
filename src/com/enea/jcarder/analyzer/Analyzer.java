@@ -65,22 +65,30 @@ public final class Analyzer {
     private Level mLogLevel = Logger.Level.INFO;
     private String mInputDirectory = ".";
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         new Analyzer().start(args);
     }
 
-    public void start(String[] args) throws Exception {
+    public void start(String[] args) {
         parseArguments(args);
         initLogger();
         LockGraphBuilder graphBuilder = new LockGraphBuilder();
+        final ContextReaderIfc contextReader;
 
-        ContextReaderIfc contextReader =
-            new ContextFileReader(mLogger, new File(mInputDirectory,
-                                                    CONTEXTS_DB_FILENAME));
+        try {
+            contextReader =
+                new ContextFileReader(mLogger, new File(mInputDirectory,
+                                                        CONTEXTS_DB_FILENAME));
 
-        EventFileReader eventReader = new EventFileReader(mLogger);
-        eventReader.parseFile(new File(mInputDirectory, EVENT_DB_FILENAME),
-                              graphBuilder);
+            EventFileReader eventReader = new EventFileReader(mLogger);
+            eventReader.parseFile(new File(mInputDirectory, EVENT_DB_FILENAME),
+                                  graphBuilder);
+        }
+        catch (IOException e) {
+            mLogger.severe("Error while reading result database: "
+                           + e.getMessage());
+            return;
+        }
         printInitiallyLoadedStatistics(graphBuilder.getAllLocks());
 
         CycleDetector cycleDetector = new CycleDetector(mLogger);
@@ -89,7 +97,12 @@ public final class Analyzer {
 
         if (mOutputMode == OutputMode.INCLUDE_ALL) {
             printDetailsIfEnabled(cycleDetector.getCycles(), contextReader);
-            generatGraphvizFileForAllNodes(graphBuilder, contextReader);
+            try {
+                generatGraphvizFileForAllNodes(graphBuilder, contextReader);
+            } catch (IOException e) {
+                mLogger.severe("Error while generating Graphviz file: "
+                               + e.getMessage());
+            }
         } else {
             if (mOutputMode == OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES) {
                 cycleDetector.removeSingleThreadedCycles();
@@ -112,7 +125,12 @@ public final class Analyzer {
             cycleDetector.removeAlikeCycles(contextReader);
 
             printDetailsIfEnabled(cycleDetector.getCycles(), contextReader);
-            generateGraphvizFilesForCycles(contextReader, cycleDetector);
+            try {
+                generateGraphvizFilesForCycles(contextReader, cycleDetector);
+            } catch (IOException e) {
+                mLogger.severe("Error while generating Graphviz file: "
+                               + e.getMessage());
+            }
         }
     }
 
