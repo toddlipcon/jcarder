@@ -41,9 +41,10 @@ public final class EventFileReader {
     throws IOException {
         int numberOfParsedEvents = 0;
         FileInputStream fis = new FileInputStream(file);
-        mLogger.info("Opening for reading: " + file.getAbsolutePath());
+        final String path = file.getCanonicalPath();
+        mLogger.info("Opening for reading: " + path);
         FileChannel fileChannel = fis.getChannel();
-        validateHeader(fileChannel, file.getAbsolutePath());
+        validateHeader(fileChannel, path);
         final ByteBuffer buffer = ByteBuffer.allocate(EVENT_LENGTH);
         while (fileChannel.read(buffer) == EVENT_LENGTH) {
             buffer.rewind();

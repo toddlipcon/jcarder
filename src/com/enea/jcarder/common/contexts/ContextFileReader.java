@@ -44,17 +44,18 @@ implements ContextReaderIfc {
     public ContextFileReader(Logger logger, File file) throws IOException {
         mLogger = logger;
         RandomAccessFile raFile = new RandomAccessFile(file, "r");
-        mLogger.info("Opening for reading: " + file.getAbsolutePath());
+        final String path = file.getCanonicalPath();
+        mLogger.info("Opening for reading: " + path);
         FileChannel roChannel = raFile.getChannel();
         if (roChannel.size() > Integer.MAX_VALUE) {
-            throw new IOException("File too large: " + file.getAbsolutePath());
+            throw new IOException("File too large: " + path);
         }
         mBuffer = roChannel.map(FileChannel.MapMode.READ_ONLY,
                                 0,
                                 (int) roChannel.size());
         roChannel.close();
         raFile.close();
-        validateHeader(file.getAbsolutePath());
+        validateHeader(path);
     }
 
     private void validateHeader(String filename) throws IOException {
