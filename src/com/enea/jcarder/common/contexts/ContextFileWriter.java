@@ -63,6 +63,10 @@ implements ContextWriterIfc {
     private void writeBuffer() throws IOException {
         mBuffer.flip();
         mChannel.write(mBuffer);
+        while (mBuffer.hasRemaining()) {
+            Thread.yield();
+            mChannel.write(mBuffer);
+        }
         mBuffer.clear();
     }
 

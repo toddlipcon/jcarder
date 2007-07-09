@@ -52,12 +52,10 @@ public final class EventFileWriter implements LockEventListenerIfc {
     }
 
     private void writeHeader() throws IOException {
-        ByteBuffer header = ByteBuffer.allocate(8 + 4 + 4);
-        header.putLong(EventFileReader.MAGIC_COOKIE);
-        header.putInt(EventFileReader.MAJOR_VERSION);
-        header.putInt(EventFileReader.MINOR_VERSION);
-        header.flip();
-        mFileChannel.write(header);
+        mBuffer.putLong(EventFileReader.MAGIC_COOKIE);
+        mBuffer.putInt(EventFileReader.MAJOR_VERSION);
+        mBuffer.putInt(EventFileReader.MINOR_VERSION);
+        writeBuffer();
     }
 
     public synchronized void onLockEvent(int lockId,
@@ -79,6 +77,10 @@ public final class EventFileWriter implements LockEventListenerIfc {
     private void writeBuffer() throws IOException {
         mBuffer.flip();
         mFileChannel.write(mBuffer);
+        while (mBuffer.hasRemaining()) {
+            Thread.yield();
+            mFileChannel.write(mBuffer);
+        }
         mBuffer.clear();
     }
 
