@@ -216,7 +216,7 @@ public final class Analyzer {
 
         op.addOption("-help",
                      "Print this help text");
-        op.addOption("-i <directory>",
+        op.addOption("-d <directory>",
                      "Read results to analyze from <directory> (default:"
                      + " current directory)");
         op.addOption("-includepackages",
