@@ -7,7 +7,7 @@ from os import mkdir
 from os.path import dirname, exists, join as joinpath
 from urllib2 import urlopen
 
-urlbase = "http://jcarder.rosdahl.net/3pp/"
+urlbase = "http://jcarder.org/3pp/"
 
 def get_3pps(path):
     jars = []
