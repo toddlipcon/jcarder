@@ -106,7 +106,7 @@ public final class JavaAgent {
         mLogger = new Logger(handlers, mLogLevel);
     }
 
-    private void handleProperties() {
+    private void handleProperties() throws IOException {
         handleDumpProperty();
         handleLogLevelProperty();
         handleOutputDirProperty();
@@ -129,8 +129,9 @@ public final class JavaAgent {
         }
     }
 
-    private void handleOutputDirProperty() {
-        mOutputDir = new File(System.getProperty(OUTPUTDIR_PROPERTY, "."));
+    private void handleOutputDirProperty() throws IOException {
+        final String property = System.getProperty(OUTPUTDIR_PROPERTY, ".");
+        mOutputDir = new File(property).getCanonicalFile();
         if (!mOutputDir.isDirectory()) {
             mOutputDir.mkdirs();
         }
