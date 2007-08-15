@@ -7,6 +7,6 @@
 ^dist/.*
 ^jcarder_contexts\.db$
 ^jcarder_events\.db$
-^jcarder_result_\d+\.gv$
+^jcarder_result_\d+\.dot$
 ^jcarder\.log$
 ^src/build\.properties$
