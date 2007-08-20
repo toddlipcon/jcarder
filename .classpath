@@ -6,7 +6,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="3pp/asm-all-2.2.2.jar"/>
 	<classpathentry kind="lib" path="3pp/easymock-2.2.jar"/>
-	<classpathentry kind="lib" path="3pp/jcip-annotations.jar"/>
+	<classpathentry kind="lib" path="3pp/jcip-annotations-20070710.jar"/>
 	<classpathentry kind="lib" path="3pp/junit-4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
