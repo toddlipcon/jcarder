@@ -9,6 +9,8 @@
   <property name="build" location="build/"/>
   <property name="examples" location="examples"/>
   <property name="dist"  location="dist"/>
+  <property name="asm.jar" location="${3pp}/asm-all-2.2.2.jar"/>
+  <property name="jcip.jar" location="${3pp}/jcip-annotations-20070710.jar"/>
 
   <target name="init">
     <tstamp/>
@@ -18,7 +20,7 @@
   <target name="compile" depends="init">
     <javac srcdir="${src}"
            destdir="${build}"
-           classpath="${3pp}/asm-all-2.2.2.jar:${3pp}/jcip-annotations.jar"
+           classpath="${asm.jar}:${jcip.jar}"
            debug="true"
            debuglevel="lines,vars,source"/>
     <javac srcdir="${examples}"
@@ -50,8 +52,8 @@
     <jarjar jarfile="${dist}/jcarder.jar" manifest="${src}/MANIFEST.MF">
       <fileset dir="${build}"/>
       <fileset file="${src}/build.properties"/>
-      <zipfileset src="${3pp}/jcip-annotations.jar"/>
-      <zipfileset src="${3pp}/asm-all-2.2.2.jar"/>
+      <zipfileset src="${jcip.jar}"/>
+      <zipfileset src="${asm.jar}"/>
       <rule pattern="org.objectweb.**"
             result="com.enea.jcarder.org.objectweb.@1"/>
     </jarjar>
