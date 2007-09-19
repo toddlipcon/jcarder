@@ -21,11 +21,13 @@
     <javac srcdir="${src}"
            destdir="${build}"
            classpath="${asm.jar}:${jcip.jar}"
+           target="1.5"
            debug="true"
            debuglevel="lines,vars,source"/>
     <javac srcdir="${examples}"
            destdir="${examples}"
            classpath="${examples}:${build}"
+           target="1.5"
            debug="true"
            debuglevel="lines,vars,source"/>
   </target>
