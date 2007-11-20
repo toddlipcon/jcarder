@@ -1,4 +1,4 @@
-public class View {
+public class View implements DataModel.Listener {
     private DataModel mDataModel;
     private boolean mFrozen = false;
 
@@ -24,7 +24,7 @@ public class View {
        }
     }
 
-     synchronized void modelUpdated() {
+     synchronized public void modelUpdated() {
          // ...
      }
 }
