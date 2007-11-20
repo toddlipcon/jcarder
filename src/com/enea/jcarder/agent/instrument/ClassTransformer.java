@@ -87,9 +87,10 @@ public class ClassTransformer implements ClassFileTransformer {
             && !className.startsWith("com.enea.jcarder.testclasses")) {
             return null; // Don't instrument ourself.
         }
-        if (isFromStandardLibrary(className)) {
-            mLogger.finest("Won't instrument standard library class "
-                           + className);
+        final String reason = isInstrumentable(className);
+        if (reason != null) {
+            mLogger.finest(
+                "Won't instrument class " + className + ": " + reason);
             return null;
         }
         if (!isCompatibleClassLoader(classLoader)) {
@@ -148,10 +149,30 @@ public class ClassTransformer implements ClassFileTransformer {
         }
     }
 
-    private static boolean isFromStandardLibrary(String className) {
-        return className.startsWith("java.")
-               || className.startsWith("javax.")
-               || className.startsWith("sun.");
+    /**
+     * Check whether we want to instrument a class.
+     *
+     * @param className Name of the class, including package.
+     * @return null if the class should be instrumented, otherwise a
+     * string containing the reason of why the class shouldn't be
+     * instrumented.
+     */
+    private static String isInstrumentable(String className) {
+        // AWK and Swing classes are OK.
+        if (className.startsWith("java.awt.")
+            || className.startsWith("javax.swing.")) {
+            return null;
+        }
+
+        // Other standard library classes are not.
+        if (className.startsWith("java.")
+            || className.startsWith("javax.")
+            || className.startsWith("sun.")) {
+            return "standard library class";
+        }
+
+        // All other classes should be instrumented.
+        return null;
     }
 
     private static boolean deleteDirRecursively(File dir) {
