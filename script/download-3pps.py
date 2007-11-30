@@ -19,7 +19,7 @@ def get_3pps(path):
 
 def download_file(url, dest_path):
     source_fp = urlopen(url)
-    dest_fp = open(dest_path, "w")
+    dest_fp = open(dest_path, "wb")
     while True:
         data = source_fp.read(2 ** 13)
         if not data:
