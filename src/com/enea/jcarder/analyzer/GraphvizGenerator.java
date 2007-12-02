@@ -128,11 +128,10 @@ final class GraphvizGenerator {
     }
 
     private static String escape(String s) {
-        return s.replace("<", "&lt;")
+        return s.replace("&", "&amp;")
+                .replace("<", "&lt;")
                 .replace(">", "&gt;")
-                .replace("&", "&amp;")
                 .replace("\"", "&quot;")
-                .replace("\\", "&#092;")
                 .replace("\'", "&#039;");
     }
 
