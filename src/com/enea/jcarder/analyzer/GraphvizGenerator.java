@@ -34,8 +34,8 @@ import com.enea.jcarder.common.contexts.ContextReaderIfc;
  */
 final class GraphvizGenerator {
     private static final String EDGE_LABEL_FORMAT =
-        " [label=<\n" +
-        "     <table align=\"left\" border=\"0\" cellborder=\"0\"" +
+        " [fontsize=10, label=<\n" +
+        "     <table align=\"left\" border=\"0\" cellborder=\"0\"\n" +
         "            cellspacing=\"0\" cellpadding=\"0\">\n" +
         "       <tr>\n" +
         "         <td align=\"left\">  </td>\n" +
@@ -77,7 +77,7 @@ final class GraphvizGenerator {
                            boolean includePackages) {
         StringBuffer sb = new StringBuffer();
         sb.append("digraph G {\n");
-        sb.append("  node [shape=ellipse, style=filled];\n");
+        sb.append("  node [shape=ellipse, style=filled, fontsize=12];\n");
         final HashSet<LockNode> alreadyAppendedNodes = new HashSet<LockNode>();
         for (LockEdge edge : edgesToBePrinted) {
             appendNodeIfNotAppended(reader,
