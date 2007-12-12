@@ -1,4 +1,5 @@
 <project name="JCarder" default="dist" basedir=".">
+  <property name="version" value="1.0"/>
   <property name="src" location="src"/>
   <property name="3pp" location="3pp"/>
   <property name="build" location="build/"/>
@@ -28,17 +29,17 @@
   </target>
 
   <target name="buildproperty">
-        <propertyfile comment="Build Information"
-                      file="${src}/build.properties">
-            <entry key="build.timestamp"
-                   type="date"
-                   pattern="yyyy-MM-dd HH:mm:ss"
-                   value="now"/>
-            <entry key="build.user.name" value="${user.name}"/>
-            <entry key="build.os.name" value="${os.name}"/>
-            <entry key="build.number" default="1" type="int" operation="+"/>
-            <entry key="build.version" value="pre-0.1"/>
-        </propertyfile>
+    <propertyfile comment="Build Information"
+                  file="${src}/build.properties">
+        <entry key="build.timestamp"
+               type="date"
+               pattern="yyyy-MM-dd HH:mm:ss"
+               value="now"/>
+        <entry key="build.user.name" value="${user.name}"/>
+        <entry key="build.os.name" value="${os.name}"/>
+        <entry key="build.number" default="1" type="int" operation="+"/>
+        <entry key="build.version" value="${version}"/>
+    </propertyfile>
   </target>
 
   <target name="dist" depends="compile, buildproperty">
@@ -55,6 +56,14 @@
             result="com.enea.jcarder.org.objectweb.@1"/>
     </jarjar>
     <jar destfile="${dist}/examples.jar" basedir="${examples}"/>
+    <tar destfile="${dist}/jcarder-${version}.tar.gz" compression="gzip">
+      <tarfileset dir="${dist}" includes="jcarder.jar, examples.jar"/>
+      <tarfileset dir="." includes="LICENSE.txt, README.txt"/>
+    </tar>
+    <zip destfile="${dist}/jcarder-${version}.zip">
+      <zipfileset dir="${dist}" includes="jcarder.jar, examples.jar"/>
+      <zipfileset dir="." includes="LICENSE.txt, README.txt"/>
+    </zip>
   </target>
 
   <target name="clean">
