@@ -1,8 +1,3 @@
-<!--
-   TODO Add checkstyle, junit and test coverage (for example cobertura)
-        targets. Also start using the checkstyle-plugin for eclipse.
--->
-
 <project name="JCarder" default="dist" basedir=".">
   <property name="src" location="src"/>
   <property name="3pp" location="3pp"/>
