@@ -28,6 +28,7 @@
   <target name="init">
     <tstamp/>
     <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/>
   </target>
 
   <target name="compile" depends="check3pps, init">
@@ -60,7 +61,6 @@
   </target>
 
   <target name="dist" depends="compile, buildproperty">
-    <mkdir dir="${dist}"/>
     <taskdef name="jarjar"
              classname="com.tonicsystems.jarjar.JarJarTask"
              classpath="${jarjar.jar}"/>
@@ -81,6 +81,23 @@
       <zipfileset dir="${dist}" includes="jcarder.jar, examples.jar"/>
       <zipfileset dir="." includes="LICENSE.txt, README.txt"/>
     </zip>
+  </target>
+
+  <target name="srcdist" depends="init">
+    <echo level="info" message="Building source zip: ${dist}/jcarder-src-${version}.zip"/>
+    <exec executable="hg">
+      <arg value="archive"/>
+      <arg value="-t"/>
+      <arg value="zip"/>
+      <arg value="${dist}/jcarder-src-${version}.zip"/>
+    </exec>
+    <echo level="info" message="Building source tar: ${dist}/jcarder-src-${version}.tar.gz"/>
+    <exec executable="hg">
+      <arg value="archive"/>
+      <arg value="-t"/>
+      <arg value="tgz"/>
+      <arg value="${dist}/jcarder-src-${version}.tar.gz"/>
+    </exec>
   </target>
 
   <target name="clean">
