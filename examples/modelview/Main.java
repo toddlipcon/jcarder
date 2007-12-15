@@ -1,4 +1,5 @@
 package modelview;
+
 public class Main {
     public static void main(String[] args) throws Exception {
         int timeToSleep;
