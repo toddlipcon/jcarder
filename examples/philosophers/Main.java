@@ -1,4 +1,5 @@
-public class DiningPhilosophers {
+package philosophers;
+public class Main {
     public static void main(String[] args) throws Exception {
         Chopstick stick1 = new Chopstick();
         Chopstick stick2 = new Chopstick();

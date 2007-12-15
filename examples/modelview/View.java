@@ -1,3 +1,4 @@
+package modelview;
 public class View implements DataModel.Listener {
     private DataModel mDataModel;
     private boolean mFrozen = false;

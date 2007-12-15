@@ -1,3 +1,4 @@
+package philosophers;
 public class Philosopher extends Thread {
     private Chopstick mLeftChopstick;
     private Chopstick mRightChopstick;

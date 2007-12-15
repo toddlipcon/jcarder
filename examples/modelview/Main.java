@@ -1,4 +1,5 @@
-public class DeadLock {
+package modelview;
+public class Main {
     public static void main(String[] args) throws Exception {
         int timeToSleep;
         if (args.length > 0) {
