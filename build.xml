@@ -109,7 +109,7 @@
     <delete file="jcarder_result_0.dot"/>
     <delete file="jcarder.log"/>
     <delete>
-       <fileset dir="examples" includes="*.class"/>
+      <fileset dir="examples" includes="**/*.class"/>
     </delete>
   </target>
 </project>
