@@ -6,14 +6,31 @@
   <property name="examples" location="examples"/>
   <property name="dist"  location="dist"/>
   <property name="asm.jar" location="${3pp}/asm-all-2.2.2.jar"/>
+  <property name="easymock.jar" location="${3pp}/easymock-2.2.jar"/>
+  <property name="jarjar.jar" location="${3pp}/jarjar-0.7.jar"/>
   <property name="jcip.jar" location="${3pp}/jcip-annotations-20070710.jar"/>
+  <property name="junit.jar" location="${3pp}/junit-4.1.jar"/>
+
+  <target name="check3pps">
+    <condition property="3pps_ok">
+      <and>
+        <available file="${asm.jar}"/>
+        <available file="${jarjar.jar}"/>
+        <available file="${easymock.jar}"/>
+        <available file="${jcip.jar}"/>
+        <available file="${junit.jar}"/>
+      </and>
+    </condition>
+    <fail unless="3pps_ok" 
+          message="Please run script/download-3pps.py to download external dependencies!"/>
+  </target>
 
   <target name="init">
     <tstamp/>
     <mkdir dir="${build}"/>
   </target>
 
-  <target name="compile" depends="init">
+  <target name="compile" depends="check3pps, init">
     <javac srcdir="${src}"
            destdir="${build}"
            classpath="${asm.jar}:${jcip.jar}"
@@ -46,7 +63,7 @@
     <mkdir dir="${dist}"/>
     <taskdef name="jarjar"
              classname="com.tonicsystems.jarjar.JarJarTask"
-             classpath="${3pp}/jarjar-0.7.jar"/>
+             classpath="${jarjar.jar}"/>
     <jarjar jarfile="${dist}/jcarder.jar" manifest="${src}/MANIFEST.MF">
       <fileset dir="${build}"/>
       <fileset file="${src}/build.properties"/>
