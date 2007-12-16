@@ -9,7 +9,7 @@ import java.util.List;
  * model are considered taking a long time and are therefore performed
  * in a background thread.
  */
-public class DataModel {
+public class Model {
     public interface Listener {
         /** Called when the model has been updated. */
         void modelUpdated();

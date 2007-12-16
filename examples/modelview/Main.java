@@ -9,7 +9,7 @@ public class Main {
             timeToSleep = 0;
         }
 
-        DataModel dataModel = new DataModel();
+        Model dataModel = new Model();
 
         @SuppressWarnings("unused")
         View view1 = new View(dataModel);

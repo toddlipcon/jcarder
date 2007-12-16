@@ -1,10 +1,10 @@
 package modelview;
 
-public class View implements DataModel.Listener {
-    private DataModel mDataModel;
+public class View implements Model.Listener {
+    private Model mDataModel;
     private boolean mFrozen = false;
 
-    public View(DataModel dataModel) {
+    public View(Model dataModel) {
        mDataModel = dataModel;
        System.out.println("Registering view in data model");
        dataModel.registerListener(this);
