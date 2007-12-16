@@ -57,6 +57,12 @@ public class ClassTransformer implements ClassFileTransformer {
         mAgentClassLoader = getClass().getClassLoader();
         mLogger.fine("JCarder loaded with "
                      + getClassLoaderName(mAgentClassLoader) + ".");
+        if (mAgentClassLoader == null) {
+            mLogger.info("Will instrument AWT and Swing classes");
+        } else {
+            mLogger.info("Not instrumenting standard library classes "
+                         + "(AWT, Swing, etc.)");
+        }
         deleteDirRecursively(mInstrumentedClassesDir);
         deleteDirRecursively(mOriginalClassesDir);
     }
