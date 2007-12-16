@@ -64,11 +64,9 @@ final class EventListener implements EventListenerIfc {
             new Counter("Entered Monitors", mLogger, 100000);
     }
 
-    public synchronized void beforeMonitorEnter(Object monitor,
-                                                LockingContext context)
+    public void beforeMonitorEnter(Object monitor, LockingContext context)
     throws Exception {
         mLogger.finest("EventListener.beforeMonitorEnter");
-        mNumberOfEnteredMonitors.increment();
         Iterator<EnteredMonitor> iter = mEnteredMonitors.getIterator();
         while (iter.hasNext()) {
             Object previousEnteredMonitor = iter.next().getMonitorIfStillHeld();
@@ -81,8 +79,10 @@ final class EventListener implements EventListenerIfc {
         enteringNewMonitor(monitor, context);
     }
 
-    private void enteringNewMonitor(Object monitor, LockingContext context)
+    private synchronized void enteringNewMonitor(Object monitor,
+                                                 LockingContext context)
     throws Exception {
+        mNumberOfEnteredMonitors.increment();
         int newLockId = mLockIdGenerator.acquireLockId(monitor);
         int newContextId = mContextCache.acquireContextId(context);
         EnteredMonitor lastMonitor = mEnteredMonitors.getFirst();

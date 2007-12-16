@@ -93,10 +93,12 @@ public final class Logger {
      */
     public Logger(Collection<Handler> handlers, Level logLevel) {
         mLevel = logLevel;
-        if (handlers == null) {
-            mHandlers = new ArrayList<Handler>();
-        } else {
-            mHandlers = handlers;
+        mHandlers = new ArrayList<Handler>();
+        if (handlers != null) {
+            // Create a copy of the provided collection instead of sharing
+            // it, in order to make sure that mHandlers is immutable and
+            // thread safe.
+            mHandlers.addAll(handlers);
         }
     }
 

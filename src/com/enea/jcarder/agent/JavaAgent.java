@@ -73,8 +73,8 @@ public final class JavaAgent {
         ClassTransformer classTransformer =
             new ClassTransformer(mLogger, mOutputDir, mConfig);
         instrumentation.addTransformer(classTransformer);
-        mLogger.info("JCarder agent initialized\n");
         StaticEventListener.setListener(listener);
+        mLogger.info("JCarder agent initialized\n");
     }
 
     private void initLogger() {

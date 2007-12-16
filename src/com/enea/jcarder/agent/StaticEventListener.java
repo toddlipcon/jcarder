@@ -15,19 +15,25 @@
 
 package com.enea.jcarder.agent;
 
+import net.jcip.annotations.ThreadSafe;
 import com.enea.jcarder.common.LockingContext;
 
 /**
  * This class provides static methods that are supposed to be invoked directly
  * from the instrumented classes.
  */
+@ThreadSafe
 public final class StaticEventListener {
 
     private StaticEventListener() { }
     private static EventListenerIfc smListener;
 
-    public static void setListener(EventListenerIfc listener) {
+    public synchronized static void setListener(EventListenerIfc listener) {
         smListener = listener;
+    }
+
+    public synchronized static EventListenerIfc getListener() {
+        return smListener;
     }
 
     /**
@@ -50,13 +56,14 @@ public final class StaticEventListener {
                                           String lockReference,
                                           String methodWithClass) {
         try {
-            if (smListener != null) {
+            EventListenerIfc listener = getListener();
+            if (listener != null) {
                 final LockingContext lockingContext =
                     new LockingContext(Thread.currentThread(),
                                        lockReference,
                                        methodWithClass);
-                smListener.beforeMonitorEnter(monitor,
-                                              lockingContext);
+                listener.beforeMonitorEnter(monitor,
+                                            lockingContext);
             }
         } catch (Throwable t) {
             handleError(t);
@@ -64,7 +71,7 @@ public final class StaticEventListener {
     }
 
     private static void handleError(Throwable t) {
-        smListener = null;
+        setListener(null);
         t.printStackTrace();
     }
 }
