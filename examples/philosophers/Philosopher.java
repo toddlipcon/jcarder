@@ -1,8 +1,8 @@
 package philosophers;
 
 public class Philosopher extends Thread {
-    private Chopstick mLeftChopstick;
-    private Chopstick mRightChopstick;
+    private final Chopstick mLeftChopstick;
+    private final Chopstick mRightChopstick;
 
     public Philosopher(String name,
                        Chopstick leftChopstick,
