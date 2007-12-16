@@ -13,7 +13,10 @@ public class Philosopher extends Thread {
     }
 
     public void run() {
-        pickUpSticksAndEat();
+        long endTime = System.currentTimeMillis() + 2000;
+        while (endTime > System.currentTimeMillis()) {
+            pickUpSticksAndEat();
+        }
     }
 
     private void pickUpSticksAndEat() {
