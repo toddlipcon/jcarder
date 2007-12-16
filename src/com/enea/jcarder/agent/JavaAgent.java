@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 
 import com.enea.jcarder.agent.instrument.ClassTransformer;
 import com.enea.jcarder.agent.instrument.InstrumentConfig;
@@ -67,6 +68,7 @@ public final class JavaAgent {
         handleProperties();
         initLogger();
         mLogger.info("Starting " + BuildInformation.getShortInfo() + " agent");
+        logJvmInfo();
         EventListener listener = EventListener.create(mLogger, mOutputDir);
         ClassTransformer classTransformer =
             new ClassTransformer(mLogger, mOutputDir, mConfig);
@@ -104,6 +106,16 @@ public final class JavaAgent {
         handlers.add(fileHandler);
         handlers.add(consoleHandler);
         mLogger = new Logger(handlers, mLogLevel);
+    }
+
+    private void logJvmInfo() {
+        Enumeration<?> properties = System.getProperties().propertyNames();
+        while (properties.hasMoreElements()) {
+            String key = (String) properties.nextElement();
+            if (key.startsWith("java.vm.")) {
+                mLogger.config(key + ": " + System.getProperty(key));
+            }
+        }
     }
 
     private void handleProperties() throws IOException {
