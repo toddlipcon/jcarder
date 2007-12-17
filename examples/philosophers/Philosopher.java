@@ -13,7 +13,7 @@ public class Philosopher extends Thread {
     }
 
     public void run() {
-        long endTime = System.currentTimeMillis() + 2000;
+        long endTime = System.currentTimeMillis() + 100;
         while (endTime > System.currentTimeMillis()) {
             pickUpSticksAndEat();
         }
