@@ -62,7 +62,7 @@ public final class Analyzer {
     private boolean mIncludePackages = false;
     private boolean mPrintDetails = false;
     private Logger mLogger;
-    private Level mLogLevel = Logger.Level.INFO;
+    final private Level mLogLevel = Logger.Level.INFO;
     private String mInputDirectory = ".";
 
     public static void main(String[] args) {
@@ -221,10 +221,6 @@ public final class Analyzer {
                      + " current directory)");
         op.addOption("-includepackages",
                      "Include packages (not only class names) in graph");
-        op.addOption("-loglevel <level>",
-                     "Set log level to <level> (one of "
-                     + Logger.Level.getEnumeration()
-                     + ")");
         op.addOption("-outputmode <mode>",
                      "Set output mode to <mode> (one of ALL, CYCLES, MTCYCLES);"
                      + " ALL: include everything;"
@@ -246,11 +242,6 @@ public final class Analyzer {
                 mInputDirectory = options.get(option);
             } else if (option.equals("-includepackages")) {
                 mIncludePackages = true;
-            } else if (option.equals("-loglevel")) {
-                mLogLevel = Logger.Level.fromString(options.get(option));
-                if (mLogLevel == null) {
-                    handleBadOption(op, "bad log level");
-                }
             } else if (option.equals("-outputmode")) {
                 String value = options.get(option);
                 if (value.equalsIgnoreCase("all")) {
