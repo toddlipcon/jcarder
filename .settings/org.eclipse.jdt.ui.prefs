@@ -1,7 +1,7 @@
-#Sun Jun 03 18:29:38 CEST 2007
+#Sat Dec 22 10:55:59 CET 2007
 eclipse.preferences.version=1
 formatter_profile=_JCarder
-formatter_settings_version=10
+formatter_settings_version=11
 org.eclipse.jdt.ui.exception.name=e
 org.eclipse.jdt.ui.gettersetter.use.is=false
 org.eclipse.jdt.ui.javadoc=false
