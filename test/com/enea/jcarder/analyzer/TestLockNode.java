@@ -5,8 +5,9 @@
  * Copyright (C) 2007 Ulrik Svensson
  * Copyright (C) 2007 Joel Rosdahl
  *
- * This program is made available under the GNU GPL version 2. See the
- * accompanying file LICENSE.txt for details.
+ * This program is made available under the GNU GPL version 2, with a special
+ * exception for linking with JUnit. See the accompanying file LICENSE.txt for
+ * details.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or

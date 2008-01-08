@@ -1,3 +1,23 @@
+JCarder is released under the terms of the GNU General Public License,
+(GPL), which is included further below.
+
+However, as a special exception, you may combine the JCarder code with
+the test framework JUnit <http://www.junit.org>, which uses the
+GPL-incompatible Common Public License (CPL), or modified versions of
+JUnit, with unchanged license. You may copy and distribute such a
+derivative work following the terms of the GNU GPL for JCarder and the
+CPL for JUnit, provided that you include the source code of JUnit when
+and as the GNU GPL requires distribution of source code.
+
+Note that people who make modified versions of JCarder are not
+obligated to grant this special exception for their modified versions;
+it is their choice whether to do so. The GNU GPL gives permission to
+release a modified version without this exception; this exception also
+makes it possible to release a modified version that carries forward
+this exception.
+
+======================================================================
+
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 

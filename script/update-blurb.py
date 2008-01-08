@@ -16,8 +16,11 @@ blurb = [
     " * Copyright (C) 2007 Ulrik Svensson\n",
     " * Copyright (C) 2007 Joel Rosdahl\n",
     " *\n",
-    " * This program is made available under the GNU GPL version 2. See the\n",
-    " * accompanying file LICENSE.txt for details.\n",
+    " * This program is made available under the GNU GPL version 2, with a",
+    " special\n",
+    " * exception for linking with JUnit. See the accompanying file"
+    " LICENSE.txt for\n",
+    " * details.\n",
     " *\n",
     " * This program is distributed in the hope that it will be useful, but"
     " WITHOUT\n",
