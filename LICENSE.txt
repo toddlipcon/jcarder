@@ -1,3 +1,9 @@
+JCarder License
+
+Copyright (C) 2006-2007 Enea AB
+Copyright (C) 2007 Ulrik Svensson
+Copyright (C) 2007 Joel Rosdahl
+
 JCarder is released under the terms of the GNU General Public License,
 (GPL), which is included further below.
 
