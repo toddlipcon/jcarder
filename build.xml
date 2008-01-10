@@ -1,5 +1,5 @@
 <project name="JCarder" default="dist" basedir=".">
-  <property name="version" value="1.0"/>
+  <property name="version" value="1.0.1"/>
   <property name="src" location="src"/>
   <property name="3pp" location="3pp"/>
   <property name="build" location="build/"/>
