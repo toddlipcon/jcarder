@@ -1,0 +1,13 @@
+JCARDER VERSION HISTORY
+=========================
+
+  1.0.1 (2008-01-10)
+     
+       * Make an exception to the GPL for linking with JUnit.
+       * Include missing licenses for bundled software.
+       
+
+  1.0 (2007-12-19)
+   
+       * First public release.
+    
