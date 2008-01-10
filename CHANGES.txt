@@ -1,5 +1,5 @@
 JCARDER VERSION HISTORY
-=========================
+=======================
 
   1.0.1 (2008-01-10)
      
@@ -10,4 +10,3 @@ JCARDER VERSION HISTORY
   1.0 (2007-12-19)
    
        * First public release.
-    
