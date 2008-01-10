@@ -75,11 +75,11 @@
     <jar destfile="${dist}/examples.jar" basedir="${examples}"/>
     <tar destfile="${dist}/jcarder-${version}.tar.gz" compression="gzip">
       <tarfileset dir="${dist}" includes="jcarder.jar, examples.jar"/>
-      <tarfileset dir="." includes="LICENSE.txt, README.txt"/>
+      <tarfileset dir="." includes="LICENSE.txt, README.txt, CHANGES.txt"/>
     </tar>
     <zip destfile="${dist}/jcarder-${version}.zip">
       <zipfileset dir="${dist}" includes="jcarder.jar, examples.jar"/>
-      <zipfileset dir="." includes="LICENSE.txt, README.txt"/>
+      <zipfileset dir="." includes="LICENSE.txt, README.txt, CHANGES.txt"/>
     </zip>
   </target>
 
