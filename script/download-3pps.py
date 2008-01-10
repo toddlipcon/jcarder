@@ -17,6 +17,13 @@ def get_3pps(path):
             jars.append(m.group(1))
     return jars
 
+def get_url(jar):
+    m = re.search('(.*)\-(.+)\.jar', jar)
+    if m:
+        return urlbase + m.group(1) + "/" + m.group(2) + "/" + jar
+    else:
+        return urlbase + jar
+
 def download_file(url, dest_path):
     source_fp = urlopen(url)
     dest_fp = open(dest_path, "wb")
@@ -35,7 +42,7 @@ def main(argv):
     for jar in get_3pps(classpath_file):
         jar_path = joinpath(dest_dir, jar)
         if not exists(jar_path):
-            url = urlbase + jar
+            url = get_url(jar)
             print "Downloading %s" % url
             download_file(url, jar_path)
 
