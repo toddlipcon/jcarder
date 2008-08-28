@@ -85,5 +85,6 @@ public class TestAppendableHandler {
         replay(streamMock);
 
         logger.warning("foo");
+        verify(streamMock);
     }
 }
