@@ -16,11 +16,10 @@
 
 package com.enea.jcarder.util.logging;
 
-import static org.easymock.EasyMock.createStrictMock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,100 +35,86 @@ public class TestLogger {
 
     @Test
     public void testSevere() {
-        Handler mockHandler = createStrictMock(Handler.class);
+        Handler mockHandler = mock(Handler.class);
         Collection<Handler> handlers = new ArrayList<Handler>();
         handlers.add(mockHandler);
         Logger logger = new Logger(handlers);
 
-        mockHandler.publish(Logger.Level.SEVERE, "foo");
-        replay(mockHandler);
-
         logger.severe("foo");
-        verify(mockHandler);
+
+        verify(mockHandler).publish(Logger.Level.SEVERE, "foo");
     }
 
     @Test
     public void testWarning() {
-        Handler mockHandler = createStrictMock(Handler.class);
+        Handler mockHandler = mock(Handler.class);
         Collection<Handler> handlers = new ArrayList<Handler>();
         handlers.add(mockHandler);
         Logger logger = new Logger(handlers);
 
-        mockHandler.publish(Logger.Level.WARNING, "foo");
-        replay(mockHandler);
-
         logger.warning("foo");
-        verify(mockHandler);
+
+        verify(mockHandler).publish(Logger.Level.WARNING, "foo");
     }
 
     @Test
     public void testInfo() {
-        Handler mockHandler = createStrictMock(Handler.class);
+        Handler mockHandler = mock(Handler.class);
         Collection<Handler> handlers = new ArrayList<Handler>();
         handlers.add(mockHandler);
         Logger logger = new Logger(handlers);
 
-        mockHandler.publish(Logger.Level.INFO, "foo");
-        replay(mockHandler);
-
         logger.info("foo");
-        verify(mockHandler);
+
+        verify(mockHandler).publish(Logger.Level.INFO, "foo");
     }
 
     @Test
     public void testConfig() {
-        Handler mockHandler = createStrictMock(Handler.class);
+        Handler mockHandler = mock(Handler.class);
         Collection<Handler> handlers = new ArrayList<Handler>();
         handlers.add(mockHandler);
         Logger logger = new Logger(handlers);
 
-        mockHandler.publish(Logger.Level.CONFIG, "foo");
-        replay(mockHandler);
-
         logger.config("foo");
-        verify(mockHandler);
+
+        verify(mockHandler).publish(Logger.Level.CONFIG, "foo");
     }
 
     @Test
     public void testFine() {
-        Handler mockHandler = createStrictMock(Handler.class);
+        Handler mockHandler = mock(Handler.class);
         Collection<Handler> handlers = new ArrayList<Handler>();
         handlers.add(mockHandler);
         Logger logger = new Logger(handlers);
 
-        mockHandler.publish(Logger.Level.FINE, "foo");
-        replay(mockHandler);
-
         logger.fine("foo");
-        verify(mockHandler);
+
+        verify(mockHandler).publish(Logger.Level.FINE, "foo");
     }
 
     @Test
     public void testFiner() {
-        Handler mockHandler = createStrictMock(Handler.class);
+        Handler mockHandler = mock(Handler.class);
         Collection<Handler> handlers = new ArrayList<Handler>();
         handlers.add(mockHandler);
         Logger logger = new Logger(handlers);
 
-        mockHandler.publish(Logger.Level.FINER, "foo");
-        replay(mockHandler);
-
         logger.finer("foo");
-        verify(mockHandler);
+
+        verify(mockHandler).publish(Logger.Level.FINER, "foo");
     }
 
     @Test
     public void testFinest() {
-        Handler mockHandler = createStrictMock(Handler.class);
+        Handler mockHandler = mock(Handler.class);
         Collection<Handler> handlers = new ArrayList<Handler>();
         handlers.add(mockHandler);
         Logger logger = new Logger(handlers);
 
-        mockHandler.publish(Logger.Level.FINEST, "foo");
-        replay(mockHandler);
-
         logger.finest("foo");
-        verify(mockHandler);
+
+        verify(mockHandler).publish(Logger.Level.FINEST, "foo");
     }
 
     @Test

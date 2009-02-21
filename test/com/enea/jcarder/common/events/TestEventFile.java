@@ -16,18 +16,17 @@
 
 package com.enea.jcarder.common.events;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.io.File;
 import java.io.IOException;
+
 import org.junit.Test;
 
-import com.enea.jcarder.common.events.EventFileReader;
-import com.enea.jcarder.common.events.EventFileWriter;
-import com.enea.jcarder.common.events.LockEventListenerIfc;
 import com.enea.jcarder.util.logging.Logger;
 
-import static org.easymock.EasyMock.createStrictMock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 public final class TestEventFile {
 
     @Test
@@ -49,18 +48,17 @@ public final class TestEventFile {
                                threadId);
         }
         writer.close();
-        LockEventListenerIfc listenerMock =
-            createStrictMock(LockEventListenerIfc.class);
-        for (int i = 0; i < nrOfLogEvents; i++) {
-            listenerMock.onLockEvent(lockId,
-                                     lockingContextId,
-                                     lastTakenLockId,
-                                     lastTakenLockingContextId,
-                                     threadId);
-        }
-        replay(listenerMock);
+
+        LockEventListenerIfc listenerMock = mock(LockEventListenerIfc.class);
         new EventFileReader(new Logger(null)).parseFile(file, listenerMock);
-        verify(listenerMock);
+
+        verify(listenerMock, times(nrOfLogEvents))
+            .onLockEvent(lockId,
+                         lockingContextId,
+                         lastTakenLockId,
+                         lastTakenLockingContextId,
+                         threadId);
+
         file.delete();
     }
 }

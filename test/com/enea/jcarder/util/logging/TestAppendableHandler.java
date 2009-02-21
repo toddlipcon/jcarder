@@ -16,10 +16,9 @@
 
 package com.enea.jcarder.util.logging;
 
-import static org.easymock.EasyMock.createStrictMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,36 +36,33 @@ public class TestAppendableHandler {
 
     @Test
     public void testSimplePublish() throws IOException {
-        Appendable streamMock = createStrictMock(Appendable.class);
+        Appendable streamMock = mock(Appendable.class);
         Collection<Handler> handlers = new ArrayList<Handler>();
         handlers.add(new AppendableHandler(streamMock));
         Logger logger = new Logger(handlers);
 
-        expect(streamMock.append("SEVERE: foo\n")).andReturn(streamMock);
-        replay(streamMock);
-
         logger.severe("foo");
-        verify(streamMock);
+
+        verify(streamMock).append("SEVERE: foo\n");
     }
 
     @Test
     public void testLogLevel() throws IOException {
-        Appendable streamMock = createStrictMock(Appendable.class);
+        Appendable streamMock = mock(Appendable.class);
         Collection<Handler> handlers = new ArrayList<Handler>();
         handlers.add(new AppendableHandler(streamMock, Logger.Level.SEVERE));
         Logger logger = new Logger(handlers);
 
-        expect(streamMock.append("SEVERE: foo\n")).andReturn(streamMock);
-        replay(streamMock);
-
         logger.severe("foo");
         logger.warning("bar");
-        verify(streamMock);
+
+        verify(streamMock).append("SEVERE: foo\n");
+        verifyNoMoreInteractions(streamMock);
     }
 
     @Test
     public void testMessageFormat() throws IOException {
-        Appendable streamMock = createStrictMock(Appendable.class);
+        Appendable streamMock = mock(Appendable.class);
         Collection<Handler> handlers = new ArrayList<Handler>();
         AppendableHandler handler1 =
             new AppendableHandler(streamMock,
@@ -80,11 +76,9 @@ public class TestAppendableHandler {
         handlers.add(handler2);
         Logger logger = new Logger(handlers);
 
-        expect(streamMock.append("[WARNING] --> {foo}.")).andReturn(streamMock);
-        expect(streamMock.append("foo {message")).andReturn(streamMock);
-        replay(streamMock);
-
         logger.warning("foo");
-        verify(streamMock);
+
+        verify(streamMock).append("[WARNING] --> {foo}.");
+        verify(streamMock).append("foo {message");
     }
 }
