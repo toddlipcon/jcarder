@@ -18,7 +18,7 @@ def get_3pps(path):
     return jars
 
 def get_url(jar):
-    m = re.search('(.*)\-(.+)\.jar', jar)
+    m = re.search(r"(.*)-(.+)\.jar", jar)
     if m:
         return urlbase + m.group(1) + "/" + m.group(2) + "/" + jar
     else:
