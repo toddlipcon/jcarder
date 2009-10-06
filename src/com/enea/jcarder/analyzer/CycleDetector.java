@@ -118,7 +118,9 @@ class CycleDetector {
                     edgesOnStack.subList(index, edgesOnStack.size());
                 mNoOfCreatedCycleObjects.increment();
                 mMaxCycleDepth.set(edgesInCycle.size());
-                mCycles.add(new Cycle(edgesInCycle));
+                Cycle newCycle = new Cycle(edgesInCycle); 
+                System.err.println("Found cycle: " + newCycle);
+                mCycles.add(newCycle);
                 mNoOfCycles.set(mCycles.size());
                 /*
                  * Keeping the first edge from the cycle in the visitedEdges
