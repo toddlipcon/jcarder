@@ -143,7 +143,8 @@ public final class JavaAgent {
     }
 
     private void handleOutputDirProperty() throws IOException {
-        final String property = System.getProperty(OUTPUTDIR_PROPERTY, ".");
+        String property = System.getProperty(OUTPUTDIR_PROPERTY, ".");
+        property = property.replace("@TIME@", String.valueOf(System.currentTimeMillis()));
         mOutputDir = new File(property).getCanonicalFile();
         if (!mOutputDir.isDirectory()) {
             mOutputDir.mkdirs();
