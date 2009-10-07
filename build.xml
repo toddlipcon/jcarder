@@ -6,7 +6,7 @@
   <property name="examples" location="examples"/>
   <property name="dist"  location="dist"/>
   <property name="asm.jar" location="${3pp}/asm-all-2.2.2.jar"/>
-  <property name="easymock.jar" location="${3pp}/easymock-2.2.jar"/>
+  <property name="mockito.jar" location="${3pp}/mockito-all-1.7.jar"/>
   <property name="jarjar.jar" location="${3pp}/jarjar-0.7.jar"/>
   <property name="jcip.jar" location="${3pp}/jcip-annotations-20070710.jar"/>
   <property name="junit.jar" location="${3pp}/junit-4.1.jar"/>
@@ -16,7 +16,7 @@
       <and>
         <available file="${asm.jar}"/>
         <available file="${jarjar.jar}"/>
-        <available file="${easymock.jar}"/>
+        <available file="${mockito.jar}"/>
         <available file="${jcip.jar}"/>
         <available file="${junit.jar}"/>
       </and>
