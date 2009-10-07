@@ -108,6 +108,7 @@ public final class Analyzer {
             if (mOutputMode == OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES) {
                 cycleDetector.removeSingleThreadedCycles();
             }
+            cycleDetector.removeGatedCycles();
             if (cycleDetector.getCycles().isEmpty()) {
                 System.out.println("No cycles found!");
                 return;

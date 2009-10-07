@@ -17,6 +17,9 @@
 package com.enea.jcarder.analyzer;
 
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Collection;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -36,17 +39,21 @@ class LockEdge {
     private int mTargetContextId;
     private long mNumberOfDuplicates;
 
+    private Set<Integer> mGateLockIds;
+
     LockEdge(LockNode source,
              LockNode target,
              long threadId,
              int sourceLockingContextId,
-             int targetLockingContextId) {
+             int targetLockingContextId,
+             Collection<Integer> gateLockIds) {
         mSource = source;
         mTarget = target;
         mThreadId = threadId;
         mSourceContextId = sourceLockingContextId;
         mTargetContextId = targetLockingContextId;
         mNumberOfDuplicates = 0;
+        mGateLockIds = new HashSet<Integer>(gateLockIds);
     }
 
     void merge(LockEdge other) {
@@ -138,6 +145,10 @@ class LockEdge {
 
     long getThreadId() {
         return mThreadId;
+    }
+
+    Set<Integer> getGateLockIds() {
+        return mGateLockIds;
     }
 
     public String toString() {

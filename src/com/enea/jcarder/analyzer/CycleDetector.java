@@ -198,6 +198,22 @@ class CycleDetector {
                      + " single threaded cycle(s).");
     }
 
+
+    void removeGatedCycles() {
+        int removedCycles = 0;
+        Iterator<Cycle> iter = mCycles.iterator();
+        while (iter.hasNext()) {
+            final Cycle cycle = iter.next();
+            if (cycle.isGated()) {
+                iter.remove();
+                removedCycles++;
+            }
+        }
+        mLogger.info("Ignoring "
+                     + removedCycles
+                     + " gated cycle(s).");
+    }
+
     /**
      * Get the total number of edges in all known cycles.
      */

@@ -18,6 +18,7 @@ package com.enea.jcarder.analyzer;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -80,6 +81,22 @@ class Cycle {
             }
         }
         return true;
+    }
+
+    boolean isGated() {
+        final Iterator<LockEdge> iter = mEdgesInCycle.iterator();
+        Set<Integer> seenGates = new HashSet<Integer>();
+
+        while (iter.hasNext()) {
+            LockEdge edge = iter.next();
+            for (int gateLockId : edge.getGateLockIds()) {
+                boolean wasNewGate = seenGates.add(gateLockId);
+                if (! wasNewGate) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     boolean alike(Cycle other, ContextReaderIfc reader) {

@@ -79,7 +79,8 @@ class LockGraphBuilder implements LockEventListenerIfc {
                                                    targetLock,
                                                    threadId,
                                                    sourceLwc.contextId,
-                                                   lockingContextId);
+                                                   lockingContextId,
+                                                   heldLocks.keySet());
                 sourceLock.addOutgoingEdge(edge);
             }
             // And add this one to the set
