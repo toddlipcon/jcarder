@@ -1,0 +1,4 @@
+src/build.properties
+*.class
+3pp
+dist
