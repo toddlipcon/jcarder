@@ -20,9 +20,8 @@ import java.io.IOException;
 
 public interface LockEventListenerIfc {
 
-    void onLockEvent(int lockId,
-                     int lockingContextId,
-                     int lastTakenLockId,
-                     int lastTakenLockingContextId,
-                     long threadId)throws IOException;
+  void onLockEvent(boolean isLock,
+                   int lockId,
+                   int lockingContextId,
+                   long threadId)throws IOException;
 }

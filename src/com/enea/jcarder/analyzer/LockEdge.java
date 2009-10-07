@@ -141,6 +141,6 @@ class LockEdge {
     }
 
     public String toString() {
-        return "  " + mSource + "->" + mTarget;
+        return "  " + mSource + "->" + mTarget + "(t " + mThreadId + ")";
     }
 }

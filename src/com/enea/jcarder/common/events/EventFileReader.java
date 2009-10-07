@@ -28,9 +28,9 @@ public final class EventFileReader {
     private static final int INT_LENGTH = 4;
     private static final int LONG_LENGTH = 8;
     private final Logger mLogger;
-    static final int EVENT_LENGTH = (INT_LENGTH * 4) + LONG_LENGTH;
+    static final int EVENT_LENGTH = 1 + (INT_LENGTH * 2) + LONG_LENGTH;
     static final long MAGIC_COOKIE = 2153191828159737167L;
-    static final int MAJOR_VERSION = 1;
+    static final int MAJOR_VERSION = 2;
     static final int MINOR_VERSION = 0;
 
     public EventFileReader(Logger logger) {
@@ -77,15 +77,13 @@ public final class EventFileReader {
     private static void parseLockEvent(ByteBuffer lockEventBuffer,
                                        LockEventListenerIfc eventReceiver)
     throws IOException {
+        final boolean isLock = (lockEventBuffer.get() == 1);
         final int lockId                    = lockEventBuffer.getInt();
         final int lockingContextId          = lockEventBuffer.getInt();
-        final int lastTakenLockId           = lockEventBuffer.getInt();
-        final int lastTakenLockingContextId = lockEventBuffer.getInt();
         final long threadId                 = lockEventBuffer.getLong();
-        eventReceiver.onLockEvent(lockId,
+        eventReceiver.onLockEvent(isLock,
+                                  lockId,
                                   lockingContextId,
-                                  lastTakenLockId,
-                                  lastTakenLockingContextId,
                                   threadId);
     }
 }

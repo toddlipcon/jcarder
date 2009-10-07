@@ -71,6 +71,26 @@ public final class StaticEventListener {
         }
     }
 
+    public static void beforeMonitorExit(Object monitor,
+                                         String lockReference,
+                                         String methodWithClass) {
+        try {
+            EventListenerIfc listener = getListener();
+            if (listener != null) {
+                final LockingContext lockingContext =
+                    new LockingContext(Thread.currentThread(),
+                                       lockReference,
+                                       methodWithClass);
+                listener.beforeMonitorExit(monitor,
+                                           lockingContext);
+            }
+        } catch (Throwable t) {
+            handleError(t);
+        }
+    }
+
+
+
     private static void handleError(Throwable t) {
         setListener(null);
         t.printStackTrace();

@@ -34,7 +34,7 @@ import com.enea.jcarder.common.contexts.ContextReaderIfc;
  * TODO Optionaly merge edges that are identical except for the threads?
  */
 final class GraphvizGenerator {
-    private static final String EDGE_LABEL_FORMAT =
+    private static final String HTML_EDGE_LABEL_FORMAT =
         " [fontsize=10, label=<\n" +
         "     <table align=\"left\" border=\"0\" cellborder=\"0\"\n" +
         "            cellspacing=\"0\" cellpadding=\"0\">\n" +
@@ -72,6 +72,15 @@ final class GraphvizGenerator {
         "       </tr>\n" +
         "     </table>\n" +
         "    >]";
+
+    private static final String EDGE_LABEL_FORMAT =
+        " [fontsize=10, label=<\n" +
+        "Thread: %1$s<br/>\n" +
+        "holding: %2$s<br/>\n" +
+        "in: %3$s<br />\n" +
+        "taking: %4$s<br />\n" +
+        "in: %5$s<br />\n" +
+        ">]";
 
     public String generate(Iterable<LockEdge> edgesToBePrinted,
                            ContextReaderIfc reader,

@@ -119,7 +119,7 @@ class CycleDetector {
                 mNoOfCreatedCycleObjects.increment();
                 mMaxCycleDepth.set(edgesInCycle.size());
                 Cycle newCycle = new Cycle(edgesInCycle); 
-                System.err.println("Found cycle: " + newCycle);
+                // System.err.println("Found cycle: " + newCycle);
                 mCycles.add(newCycle);
                 mNoOfCycles.set(mCycles.size());
                 /*

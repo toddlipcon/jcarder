@@ -59,15 +59,13 @@ public final class EventFileWriter implements LockEventListenerIfc {
         writeBuffer();
     }
 
-    public synchronized void onLockEvent(int lockId,
+    public synchronized void onLockEvent(boolean isLock,
+                                         int lockId,
                                          int lockingContextId,
-                                         int lastTakenLockId,
-                                         int lastTakenLockingContextId,
                                          long threadId) throws IOException {
+        mBuffer.put((byte)(isLock ? 1 : 0));
         mBuffer.putInt(lockId);
         mBuffer.putInt(lockingContextId);
-        mBuffer.putInt(lastTakenLockId);
-        mBuffer.putInt(lastTakenLockingContextId);
         mBuffer.putLong(threadId);
         mWrittenLockEvents.increment();
         if (mBuffer.remaining() < EVENT_LENGTH || mShutdownHookExecuted) {

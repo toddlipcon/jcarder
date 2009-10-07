@@ -22,5 +22,7 @@ public interface EventListenerIfc {
 
     void beforeMonitorEnter(Object monitor,
                             LockingContext context) throws Exception;
+    void beforeMonitorExit(Object monitor,
+                           LockingContext context) throws Exception;
 
 }

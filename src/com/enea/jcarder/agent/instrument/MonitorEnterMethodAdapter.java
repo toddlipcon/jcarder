@@ -50,7 +50,16 @@ class MonitorEnterMethodAdapter extends MethodAdapter {
                                CALLBACK_CLASS_NAME,
                                "beforeMonitorEnter",
                    "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V");
+        } else if (inst == Opcodes.MONITOREXIT) {
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitLdcInsn(convertFromJvmInternalNames(mStack.peek()));
+            mv.visitLdcInsn(mClassAndMethodName);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC,
+                               CALLBACK_CLASS_NAME,
+                               "beforeMonitorExit",
+                   "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V");
         }
+
         super.visitInsn(inst);
     }
 

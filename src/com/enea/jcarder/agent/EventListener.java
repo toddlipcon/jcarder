@@ -35,7 +35,6 @@ import com.enea.jcarder.util.logging.Logger;
 
 @ThreadSafe
 final class EventListener implements EventListenerIfc {
-    private final ThreadLocalEnteredMonitors mEnteredMonitors;
     private final LockEventListenerIfc mLockEventListener;
     private final LockIdGenerator mLockIdGenerator;
     private final LockingContextIdCache mContextCache;
@@ -57,7 +56,6 @@ final class EventListener implements EventListenerIfc {
                          LockEventListenerIfc lockEventListener,
                          ContextWriterIfc contextWriter) {
         mLogger = logger;
-        mEnteredMonitors = new ThreadLocalEnteredMonitors();
         mLockEventListener = lockEventListener;
         mLockIdGenerator = new LockIdGenerator(mLogger, contextWriter);
         mContextCache = new LockingContextIdCache(mLogger, contextWriter);
@@ -66,37 +64,30 @@ final class EventListener implements EventListenerIfc {
     }
 
     public void beforeMonitorEnter(Object monitor, LockingContext context)
-    throws Exception {
+        throws Exception {
         mLogger.finest("EventListener.beforeMonitorEnter");
-        Iterator<EnteredMonitor> iter = mEnteredMonitors.getIterator();
-        while (iter.hasNext()) {
-            Object previousEnteredMonitor = iter.next().getMonitorIfStillHeld();
-            if (previousEnteredMonitor == null) {
-                iter.remove();
-            } else if (previousEnteredMonitor == monitor) {
-                return; // Monitor already entered.
-            }
-        }
-        enteringNewMonitor(monitor, context);
+        mNumberOfEnteredMonitors.increment();
+        lockEvent(true, monitor, context);
     }
 
-    private synchronized void enteringNewMonitor(Object monitor,
-                                                 LockingContext context)
+    public void beforeMonitorExit(Object monitor, LockingContext context)
     throws Exception {
-        mNumberOfEnteredMonitors.increment();
+        mLogger.finest("EventListener.beforeMonitorEnter");
+        lockEvent(false, monitor, context);
+    }
+
+    private synchronized void lockEvent(boolean isLock,
+                                        Object monitor,
+                                        LockingContext context)
+        throws Exception {
         int newLockId = mLockIdGenerator.acquireLockId(monitor);
         int newContextId = mContextCache.acquireContextId(context);
-        EnteredMonitor lastMonitor = mEnteredMonitors.getFirst();
-        if (lastMonitor != null) {
-            Thread performingThread = Thread.currentThread();
-            mLockEventListener.onLockEvent(newLockId,
-                                           newContextId,
-                                           lastMonitor.getLockId(),
-                                           lastMonitor.getLockingContextId(),
-                                           performingThread.getId());
-        }
-        mEnteredMonitors.addFirst(new EnteredMonitor(monitor,
-                                                     newLockId,
-                                                     newContextId));
+        Thread performingThread = Thread.currentThread();
+        mLockEventListener.onLockEvent(isLock,
+                                       newLockId,
+                                       newContextId,
+                                       performingThread.getId());
     }
+
+
 }
