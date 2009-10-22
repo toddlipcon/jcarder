@@ -95,8 +95,14 @@ class LockEdge {
     }
 
     public int hashCode() {
-        // TODO Improve hashCode algorithm to improve performance?
-        return mTarget.getLockId() + mSource.getLockId();
+        final int prime = 31;
+        int result = 1;
+        result = prime + mSource.getLockId();
+        result = prime * result + mSourceContextId;
+        result = prime * result + mTarget.getLockId();
+        result = prime * result + mTargetContextId;
+        result = prime * result + (int) (mThreadId ^ (mThreadId >>> 32));
+        return result;
     }
 
     LockNode getTarget() {
