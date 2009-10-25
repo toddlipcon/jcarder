@@ -118,10 +118,13 @@ final class EventListener implements EventListenerIfc {
         if (monitor != null) {
             final Class cl = monitor.getClass();
  
-            //Try to use cache
-            Object firstOccurrence = monitorInfoCache.get(cl); 
-            if (firstOccurrence == null) {
-                firstOccurrence = checkFilters(monitor, cl);
+            Object firstOccurrence;
+            synchronized(this) {
+                //Try to use cache
+                firstOccurrence = monitorInfoCache.get(cl); 
+                if (firstOccurrence == null) {
+                    firstOccurrence = checkFilters(monitor, cl);
+                }
             }
  
             //firstOccurence may have three states at this point:
