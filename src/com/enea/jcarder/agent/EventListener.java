@@ -46,15 +46,15 @@ final class EventListener implements EventListenerIfc {
     private final LockingContextIdCache mContextCache;
     private final Logger mLogger;
     private final Counter mNumberOfEnteredMonitors;
- 
+
     private final Map<Class, Object> monitorInfoCache = new HashMap<Class, Object>();
 
     private final List<String> filterClassLevel = getFilterList("jcarder.classLevel", false);
     private final List<String> filterInclude = getFilterList("jcarder.include", true);
- 
+
     private final static Object sentinelInstanceLevel = new Object();
     private final static Object sentinelIgnore = new Object();
- 
+
     public static EventListener create(Logger logger, File outputdir)
     throws IOException {
         EventFileWriter eventWriter =
@@ -68,7 +68,7 @@ final class EventListener implements EventListenerIfc {
 
     private List<String> getFilterList(String key, boolean defaultAcceptAll) {
         final List<String> ret = new ArrayList<String>();
- 
+
         final StringTokenizer tok = new StringTokenizer(System.getProperty(key, defaultAcceptAll ? " " : ""), ",");
         while (tok.hasMoreTokens()) {
             ret.add(tok.nextToken().trim());
@@ -91,11 +91,11 @@ final class EventListener implements EventListenerIfc {
     public void beforeMonitorEnter(Object monitor, LockingContext context)
     throws Exception {
         mLogger.finest("EventListener.beforeMonitorEnter");
- 
+
         //check ignoreFilter and switch to class level if the monitor
         //is matched by classLevelFilter results are cached
         Object classifiedMonitor = checkMonitor(monitor);
- 
+
         if (classifiedMonitor != sentinelIgnore) {
             Iterator<EnteredMonitor> iter = mEnteredMonitors.getIterator();
             while (iter.hasNext()) {
@@ -114,26 +114,26 @@ final class EventListener implements EventListenerIfc {
         //the default behaviour is to treat monitor objects on instance level
         //this was the old behaviour
         Object classifiedMonitor = monitor;
- 
+
         if (monitor != null) {
             final Class cl = monitor.getClass();
- 
+
             Object firstOccurrence;
             synchronized(this) {
                 //Try to use cache
-                firstOccurrence = monitorInfoCache.get(cl); 
+                firstOccurrence = monitorInfoCache.get(cl);
                 if (firstOccurrence == null) {
                     firstOccurrence = checkFilters(monitor, cl);
                 }
             }
- 
+
             //firstOccurence may have three states at this point:
-            //1. sentinelInstanceLevel: (default) the monitor should be 
+            //1. sentinelInstanceLevel: (default) the monitor should be
             //   handled for each instance
             //2. sentinelIgnore: the monitor is not of interesst
-            //3. any other instance: is the first representation of a 
+            //3. any other instance: is the first representation of a
             //   monitor of its class. class level handling
- 
+
             if (firstOccurrence != sentinelInstanceLevel) {
                 //By using only one single instance for monitors of a certain
                 //class we simulate group level handling.
@@ -146,7 +146,7 @@ final class EventListener implements EventListenerIfc {
     private Object checkFilters(Object monitor, final Class cl) {
         Object firstOccurrence;
         final String clName = cl.getName();
- 
+
         //check if include filter matches
         if (checkIncludeFilter(clName)) {
             //check if class level filter matches
