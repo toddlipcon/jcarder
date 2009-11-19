@@ -260,7 +260,7 @@ public final class TestDeadLockInstrumentation implements EventListenerIfc {
     }
 
 
-    public void beforeMonitorExit(Object monitor, boolean foo) {
+    public void beforeMonitorExit(Object monitor, LockingContext context) {
         // TODO Auto-generated method stub
     }
 

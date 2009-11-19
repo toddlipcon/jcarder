@@ -41,10 +41,9 @@ public final class TestEventFile {
         final long threadId = 3121258129311216611L;
         final int nrOfLogEvents = 3;
         for (int i = 0; i < nrOfLogEvents; i++) {
-            writer.onLockEvent(lockId,
+            writer.onLockEvent(true,
+                               lockId,
                                lockingContextId,
-                               lastTakenLockId,
-                               lastTakenLockingContextId,
                                threadId);
         }
         writer.close();
@@ -53,10 +52,9 @@ public final class TestEventFile {
         new EventFileReader(new Logger(null)).parseFile(file, listenerMock);
 
         verify(listenerMock, times(nrOfLogEvents))
-            .onLockEvent(lockId,
+            .onLockEvent(true,
+                         lockId,
                          lockingContextId,
-                         lastTakenLockId,
-                         lastTakenLockingContextId,
                          threadId);
 
         file.delete();

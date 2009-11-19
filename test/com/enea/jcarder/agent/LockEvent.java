@@ -20,19 +20,18 @@ import com.enea.jcarder.common.Lock;
 import com.enea.jcarder.common.LockingContext;
 
 public final class LockEvent {
+    /** true for lock, false for unlock */
+    private final boolean mIsLock;
+
     private final Lock mLock;
     private final LockingContext mLockingContext;
-    private final Lock mLastTakenLock;
-    private final LockingContext mLastLockingContext;
 
-    public LockEvent(final Lock lock,
-                     final LockingContext lockingContext,
-                     final Lock lastTakenLock,
-                     final LockingContext lastTakenLockingContext) {
+    public LockEvent(final boolean isLock,
+                     final Lock lock,
+                     final LockingContext lockingContext) {
+        mIsLock = isLock;
         mLock = lock;
         mLockingContext = lockingContext;
-        mLastTakenLock = lastTakenLock;
-        mLastLockingContext = lastTakenLockingContext;
     }
 
     public int hashCode() {
@@ -50,16 +49,10 @@ public final class LockEvent {
         if (getClass() != obj.getClass())
             return false;
         final LockEvent other = (LockEvent) obj;
-        if (this.mLastTakenLock == null) {
-            if (other.mLastTakenLock != null)
-                return false;
-        } else if (!this.mLastTakenLock.equals(other.mLastTakenLock))
+
+        if (this.mIsLock != other.mIsLock)
             return false;
-        if (this.mLastLockingContext == null) {
-            if (other.mLastLockingContext != null)
-                return false;
-        } else if (!this.mLastLockingContext.equals(other.mLastLockingContext))
-            return false;
+
         if (this.mLock == null) {
             if (other.mLock != null)
                 return false;
@@ -74,7 +67,7 @@ public final class LockEvent {
     }
 
     public String toString() {
-        return ("Locking:" + mLock.toString()
-                + " LastLocked:" + mLastTakenLock.toString());
+        return (mIsLock ? "Locking:" : "Unlocking:") +
+            mLock.toString() + " in ctx:" + mLockingContext;
     }
 }

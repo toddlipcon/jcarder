@@ -34,6 +34,19 @@
     <mkdir dir="${dist}"/>
   </target>
 
+  <path id="run.classpath">
+    <pathelement location="${jcip.jar}" />
+    <pathelement location="${asm.jar}" />
+  </path>
+
+  <path id="test.classpath">
+    <path refid="run.classpath" />
+    <pathelement location="${junit.jar}" />
+    <pathelement location="${mockito.jar}" />
+    <pathelement location="${build}" />
+    <pathelement location="${build.test}" />
+  </path>
+
   <target name="compile" depends="check3pps, init">
     <javac srcdir="${src}"
            destdir="${build}"

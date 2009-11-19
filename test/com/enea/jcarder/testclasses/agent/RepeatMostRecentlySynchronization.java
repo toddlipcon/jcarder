@@ -33,9 +33,9 @@ implements SynchronizationTestIfc {
             assertFalse(Thread.holdsLock(mSync1));
             synchronized (mSync1) {
                 assertTrue(Thread.holdsLock(mSync1));
-                // The following synchronization should be ignored.
-                // There is no point in adding an additional
-                // mSync0 -> mSync1 or a mSync1 -> mSync1 transition.
+                // The following synchronization used to be ignored, though
+                // now it actually records it since it can determine redundancy
+                // at analysis time.
                 synchronized (mSync1) {
                     assertTrue(Thread.holdsLock(mSync1));
                 }
@@ -57,7 +57,12 @@ implements SynchronizationTestIfc {
                                getClass().getName() + ".mSync1",
                                method);
         return new LockEvent[] {
-            new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0)
+            new LockEvent(true, lockSync0, contextSync0),
+            new LockEvent(true, lockSync1, contextSync1),
+            new LockEvent(true, lockSync1, contextSync1),
+            new LockEvent(false, lockSync1, contextSync1),
+            new LockEvent(false, lockSync1, contextSync1),
+            new LockEvent(false, lockSync0, contextSync0)
         };
     }
 }

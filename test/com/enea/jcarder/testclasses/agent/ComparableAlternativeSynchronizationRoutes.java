@@ -119,9 +119,14 @@ implements SynchronizationTestIfc {
                                method);
 
         return new LockEvent[] {
-            new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0),
-            new LockEvent(lockSync2, contextSync2, lockSync1, contextSync1),
-            new LockEvent(lockSync2, contextSync2, lockSync0, contextSync0),
+            new LockEvent(true, lockSync0, contextSync0),
+            new LockEvent(true, lockSync1, contextSync1),
+            new LockEvent(true, lockSync2, contextSync2),
+            new LockEvent(false, lockSync2, contextSync2),
+            new LockEvent(false, lockSync1, contextSync1),
+            new LockEvent(true, lockSync2, contextSync2),
+            new LockEvent(false, lockSync2, contextSync2),
+            new LockEvent(false, lockSync0, contextSync0)
         };
     }
 }

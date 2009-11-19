@@ -85,9 +85,14 @@ implements SynchronizationTestIfc {
                                getClass().getName() + ".mSync2",
                                getClass().getName() + ".run()");
         return new LockEvent[] {
-             new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0),
-             new LockEvent(lockSync1, contextSync1Thread, lockSync2,
-                           contextSync2Thread),
+            new LockEvent(true, lockSync0, contextSync0),
+            new LockEvent(true, lockSync1, contextSync1),
+            new LockEvent(true, lockSync2, contextSync2Thread),
+            new LockEvent(true, lockSync1, contextSync1Thread),
+            new LockEvent(false, lockSync1, contextSync1),
+            new LockEvent(false, lockSync1, contextSync1Thread),
+            new LockEvent(false, lockSync2, contextSync2Thread),
+            new LockEvent(false, lockSync0, contextSync0)
         };
     }
 }

@@ -88,18 +88,16 @@ public final class TestMonitorEventListener implements LockEventListenerIfc {
         return (SynchronizationTestIfc) c.newInstance();
     }
 
-    public void onLockEvent(int lockId,
+    public void onLockEvent(boolean isLock,
+                            int lockId,
                             int lockingContextId,
-                            int lastTakenLockId,
-                            int lastTakenLockingContextId,
                             long threadId)
     throws IOException {
         ContextMemory cm = mContextMemory;
         LockEvent event =
-            new LockEvent(cm.readLock(lockId),
-                          cm.readContext(lockingContextId),
-                          cm.readLock(lastTakenLockId),
-                          cm.readContext(lastTakenLockingContextId));
+            new LockEvent(isLock,
+                          cm.readLock(lockId),
+                          cm.readContext(lockingContextId));
         mEvents.add(event);
     }
 

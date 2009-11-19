@@ -40,7 +40,5 @@ implements SynchronizationTestIfc {
         return MonitorWithContext.create(mSync,
                                          getClass().getName() + ".go()",
                                          "<localVariable1>");
-        // TODO Will it always be localVariable1 or may it sometimes be
-        //      another localVariable number?
     }
 }

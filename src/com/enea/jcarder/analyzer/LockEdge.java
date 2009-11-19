@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Collection;
+import java.util.Collections;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -40,6 +41,16 @@ class LockEdge {
     private long mNumberOfDuplicates;
 
     private Set<Integer> mGateLockIds;
+
+
+    LockEdge(LockNode source,
+             LockNode target,
+             long threadId,
+             int sourceLockingContextId,
+             int targetLockingContextId) {
+        this(source, target, threadId, sourceLockingContextId, targetLockingContextId,
+             Collections.<Integer>emptyList());
+    }
 
     LockEdge(LockNode source,
              LockNode target,
