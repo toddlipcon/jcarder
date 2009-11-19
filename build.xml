@@ -1,8 +1,10 @@
 <project name="JCarder" default="dist" basedir=".">
   <property name="version" value="1.0.1"/>
   <property name="src" location="src"/>
+  <property name="src.test" location="test"/>
   <property name="3pp" location="3pp"/>
   <property name="build" location="build/"/>
+  <property name="build.test" location="build-test/"/>
   <property name="examples" location="examples"/>
   <property name="dist"  location="dist"/>
   <property name="asm.jar" location="${3pp}/asm-all-2.2.2.jar"/>
@@ -28,6 +30,7 @@
   <target name="init">
     <tstamp/>
     <mkdir dir="${build}"/>
+    <mkdir dir="${build.test}"/>
     <mkdir dir="${dist}"/>
   </target>
 
@@ -99,6 +102,27 @@
       <arg value="${dist}/jcarder-src-${version}.tar.gz"/>
     </exec>
   </target>
+
+  <target name="compile-test" depends="check3pps, init">
+    <javac srcdir="${src.test}"
+             destdir="${build.test}"
+             classpath="${asm.jar}:${jcip.jar}:${junit.jar}:${mockito.jar}:${build}"
+             target="1.5"
+             debug="true"
+             debuglevel="lines,vars,source"/>
+  </target>
+  <target name="test" depends="compile,compile-test">
+    <junit printsummary="yes">
+      <classpath refid="test.classpath" />
+      <formatter type="plain" />
+      <batchtest fork="yes" todir="${build.test}">
+        <fileset dir="${src.test}">
+          <include name="**/Test*.java" />
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
 
   <target name="clean">
     <delete dir="bin"/>
