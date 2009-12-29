@@ -43,13 +43,13 @@ public final class JavaAgent {
     private static final String DUMP_PROPERTY = "jcarder.dump";
     private static final String LOGLEVEL_PROPERTY = "jcarder.loglevel";
     private static final String LOG_FILENAME = "jcarder.log";
+    private static final String OUTPUTDIR_PROPERTY = "jcarder.outputdir";
 
     private final InstrumentConfig mConfig = new InstrumentConfig();
     private Logger mLogger;
     PrintWriter mLogWriter;
     private File mOutputDir;
     private Logger.Level mLogLevel;
-    private static final String OUTPUTDIR_PROPERTY = "jcarder.outputdir";
 
     private JavaAgent() { }
 
@@ -61,12 +61,12 @@ public final class JavaAgent {
                                final Instrumentation instrumentation)
     throws Exception {
         JavaAgent javaAgent = new JavaAgent();
-        javaAgent.init(instrumentation);
+        javaAgent.init(args, instrumentation);
     }
 
-    private void init(Instrumentation instrumentation)
+    private void init(String args, Instrumentation instrumentation)
     throws Exception {
-        handleProperties();
+        handleProperties(args);
         initLogger();
         mLogger.info("Starting " + BuildInformation.getShortInfo() + " agent");
         logJvmInfo();
@@ -119,7 +119,22 @@ public final class JavaAgent {
         }
     }
 
-    private void handleProperties() throws IOException {
+    private void handleProperties(String args) throws IOException {
+        if (null != args) {
+            String argpairs[] = args.split(",");
+            for (String pair : argpairs) {
+                String keyval[] = pair.split("=", 2);
+                if (keyval.length != 2) {
+                    System.err.println("Couldn't parse keyval pair: " + pair);
+                    continue;
+                }
+
+                String key = keyval[0];
+                String val = keyval[1];
+                System.err.println("Setting " + key + " to " + val);
+                System.setProperty("jcarder." + key, val);
+            }
+        }
         handleDumpProperty();
         handleLogLevelProperty();
         handleOutputDirProperty();
