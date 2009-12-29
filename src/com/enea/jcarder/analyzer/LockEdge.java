@@ -113,13 +113,13 @@ class LockEdge {
     }
 
     public int hashCode() {
-        // TODO Improve hashCode algorithm to improve performance?
-        int result = 12345;
-        result = (37 * result) + mTarget.getLockId();
-        result = (37 * result) + mSource.getLockId();
-        result = (37 * result) + (int)(mThreadId ^ (mThreadId >>> 32));
-        result = (37 * result) + mSourceContextId;
-        result = (37 * result) + mTargetContextId;
+        final int prime = 31;
+        int result = 1;
+        result = prime + mSource.getLockId();
+        result = prime * result + mSourceContextId;
+        result = prime * result + mTarget.getLockId();
+        result = prime * result + mTargetContextId;
+        result = prime * result + (int) (mThreadId ^ (mThreadId >>> 32));
         return result;
     }
 
