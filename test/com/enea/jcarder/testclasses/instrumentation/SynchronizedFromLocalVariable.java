@@ -39,6 +39,6 @@ implements SynchronizationTestIfc {
     public MonitorWithContext[] getExpectedMonitorEnterings() {
         return MonitorWithContext.create(mSync,
                                          getClass().getName() + ".go()",
-                                         "<localVariable1>");
+                                         getClass().getName() + ".mSync");
     }
 }
