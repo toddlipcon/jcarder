@@ -78,9 +78,9 @@ public final class EventFileReader {
                                        LockEventListenerIfc eventReceiver)
     throws IOException {
         final boolean isLock = (lockEventBuffer.get() == 1);
-        final int lockId                    = lockEventBuffer.getInt();
-        final int lockingContextId          = lockEventBuffer.getInt();
-        final long threadId                 = lockEventBuffer.getLong();
+        final int lockId = lockEventBuffer.getInt();
+        final int lockingContextId = lockEventBuffer.getInt();
+        final long threadId = lockEventBuffer.getLong();
         eventReceiver.onLockEvent(isLock,
                                   lockId,
                                   lockingContextId,

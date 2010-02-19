@@ -29,8 +29,8 @@ public final class SingleSynchronization implements SynchronizationTestIfc {
 
     public void go() {
         assertFalse(Thread.holdsLock(mSync0));
-        // Synchronization on a single lock at a time can not cause any dead
-        // lock, but we now report all locks, so it should be reported
+        // Synchronization on a single lock at a time cannot cause any
+        // deadlock, but we now report all locks, so it should be reported.
         synchronized (mSync0) {
             assertTrue(Thread.holdsLock(mSync0));
         }

@@ -19,13 +19,13 @@ public class Main {
         phil3.start();
         phil4.start();
         phil5.start();
-        
+
         phil1.join();
         phil2.join();
         phil3.join();
         phil4.join();
         phil5.join();
-        
+
         System.out.println("Program finished successfully");
     }
 }

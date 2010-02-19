@@ -51,18 +51,15 @@ class LockGraphBuilder implements LockEventListenerIfc {
                             int lockId,
                             int lockingContextId,
                             long threadId) {
-        /*
-        System.err.println("thr " + threadId +
-                           "\tisLock: " + isLock + "\tlock: " + lockId + "\tctx: " + lockingContextId);
-        */
-        HashMap<Integer, LockWithContext> heldLocks = currentLocksByThread.get(threadId);
+        HashMap<Integer, LockWithContext> heldLocks =
+            currentLocksByThread.get(threadId);
         if (heldLocks == null) {
             heldLocks = new HashMap<Integer, LockWithContext>();
             currentLocksByThread.put(threadId, heldLocks);
         }
 
         if (isLock) {
-            // If we've already locked this monitor, just up the refcount
+            // If we've already locked this monitor, just up the refcount.
             LockWithContext alreadyHeld = heldLocks.get(lockId);
             if (alreadyHeld != null) {
                 alreadyHeld.refCount++;
@@ -71,8 +68,8 @@ class LockGraphBuilder implements LockEventListenerIfc {
 
             final LockNode targetLock = getLockNode(lockId);
 
-            // This must be a new lock.
-            // Add graph edges from all currently held locks to this one
+            // This must be a new lock. Add graph edges from all currently held
+            // locks to this one.
             for (LockWithContext sourceLwc : heldLocks.values()) {
                 LockNode sourceLock = getLockNode(sourceLwc.nodeId);
                 final LockEdge edge = new LockEdge(sourceLock,
@@ -83,16 +80,18 @@ class LockGraphBuilder implements LockEventListenerIfc {
                                                    heldLocks.keySet());
                 sourceLock.addOutgoingEdge(edge);
             }
-            // And add this one to the set
 
-            heldLocks.put(lockId, new LockWithContext(lockId, lockingContextId));
+            // And add this one to the set.
+            heldLocks.put(lockId,
+                          new LockWithContext(lockId, lockingContextId));
         } else {
-            // We should find it there
+            // We should find it there.
             LockWithContext alreadyHeld = heldLocks.get(lockId);
             if (alreadyHeld == null) {
                 throw new RuntimeException("Unlocking unheld lock!");
             }
-            if (--alreadyHeld.refCount == 0) {
+            --alreadyHeld.refCount;
+            if (alreadyHeld.refCount == 0) {
                 heldLocks.remove(lockId);
             }
         }
@@ -105,7 +104,6 @@ class LockGraphBuilder implements LockEventListenerIfc {
     Iterable<LockNode> getAllLocks() {
         return mLocks.values();
     }
-
 
     private static class LockWithContext {
         public final int nodeId;

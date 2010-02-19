@@ -118,8 +118,7 @@ class CycleDetector {
                     edgesOnStack.subList(index, edgesOnStack.size());
                 mNoOfCreatedCycleObjects.increment();
                 mMaxCycleDepth.set(edgesInCycle.size());
-                Cycle newCycle = new Cycle(edgesInCycle); 
-                // System.err.println("Found cycle: " + newCycle);
+                Cycle newCycle = new Cycle(edgesInCycle);
                 mCycles.add(newCycle);
                 mNoOfCycles.set(mCycles.size());
                 /*
@@ -209,9 +208,7 @@ class CycleDetector {
                 removedCycles++;
             }
         }
-        mLogger.info("Ignoring "
-                     + removedCycles
-                     + " gated cycle(s).");
+        mLogger.info("Ignoring " + removedCycles + " gated cycle(s).");
     }
 
     /**

@@ -39,7 +39,6 @@ import com.enea.jcarder.util.logging.Logger;
  * is loaded.
  */
 public final class JavaAgent {
-
     private static final String DUMP_PROPERTY = "jcarder.dump";
     private static final String LOGLEVEL_PROPERTY = "jcarder.loglevel";
     private static final String LOG_FILENAME = "jcarder.log";
@@ -94,7 +93,9 @@ public final class JavaAgent {
         mLogWriter = new PrintWriter(new BufferedWriter(fileWriter));
         AppendableHandler fileHandler = new AppendableHandler(mLogWriter);
         AppendableHandler consoleHandler =
-            new AppendableHandler(System.err, Logger.Level.INFO, "{message}\n");
+            new AppendableHandler(System.err,
+                                  Logger.Level.INFO,
+                                  "{message}\n");
 
         Thread hook = new Thread() {
             public void run() {
@@ -120,10 +121,10 @@ public final class JavaAgent {
     }
 
     private void handleProperties(String args) throws IOException {
-        if (null != args) {
-            String argpairs[] = args.split(",");
+        if (args != null) {
+            String[] argpairs = args.split(",");
             for (String pair : argpairs) {
-                String keyval[] = pair.split("=", 2);
+                String[] keyval = pair.split("=", 2);
                 if (keyval.length != 2) {
                     System.err.println("Couldn't parse keyval pair: " + pair);
                     continue;
@@ -159,7 +160,8 @@ public final class JavaAgent {
 
     private void handleOutputDirProperty() throws IOException {
         String property = System.getProperty(OUTPUTDIR_PROPERTY, ".");
-        property = property.replace("@TIME@", String.valueOf(System.currentTimeMillis()));
+        property = property.replace(
+            "@TIME@", String.valueOf(System.currentTimeMillis()));
         mOutputDir = new File(property).getCanonicalFile();
         if (!mOutputDir.isDirectory()) {
             mOutputDir.mkdirs();

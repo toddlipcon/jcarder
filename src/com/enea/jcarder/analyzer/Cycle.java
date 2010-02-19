@@ -91,7 +91,7 @@ class Cycle {
             LockEdge edge = iter.next();
             for (int gateLockId : edge.getGateLockIds()) {
                 boolean wasNewGate = seenGates.add(gateLockId);
-                if (! wasNewGate) {
+                if (!wasNewGate) {
                     return true;
                 }
             }

@@ -46,16 +46,19 @@ final class EventListener implements EventListenerIfc {
     private final Logger mLogger;
     private final Counter mNumberOfEnteredMonitors;
 
-    private final Map<Class, Object> monitorInfoCache = new HashMap<Class, Object>();
+    private final Map<Class, Object> monitorInfoCache =
+        new HashMap<Class, Object>();
 
-    private final List<String> filterClassLevel = getFilterList("jcarder.classLevel", false);
-    private final List<String> filterInclude = getFilterList("jcarder.include", true);
+    private final List<String> filterClassLevel =
+        getFilterList("jcarder.classLevel", false);
+    private final List<String> filterInclude =
+        getFilterList("jcarder.include", true);
 
     private final static Object sentinelInstanceLevel = new Object();
     private final static Object sentinelIgnore = new Object();
 
     public static EventListener create(Logger logger, File outputdir)
-    throws IOException {
+        throws IOException {
         EventFileWriter eventWriter =
             new EventFileWriter(logger,
                                 new File(outputdir, EVENT_DB_FILENAME));
@@ -68,7 +71,9 @@ final class EventListener implements EventListenerIfc {
     private List<String> getFilterList(String key, boolean defaultAcceptAll) {
         final List<String> ret = new ArrayList<String>();
 
-        final StringTokenizer tok = new StringTokenizer(System.getProperty(key, defaultAcceptAll ? " " : ""), ",");
+        final StringTokenizer tok =
+            new StringTokenizer(
+                System.getProperty(key, defaultAcceptAll ? " " : ""), ",");
         while (tok.hasMoreTokens()) {
             ret.add(tok.nextToken().trim());
         }
@@ -89,31 +94,31 @@ final class EventListener implements EventListenerIfc {
     public void beforeMonitorEnter(Object monitor, LockingContext context)
         throws Exception {
         mLogger.finest("EventListener.beforeMonitorEnter");
-        //check ignoreFilter and switch to class level if the monitor
-        //is matched by classLevelFilter results are cached
+        // Check ignoreFilter and switch to class level if the monitor is
+        // matched by classLevelFilter. Results are cached.
         Object classifiedMonitor = checkMonitor(monitor);
 
         if (classifiedMonitor != sentinelIgnore) {
-          mNumberOfEnteredMonitors.increment();
-          lockEvent(true, monitor, classifiedMonitor, context);
+            mNumberOfEnteredMonitors.increment();
+            lockEvent(true, monitor, classifiedMonitor, context);
         }
     }
 
     public void beforeMonitorExit(Object monitor, LockingContext context)
-    throws Exception {
+        throws Exception {
         mLogger.finest("EventListener.beforeMonitorExit");
-        //check ignoreFilter and switch to class level if the monitor
-        //is matched by classLevelFilter results are cached
+        // Check ignoreFilter and switch to class level if the monitor is
+        // matched by classLevelFilter. Results are cached.
         Object classifiedMonitor = checkMonitor(monitor);
 
         if (classifiedMonitor != sentinelIgnore) {
-          lockEvent(false, monitor, classifiedMonitor, context);
+            lockEvent(false, monitor, classifiedMonitor, context);
         }
     }
 
     private Object checkMonitor(Object monitor) {
-        //the default behaviour is to treat monitor objects on instance level
-        //this was the old behaviour
+        // The default behaviour is to treat monitor objects on instance level.
+        // This was the old behaviour.
         Object classifiedMonitor = monitor;
 
         if (monitor != null) {
@@ -121,23 +126,24 @@ final class EventListener implements EventListenerIfc {
 
             Object firstOccurrence;
             synchronized(this) {
-                //Try to use cache
+                // Try to use cache.
                 firstOccurrence = monitorInfoCache.get(cl);
                 if (firstOccurrence == null) {
                     firstOccurrence = checkFilters(monitor, cl);
                 }
             }
 
-            //firstOccurence may have three states at this point:
-            //1. sentinelInstanceLevel: (default) the monitor should be
-            //   handled for each instance
-            //2. sentinelIgnore: the monitor is not of interesst
-            //3. any other instance: is the first representation of a
-            //   monitor of its class. class level handling
+            // firstOccurence may have three states at this point:
+            //
+            // 1. sentinelInstanceLevel: (default) The monitor should be
+            //    handled for each instance.
+            // 2. sentinelIgnore: The monitor is not of interest.
+            // 3. Any other instance is the first representation of a monitor
+            //    of its class. Class level handling.
 
             if (firstOccurrence != sentinelInstanceLevel) {
-                //By using only one single instance for monitors of a certain
-                //class we simulate group level handling.
+                // By using only one single instance for monitors of a certain
+                // class we simulate group level handling.
                 classifiedMonitor = firstOccurrence;
             }
         }
@@ -148,9 +154,9 @@ final class EventListener implements EventListenerIfc {
         Object firstOccurrence;
         final String clName = cl.getName();
 
-        //check if include filter matches
+        // Check if include filter matches.
         if (checkIncludeFilter(clName)) {
-            //check if class level filter matches
+            // Check if class level filter matches.
             firstOccurrence = checkGroupLevelFilter(monitor, clName);
         } else {
             firstOccurrence = sentinelIgnore;
@@ -180,7 +186,8 @@ final class EventListener implements EventListenerIfc {
                 break;
             }
         }
-        firstOccurrence = classLevelFilterMatch ? monitor : sentinelInstanceLevel;
+        firstOccurrence =
+            classLevelFilterMatch ? monitor : sentinelInstanceLevel;
         if (classLevelFilterMatch) {
             mLogger.info("instrumenting on class level: " + clName);
         }

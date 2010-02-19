@@ -118,11 +118,11 @@
 
   <target name="compile-test" depends="check3pps, init">
     <javac srcdir="${src.test}"
-             destdir="${build.test}"
-             classpath="${asm.jar}:${jcip.jar}:${junit.jar}:${mockito.jar}:${build}"
-             target="1.5"
-             debug="true"
-             debuglevel="lines,vars,source"/>
+           destdir="${build.test}"
+           classpath="${asm.jar}:${jcip.jar}:${junit.jar}:${mockito.jar}:${build}"
+           target="1.5"
+           debug="true"
+           debuglevel="lines,vars,source"/>
   </target>
   <target name="test" depends="compile,compile-test">
     <junit printsummary="yes">
