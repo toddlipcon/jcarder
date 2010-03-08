@@ -240,7 +240,7 @@ public final class Analyzer {
             if (option.equals("-help")) {
                 printHelpText(System.out, op);
                 System.exit(0);
-            } else if (option.equals("-i")) {
+            } else if (option.equals("-d")) {
                 mInputDirectory = options.get(option);
             } else if (option.equals("-includepackages")) {
                 mIncludePackages = true;
