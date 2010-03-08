@@ -337,7 +337,7 @@ public final class Analyzer {
     }
 
     private void createGraphvizFile(String s, int index) throws IOException {
-        File file = new File("jcarder_result_" + index + ".dot");
+        File file = new File(mInputDirectory, "jcarder_result_" + index + ".dot");
         System.out.println("Writing Graphviz file: " + file.getAbsolutePath());
         FileWriter fw = new FileWriter(file);
         fw.write(s);
