@@ -39,9 +39,7 @@ import com.enea.jcarder.testclasses.agent.TwoThreadSynchronization;
 import com.enea.jcarder.util.logging.Logger;
 
 /**
- * The purpose of this junit class is to test the classes:
- *   - MonitorEventListener
- *   - ThreadLocalEnteredMonitors
+ * The purpose of this junit class is to test the MonitorEventListener class.
  *
  * But it serves also as an integration test with the MonitorEventListener and
  * the com.enea.jcarder.agent.instrument package. One interesting aspect of the
