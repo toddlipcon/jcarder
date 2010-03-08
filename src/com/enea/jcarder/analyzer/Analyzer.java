@@ -62,6 +62,7 @@ public final class Analyzer {
     private OutputMode mOutputMode = OutputMode.INCLUDE_CYCLES;
     private boolean mIncludePackages = false;
     private boolean mPrintDetails = false;
+    private boolean mIncludeGatedCycles = false;
     private Logger mLogger;
     final private Level mLogLevel = Logger.Level.INFO;
     private String mInputDirectory = ".";
@@ -108,7 +109,9 @@ public final class Analyzer {
             if (mOutputMode == OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES) {
                 cycleDetector.removeSingleThreadedCycles();
             }
-            cycleDetector.removeGatedCycles();
+            if (!mIncludeGatedCycles) {
+                cycleDetector.removeGatedCycles();
+            }
             if (cycleDetector.getCycles().isEmpty()) {
                 System.out.println("No cycles found!");
                 return;
@@ -228,6 +231,9 @@ public final class Analyzer {
                      + " ALL: include everything;"
                      + " CYCLES: only include cycles (this is the default);"
                      + " MTCYCLES: only include multi-thread cycles");
+        op.addOption("-include-gated-cycles",
+                     "Include cycles in the output even if they are always " +
+                     "gated by higher ranked locks.");
         op.addOption("-printdetails",
                      "Print details");
         op.addOption("-version",
@@ -255,11 +261,16 @@ public final class Analyzer {
                 } else {
                     handleBadOption(op, "bad output mode");
                 }
+            } else if (option.equals("-include-gated-cycles")) {
+                mIncludeGatedCycles = true;
             } else if (option.equals("-printdetails")) {
                 mPrintDetails = true;
             } else if (option.equals("-version")) {
                 BuildInformation.printLongBuildInformation();
                 System.exit(0);
+            } else {
+                System.err.println("Unknown option: " + option);
+                System.exit(1);
             }
         }
     }
