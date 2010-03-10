@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import com.enea.jcarder.util.logging.Logger;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 public final class EventFileReader {
     private static final int INT_LENGTH = 4;
@@ -77,11 +78,11 @@ public final class EventFileReader {
     private static void parseLockEvent(ByteBuffer lockEventBuffer,
                                        LockEventListenerIfc eventReceiver)
     throws IOException {
-        final boolean isLock = (lockEventBuffer.get() == 1);
+        final LockEventType type = LockEventType.fromByte(lockEventBuffer.get());
         final int lockId = lockEventBuffer.getInt();
         final int lockingContextId = lockEventBuffer.getInt();
         final long threadId = lockEventBuffer.getLong();
-        eventReceiver.onLockEvent(isLock,
+        eventReceiver.onLockEvent(type,
                                   lockId,
                                   lockingContextId,
                                   threadId);

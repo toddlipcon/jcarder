@@ -19,6 +19,7 @@ package com.enea.jcarder.testclasses.agent;
 import com.enea.jcarder.agent.LockEvent;
 import com.enea.jcarder.common.Lock;
 import com.enea.jcarder.common.LockingContext;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -57,12 +58,12 @@ implements SynchronizationTestIfc {
                                getClass().getName() + ".mSync1",
                                method);
         return new LockEvent[] {
-            new LockEvent(true, lockSync0, contextSync0),
-            new LockEvent(true, lockSync1, contextSync1),
-            new LockEvent(true, lockSync1, contextSync1),
-            new LockEvent(false, lockSync1, contextSync1),
-            new LockEvent(false, lockSync1, contextSync1),
-            new LockEvent(false, lockSync0, contextSync0)
+            new LockEvent(LockEventType.MONITOR_ENTER, lockSync0, contextSync0),
+            new LockEvent(LockEventType.MONITOR_ENTER, lockSync1, contextSync1),
+            new LockEvent(LockEventType.MONITOR_ENTER, lockSync1, contextSync1),
+            new LockEvent(LockEventType.MONITOR_EXIT, lockSync1, contextSync1),
+            new LockEvent(LockEventType.MONITOR_EXIT, lockSync1, contextSync1),
+            new LockEvent(LockEventType.MONITOR_EXIT, lockSync0, contextSync0)
         };
     }
 }

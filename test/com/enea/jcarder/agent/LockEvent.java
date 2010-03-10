@@ -18,18 +18,19 @@ package com.enea.jcarder.agent;
 
 import com.enea.jcarder.common.Lock;
 import com.enea.jcarder.common.LockingContext;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 public final class LockEvent {
     /** true for lock, false for unlock */
-    private final boolean mIsLock;
+    private final LockEventType mType;
 
     private final Lock mLock;
     private final LockingContext mLockingContext;
 
-    public LockEvent(final boolean isLock,
+    public LockEvent(final LockEventType type,
                      final Lock lock,
                      final LockingContext lockingContext) {
-        mIsLock = isLock;
+        mType = type;
         mLock = lock;
         mLockingContext = lockingContext;
     }
@@ -50,7 +51,7 @@ public final class LockEvent {
             return false;
         final LockEvent other = (LockEvent) obj;
 
-        if (this.mIsLock != other.mIsLock)
+        if (this.mType != other.mType)
             return false;
 
         if (this.mLock == null) {
@@ -67,7 +68,7 @@ public final class LockEvent {
     }
 
     public String toString() {
-        return (mIsLock ? "Locking:" : "Unlocking:") +
+        return mType.toString() + ":" +
             mLock.toString() + " in ctx:" + mLockingContext;
     }
 }

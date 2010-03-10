@@ -22,6 +22,7 @@ import java.util.Stack;
 import net.jcip.annotations.NotThreadSafe;
 
 import com.enea.jcarder.common.events.LockEventListenerIfc;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 /**
  * This class is responsible for constructing a structure of LockNode and
@@ -47,7 +48,7 @@ class LockGraphBuilder implements LockEventListenerIfc {
         return lockNode;
     }
 
-    public void onLockEvent(boolean isLock,
+    public void onLockEvent(LockEventType eventType,
                             int lockId,
                             int lockingContextId,
                             long threadId) {
@@ -58,7 +59,15 @@ class LockGraphBuilder implements LockEventListenerIfc {
             currentLocksByThread.put(threadId, heldLocks);
         }
 
-        if (isLock) {
+        if (eventType == LockEventType.MONITOR_ENTER ||
+            eventType == LockEventType.LOCK_LOCK ||
+            eventType == LockEventType.SHARED_LOCK_LOCK) {
+
+            if (eventType == LockEventType.SHARED_LOCK_LOCK) {
+                // System.err.println("SHARED LOCK");
+                lockId = -lockId;
+            }
+
             // If we've already locked this monitor, just up the refcount.
             LockWithContext alreadyHeld = heldLocks.get(lockId);
             if (alreadyHeld != null) {
@@ -84,7 +93,14 @@ class LockGraphBuilder implements LockEventListenerIfc {
             // And add this one to the set.
             heldLocks.put(lockId,
                           new LockWithContext(lockId, lockingContextId));
-        } else {
+        } else if (eventType == LockEventType.MONITOR_EXIT ||
+                   eventType == LockEventType.LOCK_UNLOCK ||
+                   eventType == LockEventType.SHARED_LOCK_UNLOCK) {
+
+            if (eventType == LockEventType.SHARED_LOCK_UNLOCK) {
+                lockId = -lockId;
+            }
+
             // We should find it there.
             LockWithContext alreadyHeld = heldLocks.get(lockId);
             if (alreadyHeld == null) {
@@ -94,6 +110,8 @@ class LockGraphBuilder implements LockEventListenerIfc {
             if (alreadyHeld.refCount == 0) {
                 heldLocks.remove(lockId);
             }
+        } else {
+            throw new RuntimeException("Unknown lock event type: " + eventType);
         }
     }
 
@@ -108,6 +126,7 @@ class LockGraphBuilder implements LockEventListenerIfc {
     private static class LockWithContext {
         public final int nodeId;
         public final int contextId;
+
         public int refCount = 1;
 
         public LockWithContext(int nodeId, int contextId) {

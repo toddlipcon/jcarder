@@ -90,10 +90,28 @@ class Cycle {
         while (iter.hasNext()) {
             LockEdge edge = iter.next();
             for (int gateLockId : edge.getGateLockIds()) {
+                // shared locks dont gate
+                if (gateLockId < 0) continue;
+
                 boolean wasNewGate = seenGates.add(gateLockId);
                 if (!wasNewGate) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    boolean isDeadlockFreeDueToSharedLocks() {
+        // TODO should this be done before creating the Cycle object?
+        Set<Integer> seenNodes = new HashSet<Integer>();
+        for (LockEdge edge : mEdgesInCycle) {
+            seenNodes.add(edge.getTarget().getLockId());
+        }
+
+        for (int seenId : seenNodes) {
+            if (seenId < 0 && !seenNodes.contains(-seenId)) {
+                return true;
             }
         }
         return false;

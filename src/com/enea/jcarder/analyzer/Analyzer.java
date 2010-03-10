@@ -106,6 +106,8 @@ public final class Analyzer {
                                + e.getMessage());
             }
         } else {
+            cycleDetector.removeSafeSharedLockCycles();
+
             if (mOutputMode == OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES) {
                 cycleDetector.removeSingleThreadedCycles();
             }

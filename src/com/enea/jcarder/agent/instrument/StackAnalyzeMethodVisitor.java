@@ -228,6 +228,14 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
             }
             // pass through to next case.
         case Opcodes.INVOKEINTERFACE:
+            String thisObject = "<unknown>";
+            if (opCode == Opcodes.INVOKEVIRTUAL ||
+                opCode == Opcodes.INVOKEINTERFACE) {
+                for (int i = 0; i < InstrumentationUtilities.countParameters(desc); i++) {
+                    popObject();
+                }
+                thisObject = popObject().toString();
+            }
             clear();
             if (isNonVoidMethod(name, desc)) {
                 pushTextualDescription(owner + "." + name + "()");

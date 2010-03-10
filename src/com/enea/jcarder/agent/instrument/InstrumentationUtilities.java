@@ -48,4 +48,26 @@ public final class InstrumentationUtilities {
     public static String getInternalName(Class c) {
         return c.getName().replace('.', '/');
     }
+
+    /**
+     * Given a JVM parameter spec, return how many parameters
+     * it expects.
+     * TODO(todd) perhaps just use Type.getArgumentTypes from ASM
+     */
+    public static int countParameters(String spec) {
+        int count = 0;
+        int index = 1;
+        int lastIndex = spec.indexOf(')');
+        while (index > 0 && index < lastIndex) {
+            switch (spec.charAt(index)) {
+                case 'L':
+                    index = spec.indexOf(';', index) + 1;
+                    break;
+                default:
+                    index++;
+            }
+            count++;
+        }
+        return count;
+    }
 }

@@ -17,12 +17,10 @@
 package com.enea.jcarder.agent;
 
 import com.enea.jcarder.common.LockingContext;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 public interface EventListenerIfc {
-
-    void beforeMonitorEnter(Object monitor,
-                            LockingContext context) throws Exception;
-    void beforeMonitorExit(Object monitor,
-                           LockingContext context) throws Exception;
-
+    void handleEvent(LockEventType type,
+                     Object monitor,
+                     LockingContext context) throws Exception;
 }

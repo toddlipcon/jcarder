@@ -86,7 +86,11 @@ class LockNode {
     }
 
     public String toString() {
-        return "L_" + mLockId;
+        if (mLockId > 0) {
+            return "L_" + mLockId;
+        } else {
+            return "L_S" + Math.abs(mLockId);
+        }
     }
 
     long numberOfUniqueEdges() {

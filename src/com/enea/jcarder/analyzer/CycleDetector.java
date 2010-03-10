@@ -211,6 +211,20 @@ class CycleDetector {
         mLogger.info("Ignoring " + removedCycles + " gated cycle(s).");
     }
 
+
+    void removeSafeSharedLockCycles() {
+        int removedCycles = 0;
+        Iterator<Cycle> iter = mCycles.iterator();
+        while (iter.hasNext()) {
+            final Cycle cycle = iter.next();
+            if (cycle.isDeadlockFreeDueToSharedLocks()) {
+                iter.remove();
+                removedCycles++;
+            }
+        }
+        mLogger.info("Ignoring " + removedCycles + " cycle(s) that are shareable.");
+    }
+
     /**
      * Get the total number of edges in all known cycles.
      */

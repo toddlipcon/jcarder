@@ -73,9 +73,15 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
                                                        exceptions);
             final MonitorEnterMethodAdapter dlma =
                 new MonitorEnterMethodAdapter(mv, mClassName, methodName);
+            final LockClassSubstituterAdapter lcsa =
+              new LockClassSubstituterAdapter(dlma, mClassName, methodName);
+
             final StackAnalyzeMethodVisitor stackAnalyzer =
-                new StackAnalyzeMethodVisitor(mLogger, dlma, isStatic);
+                new StackAnalyzeMethodVisitor(mLogger, lcsa, isStatic);
             dlma.setStackAnalyzer(stackAnalyzer);
+            lcsa.setStackAnalyzer(stackAnalyzer);
+
+
             if (isSynchronized) {
                 /*
                  * We want to be able to get an event before a synchronized
