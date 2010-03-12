@@ -59,7 +59,8 @@ class LockGraphBuilder implements LockEventListenerIfc {
             currentLocksByThread.put(threadId, heldLocks);
         }
 
-        if (eventType == LockEventType.MONITOR_ENTER) {
+        if (eventType == LockEventType.MONITOR_ENTER ||
+            eventType == LockEventType.LOCK_LOCK) {
             // If we've already locked this monitor, just up the refcount.
             LockWithContext alreadyHeld = heldLocks.get(lockId);
             if (alreadyHeld != null) {
@@ -85,7 +86,8 @@ class LockGraphBuilder implements LockEventListenerIfc {
             // And add this one to the set.
             heldLocks.put(lockId,
                           new LockWithContext(lockId, lockingContextId));
-        } else if (eventType == LockEventType.MONITOR_EXIT) {
+        } else if (eventType == LockEventType.MONITOR_EXIT ||
+                   eventType == LockEventType.LOCK_UNLOCK) {
             // We should find it there.
             LockWithContext alreadyHeld = heldLocks.get(lockId);
             if (alreadyHeld == null) {
