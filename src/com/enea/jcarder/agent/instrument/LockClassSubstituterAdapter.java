@@ -69,6 +69,7 @@ class LockClassSubstituterAdapter extends MethodAdapter {
             "<init>".equals(name) &&
             "()V".equals(desc)) {
 
+          // TODO add context info
             mv.visitLdcInsn("hello");
             mv.visitMethodInsn(
                 opcode,

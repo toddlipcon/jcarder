@@ -17,35 +17,78 @@
 package com.enea.jcarder.agent.instrument;
 
 import java.util.concurrent.locks.ReentrantLock;
+import com.enea.jcarder.agent.StaticEventListener;
 
 public class TracingReentrantLock extends ReentrantLock {
   private final String creationInfo;
+  
+  /**
+   * An Object used to track through the other layers of
+   * JCarder for the purpose of unique lock ID generation.
+   *
+   * This is important 
+   */
+  private final ReentrantLockStandin lockStandin;
 
   public TracingReentrantLock(String creationInfo) {
     super();
     this.creationInfo = creationInfo;
+    this.lockStandin = new ReentrantLockStandin();
   }
 
   public TracingReentrantLock(boolean fair, String creationInfo) {
     super(fair);
     this.creationInfo = creationInfo;
+    this.lockStandin = new ReentrantLockStandin();
   }
 
   @Override
   public void lock() {
     System.err.println("Locking " + this + " (" + creationInfo + ")");
+    StaticEventListener.beforeMonitorEnter(lockStandin, creationInfo, getCallSite());
     super.lock();
   }
 
   @Override
   public void lockInterruptibly() throws InterruptedException {
     System.err.println("lockInterruptibly " + this);
-    super.lockInterruptibly();
+    StaticEventListener.beforeMonitorEnter(lockStandin, creationInfo, getCallSite());
+    try {
+      super.lockInterruptibly();
+    } catch (InterruptedException ie) {
+      // did not acquire the lock
+      StaticEventListener.beforeMonitorExit(lockStandin, creationInfo, getCallSite());
+    }
+  }
+
+  @Override
+  public boolean tryLock() {
+    boolean ret = super.tryLock();
+    if (ret) {
+      StaticEventListener.beforeMonitorEnter(lockStandin, creationInfo, getCallSite());
+    }
+    return ret;
   }
 
   @Override
   public void unlock() {
     System.err.println("Unlocking " + this);
+    StaticEventListener.beforeMonitorExit(lockStandin, creationInfo, getCallSite());
     super.unlock();
   }
+
+
+  private String getCallSite() {
+    StackTraceElement elems[] = Thread.currentThread().getStackTrace();
+    if (elems.length < 4) {
+      return "<unknown>";
+    }
+
+    StackTraceElement caller = elems[3];
+    return caller.toString();
+  }
+
+  // TODO(tlipcon) any other lock methods?
+
+  private static class ReentrantLockStandin {}
 }
