@@ -30,6 +30,7 @@ import com.enea.jcarder.agent.instrument.InstrumentConfig;
 import com.enea.jcarder.agent.instrument.TransformClassLoader;
 import com.enea.jcarder.common.contexts.ContextMemory;
 import com.enea.jcarder.common.events.LockEventListenerIfc;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 import com.enea.jcarder.testclasses.agent.ComparableAlternativeSynchronizationRoutes;
 import com.enea.jcarder.testclasses.agent.RepeatMostRecentlySynchronization;
 import com.enea.jcarder.testclasses.agent.RepeatOlderSynchronization;
@@ -86,14 +87,14 @@ public final class TestMonitorEventListener implements LockEventListenerIfc {
         return (SynchronizationTestIfc) c.newInstance();
     }
 
-    public void onLockEvent(boolean isLock,
+    public void onLockEvent(LockEventType type,
                             int lockId,
                             int lockingContextId,
                             long threadId)
     throws IOException {
         ContextMemory cm = mContextMemory;
         LockEvent event =
-            new LockEvent(isLock,
+            new LockEvent(type,
                           cm.readLock(lockId),
                           cm.readContext(lockingContextId));
         mEvents.add(event);
