@@ -89,7 +89,7 @@ implements ContextReaderIfc {
     }
 
     public Lock readLock(int id) {
-        mBuffer.position(id);
+        mBuffer.position(Math.abs(id));
         String className = readString();
         int objectId = mBuffer.getInt();
         return new Lock(className, objectId);

@@ -33,7 +33,7 @@ public interface LockEventListenerIfc {
         LOCK_LOCK(2),
         LOCK_UNLOCK(3),
         SHARED_LOCK_LOCK(4),
-        SHARED_RLOCK_UNLOCK(5);
+        SHARED_LOCK_UNLOCK(5);
 
         public final byte typeId;
         private static Map<Byte, LockEventType> ID_TO_ENUM = new
