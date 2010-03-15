@@ -46,20 +46,7 @@ public abstract class LockTracer {
 
   public static void lock(Lock l, String refName, String stack) {
     // System.err.println("Tracing lock of " + l + " (" + refName + ") at " + stack);
-
-    if (l instanceof ReentrantReadWriteLock.ReadLock) {
-      StaticEventListener.handleEvent(
-        LockEventType.SHARED_LOCK_LOCK, getSyncObject(l), refName, stack);
-    } else if (l instanceof ReentrantReadWriteLock.WriteLock) {
-      StaticEventListener.handleEvent(
-        LockEventType.SHARED_LOCK_LOCK, getSyncObject(l), refName, stack);
-      StaticEventListener.handleEvent(
-        LockEventType.LOCK_LOCK, getSyncObject(l), refName, stack);
-    } else {
-      StaticEventListener.handleEvent(
-        LockEventType.LOCK_LOCK, getSyncObject(l), refName, stack);
-    }
-
+    recordLock(l, refName, stack);
     l.lock();
   }
 
@@ -82,4 +69,35 @@ public abstract class LockTracer {
     l.unlock();
   }
 
+  public static boolean tryLock(Lock l, String refName, String stack) {
+    // What to do here is a bit unclear.
+    // We have two options:
+    //   a) only record the lock if it's successful (the safe route)
+    //   b) if not successful, record it as a lock and immediate unlock
+    //   c) record a special trylock event type and make the analyzer figure it out
+    // I've elected for (a) since it's simplest.
+    boolean ret = l.tryLock();
+    if (!ret) {
+      return ret;
+    }
+
+    // If we succeeded in locking, we should trace it like a normal lock
+    recordLock(l, refName, stack);
+    return ret;
+  }
+
+  private static void recordLock(Lock l, String refName, String stack) {
+    if (l instanceof ReentrantReadWriteLock.ReadLock) {
+      StaticEventListener.handleEvent(
+        LockEventType.SHARED_LOCK_LOCK, getSyncObject(l), refName, stack);
+    } else if (l instanceof ReentrantReadWriteLock.WriteLock) {
+      StaticEventListener.handleEvent(
+        LockEventType.SHARED_LOCK_LOCK, getSyncObject(l), refName, stack);
+      StaticEventListener.handleEvent(
+        LockEventType.LOCK_LOCK, getSyncObject(l), refName, stack);
+    } else {
+      StaticEventListener.handleEvent(
+        LockEventType.LOCK_LOCK, getSyncObject(l), refName, stack);
+    }
+  }
 }
