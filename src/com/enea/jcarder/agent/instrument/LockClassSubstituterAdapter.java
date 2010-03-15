@@ -28,8 +28,10 @@ import org.objectweb.asm.Opcodes;
 @NotThreadSafe
 class LockClassSubstituterAdapter extends MethodAdapter {
   private StackAnalyzeMethodVisitor mStack;
-  private String mClassAndMethodName;
+  private final ClassAdapter mAdapter;
   private String mClassName;
+  private String mClassAndMethodName;
+  private int mLineNumber = -1;
 
   private static final String REENTRANTLOCK_INTERNAL_NAME =
     "java/util/concurrent/locks/ReentrantLock";
@@ -46,11 +48,12 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
 
 
   LockClassSubstituterAdapter(final MethodVisitor visitor,
-                              String className,
+                              ClassAdapter adapter,
                               String methodName) {
     super(visitor);
-    mClassAndMethodName = className + "." + methodName + "()";
-    mClassName = className;
+    mAdapter = adapter;
+    mClassName = adapter.getCurrentClassName();
+    mClassAndMethodName = mClassName + "." + methodName + "()";
   }
 
   void setStackAnalyzer(StackAnalyzeMethodVisitor stack) {
@@ -58,13 +61,14 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
   }
 
   @Override
+  public void visitLineNumber(int line, Label start) {
+    mLineNumber = line;
+    super.visitLineNumber(line, start);
+  }
+
+  @Override
   public void visitMethodInsn(int opcode,
                               String owner, String name, String desc) {
-
-    /*System.err.println("method. opcode: " + opcode + 
-                       " owner: " + owner +
-                       " name: " + name + 
-                       " desc: " + desc); */
     if ((opcode == Opcodes.INVOKEVIRTUAL ||
          opcode == Opcodes.INVOKEINTERFACE) && 
         (REENTRANTLOCK_INTERNAL_NAME.equals(owner) ||
@@ -85,7 +89,8 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
 
       if (traceCallSpec != null) {
         mv.visitLdcInsn(convertFromJvmInternalNames(mStack.peek()));
-        mv.visitLdcInsn(mClassAndMethodName);
+        mv.visitLdcInsn(mClassAndMethodName + 
+          mAdapter.getCurrentSourceFile() + ":" + mLineNumber);
 
         mv.visitMethodInsn(
           Opcodes.INVOKESTATIC,

@@ -33,6 +33,7 @@ import com.enea.jcarder.util.logging.Logger;
 @NotThreadSafe
 class ClassAdapter extends org.objectweb.asm.ClassAdapter {
     private final String mClassName;
+    private String mSourceFile = "<unknown>";
     private final Logger mLogger;
 
     ClassAdapter(Logger logger, ClassVisitor visitor, String className) {
@@ -48,6 +49,13 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
         super.visitAttribute(new InstrumentedAttribute("DeadLock"));
     }
 
+    @Override
+    public void visitSource(String source, String debug) {
+        mSourceFile = source;
+        super.visitSource(source, debug);
+    }
+
+    @Override
     public MethodVisitor visitMethod(final int arg,
                                      final String methodName,
                                      final String descriptor,
@@ -74,7 +82,7 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
             final MonitorEnterMethodAdapter dlma =
                 new MonitorEnterMethodAdapter(mv, mClassName, methodName);
             final LockClassSubstituterAdapter lcsa =
-              new LockClassSubstituterAdapter(dlma, mClassName, methodName);
+              new LockClassSubstituterAdapter(dlma, this, methodName);
 
             final StackAnalyzeMethodVisitor stackAnalyzer =
                 new StackAnalyzeMethodVisitor(mLogger, lcsa, isStatic);
@@ -99,5 +107,13 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
                 return stackAnalyzer;
             }
         }
+    }
+
+    String getCurrentClassName() {
+        return mClassName;
+    }
+
+    String getCurrentSourceFile() {
+        return mSourceFile;
     }
 }
