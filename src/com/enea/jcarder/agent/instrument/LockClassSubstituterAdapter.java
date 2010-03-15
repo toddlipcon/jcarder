@@ -28,8 +28,7 @@ import org.objectweb.asm.Opcodes;
 @NotThreadSafe
 class LockClassSubstituterAdapter extends MethodAdapter {
   private StackAnalyzeMethodVisitor mStack;
-  private String mClassAndMethodName;
-  private String mClassName;
+  private final InstrumentationContext mContext;
 
   private static final String REENTRANTLOCK_INTERNAL_NAME =
     "java/util/concurrent/locks/ReentrantLock";
@@ -46,11 +45,9 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
 
 
   LockClassSubstituterAdapter(final MethodVisitor visitor,
-                              String className,
-                              String methodName) {
+                              final InstrumentationContext context) {
     super(visitor);
-    mClassAndMethodName = className + "." + methodName + "()";
-    mClassName = className;
+    mContext = context;
   }
 
   void setStackAnalyzer(StackAnalyzeMethodVisitor stack) {
@@ -60,11 +57,6 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
   @Override
   public void visitMethodInsn(int opcode,
                               String owner, String name, String desc) {
-
-    /*System.err.println("method. opcode: " + opcode + 
-                       " owner: " + owner +
-                       " name: " + name + 
-                       " desc: " + desc); */
     if ((opcode == Opcodes.INVOKEVIRTUAL ||
          opcode == Opcodes.INVOKEINTERFACE) && 
         (REENTRANTLOCK_INTERNAL_NAME.equals(owner) ||
@@ -84,8 +76,8 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
       }
 
       if (traceCallSpec != null) {
-        mv.visitLdcInsn(convertFromJvmInternalNames(mStack.peek()));
-        mv.visitLdcInsn(mClassAndMethodName);
+        mv.visitLdcInsn(mContext.convertFromJvmInternalNames(mStack.peek()));
+        mv.visitLdcInsn(mContext.getCallContextString());
 
         mv.visitMethodInsn(
           Opcodes.INVOKESTATIC,
@@ -99,20 +91,4 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
     }
     mv.visitMethodInsn(opcode, owner, name, desc);
   }
-
-  // TODO(tlipcon) make me util
-    private String convertFromJvmInternalNames(String s) {
-        if (s == null) {
-            assert false;
-            return "null???";
-        } else {
-            final String name = s.replace('/', '.');
-            if (name.equals(mClassName + ".class")) {
-                return "class";
-            } else {
-                return name;
-            }
-        }
-    }
-
 }

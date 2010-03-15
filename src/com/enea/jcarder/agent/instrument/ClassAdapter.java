@@ -32,14 +32,17 @@ import com.enea.jcarder.util.logging.Logger;
  */
 @NotThreadSafe
 class ClassAdapter extends org.objectweb.asm.ClassAdapter {
-    private final String mClassName;
+    private final InstrumentationContext mContext;
+
+    private String mSourceFile = "<unknown>";
     private final Logger mLogger;
 
     ClassAdapter(Logger logger, ClassVisitor visitor, String className) {
         super(visitor);
         mLogger = logger;
-        mClassName = className;
-        mLogger.fine("Instrumenting class " + mClassName);
+
+        mContext = new InstrumentationContext(className);
+        mLogger.fine("Instrumenting class " + className);
     }
 
     public void visit(int arg0, int arg1, String arg2, String arg3, String arg4,
@@ -48,6 +51,13 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
         super.visitAttribute(new InstrumentedAttribute("DeadLock"));
     }
 
+    @Override
+    public void visitSource(String source, String debug) {
+        mContext.setSourceFile(source);
+        super.visitSource(source, debug);
+    }
+
+    @Override
     public MethodVisitor visitMethod(final int arg,
                                      final String methodName,
                                      final String descriptor,
@@ -59,28 +69,33 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
         final int manipulatedArg = arg & ~ACC_SYNCHRONIZED;
         if (isNative) {
             mLogger.finer("Can't instrument native method "
-                          + mClassName + "." + methodName);
+                          + mContext.getClassName() + "." + methodName);
             return super.visitMethod(arg,
                                      methodName,
                                      descriptor,
                                      signature,
                                      exceptions);
         } else {
+            mContext.setMethodName(methodName);
+
             final MethodVisitor mv = super.visitMethod(manipulatedArg,
                                                        methodName,
                                                        descriptor,
                                                        signature,
                                                        exceptions);
             final MonitorEnterMethodAdapter dlma =
-                new MonitorEnterMethodAdapter(mv, mClassName, methodName);
+                new MonitorEnterMethodAdapter(mv, mContext);
             final LockClassSubstituterAdapter lcsa =
-              new LockClassSubstituterAdapter(dlma, mClassName, methodName);
+              new LockClassSubstituterAdapter(dlma, mContext);
 
             final StackAnalyzeMethodVisitor stackAnalyzer =
                 new StackAnalyzeMethodVisitor(mLogger, lcsa, isStatic);
             dlma.setStackAnalyzer(stackAnalyzer);
             lcsa.setStackAnalyzer(stackAnalyzer);
 
+
+            final MethodVisitor lineNumberWatcher =
+                mContext.getLineNumberWatcherAdapter(stackAnalyzer);
 
             if (isSynchronized) {
                 /*
@@ -92,11 +107,11 @@ class ClassAdapter extends org.objectweb.asm.ClassAdapter {
                  * beginning of the method and at each possible exit (by normal
                  * return and by exception) of the method.
                  */
-                return new SimulateMethodSyncMethodAdapter(stackAnalyzer,
-                                                           mClassName,
+                return new SimulateMethodSyncMethodAdapter(lineNumberWatcher,
+                                                           mContext,
                                                            isStatic);
             } else {
-                return stackAnalyzer;
+                return lineNumberWatcher;
             }
         }
     }
