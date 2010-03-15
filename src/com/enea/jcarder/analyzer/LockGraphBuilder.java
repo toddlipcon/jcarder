@@ -64,7 +64,7 @@ class LockGraphBuilder implements LockEventListenerIfc {
             eventType == LockEventType.SHARED_LOCK_LOCK) {
 
             if (eventType == LockEventType.SHARED_LOCK_LOCK) {
-                System.err.println("SHARED LOCK");
+                // System.err.println("SHARED LOCK");
                 lockId = -lockId;
             }
 

@@ -35,7 +35,13 @@ class LockClassSubstituterAdapter extends MethodAdapter {
     "java/util/concurrent/locks/ReentrantLock";
   private static final String LOCK_INTERNAL_NAME =
     "java/util/concurrent/locks/Lock";
-  private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
+  private static final String RWLOCK_WLOCK_INTERNAL_NAME =
+    "java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock";
+  private static final String RWLOCK_RLOCK_INTERNAL_NAME =
+    "java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock";
+
+
+private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
     "com/enea/jcarder/agent/instrument/TracingReentrantLock";
 
 
@@ -55,14 +61,16 @@ class LockClassSubstituterAdapter extends MethodAdapter {
   public void visitMethodInsn(int opcode,
                               String owner, String name, String desc) {
 
-    System.err.println("method. opcode: " + opcode + 
+    /*System.err.println("method. opcode: " + opcode + 
                        " owner: " + owner +
                        " name: " + name + 
-                       " desc: " + desc);
+                       " desc: " + desc); */
     if ((opcode == Opcodes.INVOKEVIRTUAL ||
          opcode == Opcodes.INVOKEINTERFACE) && 
         (REENTRANTLOCK_INTERNAL_NAME.equals(owner) ||
-         LOCK_INTERNAL_NAME.equals(owner))) {
+         LOCK_INTERNAL_NAME.equals(owner) ||
+         RWLOCK_WLOCK_INTERNAL_NAME.equals(owner) ||
+         RWLOCK_RLOCK_INTERNAL_NAME.equals(owner))) {
 
       String traceCallSpec = null;
 
