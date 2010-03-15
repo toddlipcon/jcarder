@@ -46,8 +46,8 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
 
 
   LockClassSubstituterAdapter(final MethodVisitor visitor,
-                              String methodName,
-                              String className) {
+                              String className,
+                              String methodName) {
     super(visitor);
     mClassAndMethodName = className + "." + methodName + "()";
     mClassName = className;
