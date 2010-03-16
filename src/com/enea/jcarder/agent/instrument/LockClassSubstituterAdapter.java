@@ -28,10 +28,7 @@ import org.objectweb.asm.Opcodes;
 @NotThreadSafe
 class LockClassSubstituterAdapter extends MethodAdapter {
   private StackAnalyzeMethodVisitor mStack;
-  private final ClassAdapter mAdapter;
-  private String mClassName;
-  private String mClassAndMethodName;
-  private int mLineNumber = -1;
+  private final InstrumentationContext mContext;
 
   private static final String REENTRANTLOCK_INTERNAL_NAME =
     "java/util/concurrent/locks/ReentrantLock";
@@ -48,22 +45,13 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
 
 
   LockClassSubstituterAdapter(final MethodVisitor visitor,
-                              ClassAdapter adapter,
-                              String methodName) {
+                              final InstrumentationContext context) {
     super(visitor);
-    mAdapter = adapter;
-    mClassName = adapter.getCurrentClassName();
-    mClassAndMethodName = mClassName + "." + methodName + "()";
+    mContext = context;
   }
 
   void setStackAnalyzer(StackAnalyzeMethodVisitor stack) {
     mStack = stack;
-  }
-
-  @Override
-  public void visitLineNumber(int line, Label start) {
-    mLineNumber = line;
-    super.visitLineNumber(line, start);
   }
 
   @Override
@@ -88,9 +76,8 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
       }
 
       if (traceCallSpec != null) {
-        mv.visitLdcInsn(convertFromJvmInternalNames(mStack.peek()));
-        mv.visitLdcInsn(mClassAndMethodName + 
-          mAdapter.getCurrentSourceFile() + ":" + mLineNumber);
+        mv.visitLdcInsn(mContext.convertFromJvmInternalNames(mStack.peek()));
+        mv.visitLdcInsn(mContext.getCallContextString());
 
         mv.visitMethodInsn(
           Opcodes.INVOKESTATIC,
@@ -104,20 +91,4 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
     }
     mv.visitMethodInsn(opcode, owner, name, desc);
   }
-
-  // TODO(tlipcon) make me util
-    private String convertFromJvmInternalNames(String s) {
-        if (s == null) {
-            assert false;
-            return "null???";
-        } else {
-            final String name = s.replace('/', '.');
-            if (name.equals(mClassName + ".class")) {
-                return "class";
-            } else {
-                return name;
-            }
-        }
-    }
-
 }
