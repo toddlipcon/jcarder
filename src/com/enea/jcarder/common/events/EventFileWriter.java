@@ -21,6 +21,19 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+
 import net.jcip.annotations.ThreadSafe;
 
 import com.enea.jcarder.util.Counter;
@@ -37,6 +50,8 @@ public final class EventFileWriter implements LockEventListenerIfc {
     private final Counter mWrittenLockEvents;
     private boolean mShutdownHookExecuted = false;
 
+    private final ExecutorService mWriterThread;
+
     public EventFileWriter(Logger logger, File file) throws IOException {
         mLogger = logger;
         mLogger.info("Opening for writing: " + file.getAbsolutePath());
@@ -47,6 +62,9 @@ public final class EventFileWriter implements LockEventListenerIfc {
                                          mLogger,
                                          100000);
         writeHeader();
+
+        mWriterThread = Executors.newSingleThreadExecutor();
+
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() { shutdownHook(); }
         });
@@ -59,18 +77,42 @@ public final class EventFileWriter implements LockEventListenerIfc {
         writeBuffer();
     }
 
-    public synchronized void onLockEvent(boolean isLock,
-                                         int lockId,
-                                         int lockingContextId,
-                                         long threadId) throws IOException {
-        mBuffer.put((byte)(isLock ? 1 : 0));
-        mBuffer.putInt(lockId);
-        mBuffer.putInt(lockingContextId);
-        mBuffer.putLong(threadId);
-        mWrittenLockEvents.increment();
-        if (mBuffer.remaining() < EVENT_LENGTH || mShutdownHookExecuted) {
-            writeBuffer();
+    private void onWriterThread(Callable<Void> c) throws IOException {
+        try {
+            mWriterThread.submit(c).get();
+        } catch (RejectedExecutionException ree) {
+            throw new IOException(ree);
+        } catch (ExecutionException ee) {
+            if (ee.getCause() instanceof IOException) {
+                throw (IOException)ee.getCause();
+            } else {
+                throw new IOException(ee);
+            }
+        } catch (InterruptedException ie) {
+            // Just re-set current thread's interruption status, since
+            // we want to appear as if we don't exist to the instrumented
+            // application.
+            Thread.currentThread().interrupt();
         }
+    }
+
+    public void onLockEvent(final boolean isLock,
+                            final int lockId,
+                            final int lockingContextId,
+                            final long threadId) throws IOException {
+        onWriterThread(new Callable<Void>() {
+                public Void call() throws IOException {
+                    mBuffer.put((byte)(isLock ? 1 : 0));
+                    mBuffer.putInt(lockId);
+                    mBuffer.putInt(lockingContextId);
+                    mBuffer.putLong(threadId);
+                    mWrittenLockEvents.increment();
+                    if (mBuffer.remaining() < EVENT_LENGTH || mShutdownHookExecuted) {
+                        writeBuffer();
+                    }
+                    return null;
+                }
+            });
     }
 
     private void writeBuffer() throws IOException {
@@ -84,14 +126,21 @@ public final class EventFileWriter implements LockEventListenerIfc {
     }
 
     public synchronized void close() throws IOException {
+        mWriterThread.shutdown();
+        try {
+            mWriterThread.awaitTermination(20, TimeUnit.SECONDS);
+        } catch (InterruptedException ie) {
+            throw new IOException("Failed to terminate writer thread", ie);
+        }
+
         writeBuffer();
         mFileChannel.close();
     }
 
     private synchronized void shutdownHook() {
         try {
-            if (mFileChannel.isOpen()) {
-                writeBuffer();
+            if (!mWriterThread.isShutdown()) {
+                close();
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -21,6 +21,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import net.jcip.annotations.ThreadSafe;
 
@@ -37,6 +44,8 @@ implements ContextWriterIfc {
     private ByteBuffer mBuffer = ByteBuffer.allocateDirect(8192);
     private boolean mShutdownHookExecuted = false;
 
+    private final ExecutorService mWriterThread;
+
     public ContextFileWriter(Logger logger, File file) throws IOException {
         mLogger = logger;
         mLogger.info("Opening for writing: " + file.getAbsolutePath());
@@ -45,15 +54,51 @@ implements ContextWriterIfc {
         mChannel = raFile.getChannel();
         writeHeader();
 
+        mWriterThread = Executors.newSingleThreadExecutor();
+
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() { shutdownHook(); }
         });
     }
 
+    private <T> T onWriterThread(Callable<T> c) throws IOException {
+        Future<T> future;
+
+        try {
+            future = mWriterThread.submit(c);
+        } catch (RejectedExecutionException ree) {
+            throw new IOException(ree);
+        }
+
+        boolean interrupted = false;
+        try {
+            while (true) {
+                try {
+                    return future.get();
+                } catch (ExecutionException ee) {
+                    if (ee.getCause() instanceof IOException) {
+                        throw (IOException)ee.getCause();
+                    } else {
+                        throw new IOException(ee);
+                    }
+                } catch (InterruptedException ie) {
+                    // If interrupted, we still need to keep on going, since
+                    // we have to really log the whole lock event before handing
+                    // control back to the user code
+                    interrupted = true;
+                }
+            }
+        } finally {
+            if (interrupted) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
     private synchronized void shutdownHook() {
         try {
-            if (mChannel.isOpen()) {
-                writeBuffer();
+            if (!mWriterThread.isShutdown()) {
+                close();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -79,6 +124,13 @@ implements ContextWriterIfc {
     }
 
     public synchronized void close() throws IOException {
+        mWriterThread.shutdown();
+        try {
+            mWriterThread.awaitTermination(20, TimeUnit.SECONDS);
+        } catch (InterruptedException ie) {
+            throw new IOException("Failed to terminate writer thread", ie);
+        }
+
         writeBuffer();
         mChannel.close();
     }
@@ -109,22 +161,30 @@ implements ContextWriterIfc {
         }
     }
 
-    public synchronized int writeLock(Lock lock) throws IOException {
-        final int startPosition = mNextFilePosition;
-        writeString(lock.getClassName());
-        writeInteger(lock.getObjectId());
-        flushBufferIfNeeded();
-        return startPosition;
+    public int writeLock(final Lock lock) throws IOException {
+        return onWriterThread(new Callable<Integer>() {
+                public Integer call() throws IOException {
+                    final int startPosition = mNextFilePosition;
+                    writeString(lock.getClassName());
+                    writeInteger(lock.getObjectId());
+                    flushBufferIfNeeded();
+                    return startPosition;
+                }
+            });
     }
 
-    public synchronized int writeContext(LockingContext context)
+    public int writeContext(final LockingContext context)
     throws IOException {
-        final int startPosition = mNextFilePosition;
-        writeString(context.getThreadName());
-        writeString(context.getLockReference());
-        writeString(context.getMethodWithClass());
-        flushBufferIfNeeded();
-        return startPosition;
+        return onWriterThread(new Callable<Integer>() {
+                public Integer call() throws IOException {
+                    final int startPosition = mNextFilePosition;
+                    writeString(context.getThreadName());
+                    writeString(context.getLockReference());
+                    writeString(context.getMethodWithClass());
+                    flushBufferIfNeeded();
+                    return startPosition;
+                }
+            });
     }
 
     private void flushBufferIfNeeded() throws IOException {

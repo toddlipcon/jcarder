@@ -48,4 +48,60 @@ public final class TestContextFile {
         Assert.assertEquals(context, reader.readContext(contextId));
         file.delete();
     }
+
+    @Test
+    public void interruptedTest() throws IOException {
+        File file = File.createTempFile(TestContextFile.class.getName(),
+                                        null);
+        ContextFileWriter writer =
+            new ContextFileWriter(new Logger(null), file);
+        Lock lock = new Lock("myClassName", 5);
+        LockingContext context = new LockingContext("myThreadName",
+                                                    "myLockReference",
+                                                    "myMethod");
+
+        // Start another thread which will interrupt us a lot
+        final Thread testThread = Thread.currentThread();
+        Thread interrupter = new Thread() {
+                public void run() {
+                    while (!Thread.interrupted()) {
+                        testThread.interrupt();
+                    }
+                }
+            };
+        interrupter.start();
+
+        // Write a bunch of things to the context file while getting
+        // interrupted
+        int numWrites = 500;
+        int lockIds[] = new int[numWrites];
+        int contextIds[] = new int[numWrites];
+
+        for (int i = 0; i < numWrites; i++) {
+            lockIds[i] = writer.writeLock(lock);
+            contextIds[i] = writer.writeContext(context);
+        }
+
+        // Stop the thread that's interrupting us and wait for it to stop
+        interrupter.interrupt();
+
+        while (interrupter.isAlive()) {
+            try {
+                interrupter.join();
+            } catch (InterruptedException ie) {
+                // We expect this
+            }
+        }
+        testThread.interrupted(); // clear our interrupt status!
+
+        writer.close();
+
+
+        ContextFileReader reader = new ContextFileReader(new Logger(null), file);
+        for (int i = 0; i < numWrites; i++) {
+            Assert.assertEquals(lock, reader.readLock(lockIds[i]));
+            Assert.assertEquals(context, reader.readContext(contextIds[i]));
+        }
+        file.delete();
+    }
 }

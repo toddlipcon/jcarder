@@ -59,4 +59,63 @@ public final class TestEventFile {
 
         file.delete();
     }
+
+    @Test
+    public void interruptedWriterTest() throws Exception {
+        File file = File.createTempFile(TestEventFile.class.getName(),
+                                        null);
+        EventFileWriter writer = new EventFileWriter(new Logger(null), file);
+        final int lockId = 5476;
+        final int lockingContextId = 523;
+        final int lastTakenLockId = 21;
+        final int lastTakenLockingContextId = 541;
+        final long threadId = 3121258129311216611L;
+
+        final int nrOfLogEvents = 3000;
+
+        // Start another thread which will interrupt us a lot
+        final Thread testThread = Thread.currentThread();
+        Thread interrupter = new Thread() {
+                public void run() {
+                    while (!Thread.interrupted()) {
+                        testThread.interrupt();
+                    }
+                }
+            };
+        interrupter.start();
+
+        // Try to write a bunch of events while we're being interrupted
+        for (int i = 0; i < nrOfLogEvents; i++) {
+            writer.onLockEvent(true,
+                               lockId,
+                               lockingContextId,
+                               threadId);
+        }
+
+        // Stop the thread that's interrupting us and wait for it to stop
+        interrupter.interrupt();
+
+        while (interrupter.isAlive()) {
+            try {
+                interrupter.join();
+            } catch (InterruptedException ie) {
+                // We expect this
+            }
+        }
+        testThread.interrupted(); // clear our interrupt status!
+
+        writer.close();
+
+        // Verify we got all our events
+        LockEventListenerIfc listenerMock = mock(LockEventListenerIfc.class);
+        new EventFileReader(new Logger(null)).parseFile(file, listenerMock);
+
+        verify(listenerMock, times(nrOfLogEvents))
+            .onLockEvent(true,
+                         lockId,
+                         lockingContextId,
+                         threadId);
+
+        file.delete();
+    }
 }
