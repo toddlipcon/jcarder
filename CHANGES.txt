@@ -1,6 +1,19 @@
 JCARDER VERSION HISTORY
 =======================
 
+  2.0.0 (2010-04-05)
+
+       * Ignoring cycles protected by shared gate locks, thereby
+         minimizing false positives.
+       * New database file format.
+       * Runtime filters for class level handling of certain monitors.
+       * Runtime filters for including only specific monitors.
+       * Allowing jcarder options to be specified as arguments to the
+         java agent.
+
+       Contributions by: Todd Lipcon, Henning Moll
+
+
   1.0.1 (2008-01-10)
      
        * Make an exception to the GPL for linking with JUnit.
