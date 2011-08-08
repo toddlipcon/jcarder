@@ -82,7 +82,11 @@ implements ContextReaderIfc {
     }
 
     public LockingContext readContext(int id) {
-        mBuffer.position(id);
+        try {
+          mBuffer.position(id);
+        } catch (IllegalArgumentException iae) {
+          throw new IllegalArgumentException("Invalid pos: " + id);
+        }
         return new LockingContext(readString(),
                                   readString(),
                                   readString());

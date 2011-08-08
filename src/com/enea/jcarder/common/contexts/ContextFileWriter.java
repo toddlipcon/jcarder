@@ -31,7 +31,8 @@ import com.enea.jcarder.util.logging.Logger;
 @ThreadSafe
 public final class ContextFileWriter
 implements ContextWriterIfc {
-    private final FileChannel mChannel;
+    private final File mFile;
+    private FileChannel mChannel;
     private int mNextFilePosition = 0;
     private final Logger mLogger;
     private ByteBuffer mBuffer = ByteBuffer.allocateDirect(8192);
@@ -39,6 +40,7 @@ implements ContextWriterIfc {
 
     public ContextFileWriter(Logger logger, File file) throws IOException {
         mLogger = logger;
+        mFile = file;
         mLogger.info("Opening for writing: " + file.getAbsolutePath());
         RandomAccessFile raFile = new RandomAccessFile(file, "rw");
         raFile.setLength(0);
@@ -54,6 +56,18 @@ implements ContextWriterIfc {
         try {
             if (mChannel.isOpen()) {
                 writeBuffer();
+            } else {
+                // the JDK seems to close off the file channel during
+                // the shutdown hook. So, we reopen it here and seek
+                // to the last known end of the file
+                RandomAccessFile raFile = new RandomAccessFile(mFile, "rw");
+                mChannel = raFile.getChannel();
+                try {
+                  mChannel.position(mNextFilePosition - mBuffer.position());
+                  writeBuffer();
+                } finally {
+                  mChannel.close();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
