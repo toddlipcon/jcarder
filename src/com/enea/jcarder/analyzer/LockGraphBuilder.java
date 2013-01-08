@@ -16,6 +16,8 @@
 
 package com.enea.jcarder.analyzer;
 
+import com.enea.jcarder.common.contexts.ContextReaderIfc;
+import com.enea.jcarder.util.logging.Logger;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -32,12 +34,20 @@ import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
  */
 @NotThreadSafe
 class LockGraphBuilder implements LockEventListenerIfc {
+
+    private final Logger mLogger;
+    private final ContextReaderIfc mContextReader;
+
     private HashMap<Integer, LockNode> mLocks =
         new HashMap<Integer, LockNode>();
 
     private HashMap<Long, HashMap<Integer, LockWithContext>> currentLocksByThread =
         new HashMap<Long, HashMap<Integer, LockWithContext>>();
 
+    public LockGraphBuilder(Logger logger, ContextReaderIfc contextReader) {
+        mLogger = logger;
+        mContextReader = contextReader;
+    }
 
     LockNode getLockNode(int lockId) {
         LockNode lockNode = mLocks.get(lockId);
@@ -75,6 +85,23 @@ class LockGraphBuilder implements LockEventListenerIfc {
                 return;
             }
 
+            // Verify that the lock and context are both in the context DB.
+            // They may not be if the end of the file was corrupted during shutdown.
+            if (mContextReader != null) {
+                try {
+                    mContextReader.readLock(lockId);
+                } catch (RuntimeException e) {
+                    mLogger.warning("Cannot find lock ID " + lockId + " in database. Ignoring.");
+                    return;
+                }
+                try {
+                    mContextReader.readContext(lockingContextId);
+                } catch (RuntimeException e) {
+                    mLogger.warning("Cannot find context ID " + lockingContextId + " in database. Ignoring.");
+                    return;
+                }
+            }
+
             final LockNode targetLock = getLockNode(lockId);
 
             // This must be a new lock. Add graph edges from all currently held
@@ -101,10 +128,11 @@ class LockGraphBuilder implements LockEventListenerIfc {
                 lockId = -lockId;
             }
 
-            // We should find it there.
+            // We should find it there unless the end of the DB was corrupted.
             LockWithContext alreadyHeld = heldLocks.get(lockId);
             if (alreadyHeld == null) {
-                throw new RuntimeException("Unlocking unheld lock!");
+                mLogger.warning("Cannot find held lock ID " + lockId + ". Ignoring.");
+                return;
             }
             --alreadyHeld.refCount;
             if (alreadyHeld.refCount == 0) {

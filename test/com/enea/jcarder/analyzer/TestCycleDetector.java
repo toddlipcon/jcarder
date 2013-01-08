@@ -44,7 +44,7 @@ public final class TestCycleDetector {
 
     @Before
     public void setUp() throws Exception {
-        mBuilder = new LockGraphBuilder();
+        mBuilder = new LockGraphBuilder(new Logger(null), null);
         mCycleDetector = new CycleDetector(new Logger(null));
         mNodes = new LinkedList<LockNode>();
         mExpectedCycles = new HashSet<Cycle>();
