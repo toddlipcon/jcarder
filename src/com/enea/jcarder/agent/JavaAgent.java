@@ -114,7 +114,7 @@ public final class JavaAgent {
         Enumeration<?> properties = System.getProperties().propertyNames();
         while (properties.hasMoreElements()) {
             String key = (String) properties.nextElement();
-            if (key.startsWith("java.vm.")) {
+            if (key.startsWith("java.vm.") || key.startsWith("sun.")) {
                 mLogger.config(key + ": " + System.getProperty(key));
             }
         }
