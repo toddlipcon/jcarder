@@ -34,7 +34,8 @@ public final class SynchronizedStaticField implements SynchronizationTestIfc {
 
     public MonitorWithContext[] getExpectedMonitorEnterings() {
         return MonitorWithContext.create(mSync,
-                                         getClass().getName() + ".go()",
-                                         getClass().getName() + ".mSync");
+                                         getClass(), "go",
+                                         getClass().getName() + ".mSync",
+                                         29);
     }
 }

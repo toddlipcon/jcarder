@@ -35,6 +35,30 @@ public final class LockEvent {
         mLockingContext = lockingContext;
     }
 
+    public static LockEvent create(final LockEventType type,
+                            final Lock lock,
+                            final Class<?> baseClass,
+                            final String methodShortName,
+                            final String lockReferenceShortName,
+                            final int lineNumber) {
+        return create(type, lock, baseClass, methodShortName,
+            lockReferenceShortName, lineNumber, Thread.currentThread().getName());
+    }
+
+    public static LockEvent create(final LockEventType type,
+                                   final Lock lock,
+                                   final Class<?> baseClass,
+                                   final String methodShortName,
+                                   final String lockReferenceShortName,
+                                   final int lineNumber,
+                                   final String threadName) {
+        LockingContext context = new LockingContext(threadName,
+            baseClass.getName() + "." + lockReferenceShortName,
+            baseClass.getName() + "." + methodShortName+ "() " +
+                "(" + baseClass.getSimpleName() + ".java:" + lineNumber + ")");
+        return new LockEvent(type, lock, context);
+    }
+
     public int hashCode() {
         return mLock.hashCode();
     }

@@ -38,7 +38,8 @@ public final class SynchronizedInStaticBlock implements SynchronizationTestIfc {
 
     public MonitorWithContext[] getExpectedMonitorEnterings() {
         return MonitorWithContext.create(mSync,
-                                         getClass().getName() + ".<clinit>()",
-                                         getClass().getName() + ".mSync");
+                                         getClass(), "<clinit>",
+                                         getClass().getName() + ".mSync",
+                                         29);
     }
 }

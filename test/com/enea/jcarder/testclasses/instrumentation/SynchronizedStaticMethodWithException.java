@@ -48,7 +48,8 @@ implements SynchronizationTestIfc {
 
     public MonitorWithContext[] getExpectedMonitorEnterings() {
         return MonitorWithContext.create(getClass(),
-                                         getClass().getName() + ".help()",
-                                         "class");
+                                         getClass(), "help",
+                                         "class",
+                                         36);
     }
 }

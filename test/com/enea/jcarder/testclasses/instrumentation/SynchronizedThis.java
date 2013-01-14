@@ -33,7 +33,8 @@ public final class SynchronizedThis implements SynchronizationTestIfc {
 
     public MonitorWithContext[] getExpectedMonitorEnterings() {
         return MonitorWithContext.create(this,
-                                         getClass().getName() + ".go()",
-                                         "this");
+                                         getClass(), "go",
+                                         "this",
+                                         28);
     }
 }
