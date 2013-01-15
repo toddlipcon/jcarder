@@ -19,9 +19,11 @@ package com.enea.jcarder.agent.instrument;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import com.enea.jcarder.testclasses.instrumentation.ReentrantLockSynchronization;
 import java.io.File;
 import java.util.ArrayList;
 
+import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,6 +105,13 @@ public final class TestDeadLockInstrumentation implements EventListenerIfc {
             // occured.
             if (monitor != null) {
                 assertFalse(Thread.holdsLock(monitor));
+                mEnteredMonitors.add(new MonitorWithContext(monitor, context));
+            }
+        } else if (type == LockEventType.LOCK_LOCK) {
+            if (monitor != null) {
+                if (monitor instanceof ReentrantLock) {
+                    assertFalse(((ReentrantLock) monitor).isHeldByCurrentThread());
+                }
                 mEnteredMonitors.add(new MonitorWithContext(monitor, context));
             }
         }
@@ -236,6 +245,11 @@ public final class TestDeadLockInstrumentation implements EventListenerIfc {
     @Test
     public void testSynchronizedMethodWithException() throws Exception {
         testClass(SynchronizedMethodWithException.class);
+    }
+
+    @Test
+    public void testReentrantLockSynchronization() throws Exception {
+        testClass(ReentrantLockSynchronization.class);
     }
 
     @Test

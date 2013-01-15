@@ -25,7 +25,7 @@ public abstract class LockTracer {
     }
   }
 
-  private static Object getSyncObject(Lock l) {
+  public static Object getSyncObject(Lock l) {
     Field fieldToGrab = null;
     if (l instanceof ReentrantLock) {
       fieldToGrab = reentrantLockSync;
