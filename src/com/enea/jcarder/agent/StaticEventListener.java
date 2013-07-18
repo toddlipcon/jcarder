@@ -20,6 +20,8 @@ import net.jcip.annotations.ThreadSafe;
 import com.enea.jcarder.common.LockingContext;
 import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
+import java.nio.channels.ClosedByInterruptException;
+
 /**
  * This class provides static methods that are supposed to be invoked directly
  * from the instrumented classes.
@@ -82,6 +84,8 @@ public final class StaticEventListener {
                                      monitor,
                                      lockingContext);
             }
+        } catch (ClosedByInterruptException e) {
+            // nothing to do because we cannot do anything
         } catch (Throwable t) {
             handleError(t);
         }
