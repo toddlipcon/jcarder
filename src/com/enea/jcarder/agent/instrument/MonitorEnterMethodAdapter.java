@@ -29,43 +29,36 @@ import static com.enea.jcarder.agent.instrument.InstrumentationUtilities.getInte
 class MonitorEnterMethodAdapter extends MethodAdapter {
     private static final String CALLBACK_CLASS_NAME =
         getInternalName(StaticEventListener.class);
-    private final String mClassAndMethodName;
-    private final String mClassName;
+    private final InstrumentationContext mContext;
     private StackAnalyzeMethodVisitor mStack;
 
+
     MonitorEnterMethodAdapter(final MethodVisitor visitor,
-                          final String className,
-                          final String methodName) {
+                              final InstrumentationContext context) {
         super(visitor);
-        mClassAndMethodName = className + "." + methodName + "()";
-        mClassName = className;
+        mContext = context;
     }
 
     public void visitInsn(int inst) {
         if (inst == Opcodes.MONITORENTER) {
             mv.visitInsn(Opcodes.DUP);
-            mv.visitLdcInsn(convertFromJvmInternalNames(mStack.peek()));
-            mv.visitLdcInsn(mClassAndMethodName);
+            mv.visitLdcInsn(mContext.convertFromJvmInternalNames(mStack.peek()));
+            mv.visitLdcInsn(mContext.getCallContextString());
             mv.visitMethodInsn(Opcodes.INVOKESTATIC,
                                CALLBACK_CLASS_NAME,
                                "beforeMonitorEnter",
                    "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V");
+        } else if (inst == Opcodes.MONITOREXIT) {
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitLdcInsn(mContext.convertFromJvmInternalNames(mStack.peek()));
+            mv.visitLdcInsn(mContext.getCallContextString());
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC,
+                               CALLBACK_CLASS_NAME,
+                               "beforeMonitorExit",
+                   "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V");
         }
-        super.visitInsn(inst);
-    }
 
-    private String convertFromJvmInternalNames(String s) {
-        if (s == null) {
-            assert false;
-            return "null???";
-        } else {
-            final String name = s.replace('/', '.');
-            if (name.equals(mClassName + ".class")) {
-                return "class";
-            } else {
-                return name;
-            }
-        }
+        super.visitInsn(inst);
     }
 
     void setStackAnalyzer(StackAnalyzeMethodVisitor stack) {

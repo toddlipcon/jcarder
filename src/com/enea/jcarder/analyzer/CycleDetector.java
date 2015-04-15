@@ -118,7 +118,8 @@ class CycleDetector {
                     edgesOnStack.subList(index, edgesOnStack.size());
                 mNoOfCreatedCycleObjects.increment();
                 mMaxCycleDepth.set(edgesInCycle.size());
-                mCycles.add(new Cycle(edgesInCycle));
+                Cycle newCycle = new Cycle(edgesInCycle);
+                mCycles.add(newCycle);
                 mNoOfCycles.set(mCycles.size());
                 /*
                  * Keeping the first edge from the cycle in the visitedEdges
@@ -194,6 +195,34 @@ class CycleDetector {
         mLogger.info("Ignoring "
                      + removedCycles
                      + " single threaded cycle(s).");
+    }
+
+
+    void removeGatedCycles() {
+        int removedCycles = 0;
+        Iterator<Cycle> iter = mCycles.iterator();
+        while (iter.hasNext()) {
+            final Cycle cycle = iter.next();
+            if (cycle.isGated()) {
+                iter.remove();
+                removedCycles++;
+            }
+        }
+        mLogger.info("Ignoring " + removedCycles + " gated cycle(s).");
+    }
+
+
+    void removeSafeSharedLockCycles() {
+        int removedCycles = 0;
+        Iterator<Cycle> iter = mCycles.iterator();
+        while (iter.hasNext()) {
+            final Cycle cycle = iter.next();
+            if (cycle.isDeadlockFreeDueToSharedLocks()) {
+                iter.remove();
+                removedCycles++;
+            }
+        }
+        mLogger.info("Ignoring " + removedCycles + " cycle(s) that are shareable.");
     }
 
     /**

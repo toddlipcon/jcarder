@@ -18,6 +18,7 @@ package com.enea.jcarder.analyzer;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -80,6 +81,40 @@ class Cycle {
             }
         }
         return true;
+    }
+
+    boolean isGated() {
+        final Iterator<LockEdge> iter = mEdgesInCycle.iterator();
+        Set<Integer> seenGates = new HashSet<Integer>();
+
+        while (iter.hasNext()) {
+            LockEdge edge = iter.next();
+            for (int gateLockId : edge.getGateLockIds()) {
+                // shared locks dont gate
+                if (gateLockId < 0) continue;
+
+                boolean wasNewGate = seenGates.add(gateLockId);
+                if (!wasNewGate) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    boolean isDeadlockFreeDueToSharedLocks() {
+        // TODO should this be done before creating the Cycle object?
+        Set<Integer> seenNodes = new HashSet<Integer>();
+        for (LockEdge edge : mEdgesInCycle) {
+            seenNodes.add(edge.getTarget().getLockId());
+        }
+
+        for (int seenId : seenNodes) {
+            if (seenId < 0 && !seenNodes.contains(-seenId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     boolean alike(Cycle other, ContextReaderIfc reader) {

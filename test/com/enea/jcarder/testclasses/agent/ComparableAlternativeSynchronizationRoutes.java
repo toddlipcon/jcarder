@@ -19,6 +19,7 @@ package com.enea.jcarder.testclasses.agent;
 import com.enea.jcarder.agent.LockEvent;
 import com.enea.jcarder.common.Lock;
 import com.enea.jcarder.common.LockingContext;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -119,9 +120,14 @@ implements SynchronizationTestIfc {
                                method);
 
         return new LockEvent[] {
-            new LockEvent(lockSync1, contextSync1, lockSync0, contextSync0),
-            new LockEvent(lockSync2, contextSync2, lockSync1, contextSync1),
-            new LockEvent(lockSync2, contextSync2, lockSync0, contextSync0),
+            new LockEvent(LockEventType.MONITOR_ENTER, lockSync0, contextSync0),
+            new LockEvent(LockEventType.MONITOR_ENTER, lockSync1, contextSync1),
+            new LockEvent(LockEventType.MONITOR_ENTER, lockSync2, contextSync2),
+            new LockEvent(LockEventType.MONITOR_EXIT, lockSync2, contextSync2),
+            new LockEvent(LockEventType.MONITOR_EXIT, lockSync1, contextSync1),
+            new LockEvent(LockEventType.MONITOR_ENTER, lockSync2, contextSync2),
+            new LockEvent(LockEventType.MONITOR_EXIT, lockSync2, contextSync2),
+            new LockEvent(LockEventType.MONITOR_EXIT, lockSync0, contextSync0)
         };
     }
 }

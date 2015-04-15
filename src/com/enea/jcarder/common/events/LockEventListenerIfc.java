@@ -17,12 +17,42 @@
 package com.enea.jcarder.common.events;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 public interface LockEventListenerIfc {
-
-    void onLockEvent(int lockId,
+    void onLockEvent(LockEventType eventType,
+                     int lockId,
                      int lockingContextId,
-                     int lastTakenLockId,
-                     int lastTakenLockingContextId,
-                     long threadId)throws IOException;
+                     long threadId)
+        throws IOException;
+
+    public static enum LockEventType {
+        MONITOR_ENTER(0),
+        MONITOR_EXIT(1),
+        LOCK_LOCK(2),
+        LOCK_UNLOCK(3),
+        SHARED_LOCK_LOCK(4),
+        SHARED_LOCK_UNLOCK(5);
+
+        public final byte typeId;
+        private static Map<Byte, LockEventType> ID_TO_ENUM = new
+            TreeMap<Byte, LockEventType>();
+
+        LockEventType(int typeId) {
+            this.typeId = (byte)typeId;
+        }
+
+        static {
+            for (LockEventType t : LockEventType.values()) {
+                ID_TO_ENUM.put(t.typeId, t);
+            }
+        }
+
+        static LockEventType fromByte(byte b) {
+            return ID_TO_ENUM.get(b);
+        }
+    }
+
+
 }

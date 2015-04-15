@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import com.enea.jcarder.util.logging.Logger;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 public final class TestEventFile {
 
@@ -41,10 +42,9 @@ public final class TestEventFile {
         final long threadId = 3121258129311216611L;
         final int nrOfLogEvents = 3;
         for (int i = 0; i < nrOfLogEvents; i++) {
-            writer.onLockEvent(lockId,
+            writer.onLockEvent(LockEventType.MONITOR_ENTER,
+                               lockId,
                                lockingContextId,
-                               lastTakenLockId,
-                               lastTakenLockingContextId,
                                threadId);
         }
         writer.close();
@@ -53,10 +53,9 @@ public final class TestEventFile {
         new EventFileReader(new Logger(null)).parseFile(file, listenerMock);
 
         verify(listenerMock, times(nrOfLogEvents))
-            .onLockEvent(lockId,
+            .onLockEvent(LockEventType.MONITOR_ENTER,
+                         lockId,
                          lockingContextId,
-                         lastTakenLockId,
-                         lastTakenLockingContextId,
                          threadId);
 
         file.delete();

@@ -28,16 +28,16 @@ import org.objectweb.asm.Opcodes;
  */
 @NotThreadSafe
 class SimulateMethodSyncMethodAdapter extends MethodAdapter {
-    private final String mClassName;
+    private final InstrumentationContext mContext;
     private final boolean mIsStatic;
     private final Label mTryLabel = new Label();
     private final Label mFinallyLabel = new Label();
 
     SimulateMethodSyncMethodAdapter(final MethodVisitor visitor,
-                                    final String className,
+                                    final InstrumentationContext context,
                                     final boolean isStatic) {
         super(visitor);
-        mClassName = className;
+        mContext = context;
         mIsStatic = isStatic;
     }
 
@@ -96,7 +96,7 @@ class SimulateMethodSyncMethodAdapter extends MethodAdapter {
 
     private void putMonitorObjectReferenceOnStack() {
         if (mIsStatic) {
-            InstrumentationUtilities.pushClassReferenceToStack(mv, mClassName);
+            InstrumentationUtilities.pushClassReferenceToStack(mv, mContext.getClassName());
         } else {
             mv.visitVarInsn(Opcodes.ALOAD, 0);
         }

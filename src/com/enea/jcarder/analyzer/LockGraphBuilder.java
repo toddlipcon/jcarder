@@ -17,10 +17,12 @@
 package com.enea.jcarder.analyzer;
 
 import java.util.HashMap;
+import java.util.Stack;
 
 import net.jcip.annotations.NotThreadSafe;
 
 import com.enea.jcarder.common.events.LockEventListenerIfc;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 /**
  * This class is responsible for constructing a structure of LockNode and
@@ -33,6 +35,10 @@ class LockGraphBuilder implements LockEventListenerIfc {
     private HashMap<Integer, LockNode> mLocks =
         new HashMap<Integer, LockNode>();
 
+    private HashMap<Long, HashMap<Integer, LockWithContext>> currentLocksByThread =
+        new HashMap<Long, HashMap<Integer, LockWithContext>>();
+
+
     LockNode getLockNode(int lockId) {
         LockNode lockNode = mLocks.get(lockId);
         if (lockNode == null) {
@@ -42,20 +48,70 @@ class LockGraphBuilder implements LockEventListenerIfc {
         return lockNode;
     }
 
-    public void onLockEvent(int lockId,
+    public void onLockEvent(LockEventType eventType,
+                            int lockId,
                             int lockingContextId,
-                            int lastTakenLockId,
-                            int lastTakenLockingContectId,
                             long threadId) {
-        if (lastTakenLockId >= 0) {
-            final LockNode sourceLock = getLockNode(lastTakenLockId);
+        HashMap<Integer, LockWithContext> heldLocks =
+            currentLocksByThread.get(threadId);
+        if (heldLocks == null) {
+            heldLocks = new HashMap<Integer, LockWithContext>();
+            currentLocksByThread.put(threadId, heldLocks);
+        }
+
+        if (eventType == LockEventType.MONITOR_ENTER ||
+            eventType == LockEventType.LOCK_LOCK ||
+            eventType == LockEventType.SHARED_LOCK_LOCK) {
+
+            if (eventType == LockEventType.SHARED_LOCK_LOCK) {
+                // System.err.println("SHARED LOCK");
+                lockId = -lockId;
+            }
+
+            // If we've already locked this monitor, just up the refcount.
+            LockWithContext alreadyHeld = heldLocks.get(lockId);
+            if (alreadyHeld != null) {
+                alreadyHeld.refCount++;
+                return;
+            }
+
             final LockNode targetLock = getLockNode(lockId);
-            final LockEdge edge = new LockEdge(sourceLock,
-                                               targetLock,
-                                               threadId,
-                                               lastTakenLockingContectId,
-                                               lockingContextId);
-            sourceLock.addOutgoingEdge(edge);
+
+            // This must be a new lock. Add graph edges from all currently held
+            // locks to this one.
+            for (LockWithContext sourceLwc : heldLocks.values()) {
+                LockNode sourceLock = getLockNode(sourceLwc.nodeId);
+                final LockEdge edge = new LockEdge(sourceLock,
+                                                   targetLock,
+                                                   threadId,
+                                                   sourceLwc.contextId,
+                                                   lockingContextId,
+                                                   heldLocks.keySet());
+                sourceLock.addOutgoingEdge(edge);
+            }
+
+            // And add this one to the set.
+            heldLocks.put(lockId,
+                          new LockWithContext(lockId, lockingContextId));
+        } else if (eventType == LockEventType.MONITOR_EXIT ||
+                   eventType == LockEventType.LOCK_UNLOCK ||
+                   eventType == LockEventType.SHARED_LOCK_UNLOCK) {
+
+            if (eventType == LockEventType.SHARED_LOCK_UNLOCK) {
+                lockId = -lockId;
+            }
+
+            // We should find it there.
+            LockWithContext alreadyHeld = heldLocks.get(lockId);
+            if (alreadyHeld == null) {
+                throw new RuntimeException("Unlocking unheld lock!");
+            }
+            --alreadyHeld.refCount;
+            if (alreadyHeld.refCount == 0) {
+                heldLocks.remove(lockId);
+            }
+        } else {
+            throw new RuntimeException("Unknown lock event type: " + eventType);
         }
     }
 
@@ -65,5 +121,17 @@ class LockGraphBuilder implements LockEventListenerIfc {
 
     Iterable<LockNode> getAllLocks() {
         return mLocks.values();
+    }
+
+    private static class LockWithContext {
+        public final int nodeId;
+        public final int contextId;
+
+        public int refCount = 1;
+
+        public LockWithContext(int nodeId, int contextId) {
+            this.nodeId = nodeId;
+            this.contextId = contextId;
+        }
     }
 }

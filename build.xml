@@ -1,12 +1,14 @@
 <project name="JCarder" default="dist" basedir=".">
   <property name="version" value="1.0.1"/>
   <property name="src" location="src"/>
+  <property name="src.test" location="test"/>
   <property name="3pp" location="3pp"/>
   <property name="build" location="build/"/>
+  <property name="build.test" location="build-test/"/>
   <property name="examples" location="examples"/>
   <property name="dist"  location="dist"/>
   <property name="asm.jar" location="${3pp}/asm-all-2.2.2.jar"/>
-  <property name="easymock.jar" location="${3pp}/easymock-2.2.jar"/>
+  <property name="mockito.jar" location="${3pp}/mockito-all-1.7.jar"/>
   <property name="jarjar.jar" location="${3pp}/jarjar-0.7.jar"/>
   <property name="jcip.jar" location="${3pp}/jcip-annotations-20070710.jar"/>
   <property name="junit.jar" location="${3pp}/junit-4.1.jar"/>
@@ -16,7 +18,7 @@
       <and>
         <available file="${asm.jar}"/>
         <available file="${jarjar.jar}"/>
-        <available file="${easymock.jar}"/>
+        <available file="${mockito.jar}"/>
         <available file="${jcip.jar}"/>
         <available file="${junit.jar}"/>
       </and>
@@ -28,8 +30,22 @@
   <target name="init">
     <tstamp/>
     <mkdir dir="${build}"/>
+    <mkdir dir="${build.test}"/>
     <mkdir dir="${dist}"/>
   </target>
+
+  <path id="run.classpath">
+    <pathelement location="${jcip.jar}" />
+    <pathelement location="${asm.jar}" />
+  </path>
+
+  <path id="test.classpath">
+    <path refid="run.classpath" />
+    <pathelement location="${junit.jar}" />
+    <pathelement location="${mockito.jar}" />
+    <pathelement location="${build}" />
+    <pathelement location="${build.test}" />
+  </path>
 
   <target name="compile" depends="check3pps, init">
     <javac srcdir="${src}"
@@ -99,6 +115,27 @@
       <arg value="${dist}/jcarder-src-${version}.tar.gz"/>
     </exec>
   </target>
+
+  <target name="compile-test" depends="check3pps, init">
+    <javac srcdir="${src.test}"
+           destdir="${build.test}"
+           classpath="${asm.jar}:${jcip.jar}:${junit.jar}:${mockito.jar}:${build}"
+           target="1.5"
+           debug="true"
+           debuglevel="lines,vars,source"/>
+  </target>
+  <target name="test" depends="compile,compile-test">
+    <junit printsummary="yes">
+      <classpath refid="test.classpath" />
+      <formatter type="plain" />
+      <batchtest fork="yes" todir="${build.test}">
+        <fileset dir="${src.test}">
+          <include name="**/Test*.java" />
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
 
   <target name="clean">
     <delete dir="bin"/>

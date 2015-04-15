@@ -17,6 +17,10 @@
 package com.enea.jcarder.analyzer;
 
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -36,17 +40,31 @@ class LockEdge {
     private int mTargetContextId;
     private long mNumberOfDuplicates;
 
+    private Set<Integer> mGateLockIds;
+
+
     LockEdge(LockNode source,
              LockNode target,
              long threadId,
              int sourceLockingContextId,
              int targetLockingContextId) {
+        this(source, target, threadId, sourceLockingContextId, targetLockingContextId,
+             Collections.<Integer>emptyList());
+    }
+
+    LockEdge(LockNode source,
+             LockNode target,
+             long threadId,
+             int sourceLockingContextId,
+             int targetLockingContextId,
+             Collection<Integer> gateLockIds) {
         mSource = source;
         mTarget = target;
         mThreadId = threadId;
         mSourceContextId = sourceLockingContextId;
         mTargetContextId = targetLockingContextId;
         mNumberOfDuplicates = 0;
+        mGateLockIds = new HashSet<Integer>(gateLockIds);
     }
 
     void merge(LockEdge other) {
@@ -95,8 +113,14 @@ class LockEdge {
     }
 
     public int hashCode() {
-        // TODO Improve hashCode algorithm to improve performance?
-        return mTarget.getLockId() + mSource.getLockId();
+        final int prime = 31;
+        int result = 1;
+        result = prime + mSource.getLockId();
+        result = prime * result + mSourceContextId;
+        result = prime * result + mTarget.getLockId();
+        result = prime * result + mTargetContextId;
+        result = prime * result + (int) (mThreadId ^ (mThreadId >>> 32));
+        return result;
     }
 
     LockNode getTarget() {
@@ -134,7 +158,11 @@ class LockEdge {
         return mThreadId;
     }
 
+    Set<Integer> getGateLockIds() {
+        return mGateLockIds;
+    }
+
     public String toString() {
-        return "  " + mSource + "->" + mTarget;
+        return "  " + mSource + "->" + mTarget + "(t " + mThreadId + ")";
     }
 }

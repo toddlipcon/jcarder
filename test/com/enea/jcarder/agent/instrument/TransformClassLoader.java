@@ -147,11 +147,11 @@ public final class TransformClassLoader extends ClassLoader {
     public boolean hasBeenTransformed(String className) {
         return mTansformedClasses.contains(className);
     }
-    
+
     public static String resourceNameForClass(String className) {
         return className.replace(".", "/") + ".class";
-    }    
-    
+    }
+
     /**
     *
     * @param className

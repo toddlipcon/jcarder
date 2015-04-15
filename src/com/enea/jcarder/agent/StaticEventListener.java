@@ -18,6 +18,7 @@ package com.enea.jcarder.agent;
 
 import net.jcip.annotations.ThreadSafe;
 import com.enea.jcarder.common.LockingContext;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 /**
  * This class provides static methods that are supposed to be invoked directly
@@ -56,6 +57,20 @@ public final class StaticEventListener {
     public static void beforeMonitorEnter(Object monitor,
                                           String lockReference,
                                           String methodWithClass) {
+      handleEvent(LockEventType.MONITOR_ENTER, monitor, lockReference, methodWithClass);
+    }
+
+
+    public static void beforeMonitorExit(Object monitor,
+                                         String lockReference,
+                                         String methodWithClass) {
+      handleEvent(LockEventType.MONITOR_EXIT, monitor, lockReference, methodWithClass);
+    }
+
+    public static void handleEvent(LockEventType type,
+                                   Object monitor,
+                                   String lockReference,
+                                   String methodWithClass) {
         try {
             EventListenerIfc listener = getListener();
             if (listener != null) {
@@ -63,13 +78,16 @@ public final class StaticEventListener {
                     new LockingContext(Thread.currentThread(),
                                        lockReference,
                                        methodWithClass);
-                listener.beforeMonitorEnter(monitor,
-                                            lockingContext);
+                listener.handleEvent(type,
+                                     monitor,
+                                     lockingContext);
             }
         } catch (Throwable t) {
             handleError(t);
         }
     }
+
+
 
     private static void handleError(Throwable t) {
         setListener(null);

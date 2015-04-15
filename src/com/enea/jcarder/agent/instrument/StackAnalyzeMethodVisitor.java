@@ -16,6 +16,8 @@
 
 package com.enea.jcarder.agent.instrument;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 import net.jcip.annotations.NotThreadSafe;
 
@@ -45,6 +47,8 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
     private final Stack<Object> mStack = new Stack<Object>();
     private final MethodVisitor mMethodVisitor;
     private final boolean mIsStatic;
+    private final Map<Integer, String> mLocalVarNames =
+        new HashMap<Integer, String>();
 
     StackAnalyzeMethodVisitor(final Logger logger,
                               final MethodVisitor methodVisitor,
@@ -224,9 +228,17 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
             }
             // pass through to next case.
         case Opcodes.INVOKEINTERFACE:
+            String thisObject = "<unknown>";
+            if (opCode == Opcodes.INVOKEVIRTUAL ||
+                opCode == Opcodes.INVOKEINTERFACE) {
+                for (int i = 0; i < InstrumentationUtilities.countParameters(desc); i++) {
+                    popObject();
+                }
+                thisObject = popObject().toString();
+            }
             clear();
             if (isNonVoidMethod(name, desc)) {
-                pushTextualDescription(owner + "." + name + "()");
+                pushTextualDescription("(" + owner + ")" + thisObject + "." + name + "()");
             }
             break;
         default:
@@ -277,17 +289,16 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
             if (index == 0 && !mIsStatic) {
                 pushTextualDescription("this");
             } else {
-                /*
-                 * TODO Translate the index to a local variable name. To be able
-                 * to do that we probably have to analyze the class in two steps
-                 * since the visit method visitLocalVariable is not called until
-                 * after all calls to visitVarInsn.
-                 */
-                pushTextualDescription("<localVariable" + index + ">");
+                String previouslyStoredName = mLocalVarNames.get(index);
+                if (previouslyStoredName == null) {
+                    previouslyStoredName = "<localVariable" + index + ">";
+                }
+                pushTextualDescription(previouslyStoredName);
             }
             break;
         case Opcodes.ASTORE:
-            pop();
+            String varname = pop();
+            mLocalVarNames.put(index, varname);
             break;
         default:
             clear();
