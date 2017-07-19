@@ -17,7 +17,6 @@
 package com.enea.jcarder.agent.instrument;
 import net.jcip.annotations.NotThreadSafe;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -26,7 +25,7 @@ import org.objectweb.asm.Opcodes;
  * adding a MonitorEnter and MonitorExits.
  */
 @NotThreadSafe
-class LockClassSubstituterAdapter extends MethodAdapter {
+class LockClassSubstituterAdapter extends MethodVisitor {
   private StackAnalyzeMethodVisitor mStack;
   private final InstrumentationContext mContext;
 
@@ -46,7 +45,7 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
 
   LockClassSubstituterAdapter(final MethodVisitor visitor,
                               final InstrumentationContext context) {
-    super(visitor);
+    super(Opcodes.ASM5, visitor);
     mContext = context;
   }
 
@@ -56,7 +55,7 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
 
   @Override
   public void visitMethodInsn(int opcode,
-                              String owner, String name, String desc) {
+                              String owner, String name, String desc, boolean ifc) {
     if ((opcode == Opcodes.INVOKEVIRTUAL ||
          opcode == Opcodes.INVOKEINTERFACE) && 
         (REENTRANTLOCK_INTERNAL_NAME.equals(owner) ||

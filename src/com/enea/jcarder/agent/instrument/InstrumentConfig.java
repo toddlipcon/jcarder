@@ -20,7 +20,7 @@ package com.enea.jcarder.agent.instrument;
 public final class InstrumentConfig {
 
     private final boolean mValidateTransfomedClasses = true;
-    private boolean mDumpClassFiles;
+    private boolean mDumpClassFiles = true;
 
     public InstrumentConfig() {
         mDumpClassFiles = false;

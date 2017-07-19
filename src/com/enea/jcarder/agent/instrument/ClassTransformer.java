@@ -106,15 +106,16 @@ public class ClassTransformer implements ClassFileTransformer {
             return null;
         }
         final ClassReader reader = new ClassReader(originalClassBuffer);
-        final ClassWriter writer = new ClassWriter(true);
+        final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         ClassVisitor visitor = writer;
         if (mInstrumentConfig.getValidateTransfomedClasses()) {
-            visitor = new CheckClassAdapter(visitor);
+            visitor = new CheckClassAdapter(visitor, false);
         }
         visitor = new ClassAdapter(mLogger, visitor, className);
-        reader.accept(visitor, false);
+        reader.accept(visitor, ClassReader.EXPAND_FRAMES);
         byte[] instrumentedClassfileBuffer = writer.toByteArray();
-        if (mInstrumentConfig.getDumpClassFiles()) {
+        if (true || mInstrumentConfig.getDumpClassFiles()) {
+            mLogger.severe("==> dumping class files to " + mOriginalClassesDir);
             dumpClassToFile(originalClassBuffer,
                             mOriginalClassesDir,
                             className);

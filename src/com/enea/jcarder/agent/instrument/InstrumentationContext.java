@@ -16,7 +16,7 @@
 package com.enea.jcarder.agent.instrument;
 
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodAdapter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.MethodVisitor;
 
 
@@ -78,13 +78,13 @@ class InstrumentationContext {
     }
 
 
-    public MethodAdapter getLineNumberWatcherAdapter(MethodVisitor mv) {
+    public MethodVisitor getLineNumberWatcherAdapter(MethodVisitor mv) {
         return new LineNumberMethodAdapter(mv);
     }
 
-    private class LineNumberMethodAdapter extends MethodAdapter {
+    private class LineNumberMethodAdapter extends MethodVisitor {
         public LineNumberMethodAdapter(MethodVisitor mv) {
-            super(mv);
+            super(Opcodes.ASM5, mv);
         }
 
         @Override

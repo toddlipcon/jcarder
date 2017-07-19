@@ -40,12 +40,11 @@ import com.enea.jcarder.util.logging.Logger;
  * The analysis is done during the instrumentation.
  */
 @NotThreadSafe
-class StackAnalyzeMethodVisitor implements MethodVisitor {
+class StackAnalyzeMethodVisitor extends MethodVisitor {
     private static final TextualDescription UNKOWN_VALUE =
         new TextualDescription("???");
     private final Logger mLogger;
     private final Stack<Object> mStack = new Stack<Object>();
-    private final MethodVisitor mMethodVisitor;
     private final boolean mIsStatic;
     private final Map<Integer, String> mLocalVarNames =
         new HashMap<Integer, String>();
@@ -53,8 +52,8 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
     StackAnalyzeMethodVisitor(final Logger logger,
                               final MethodVisitor methodVisitor,
                               final boolean isStatic) {
+        super(Opcodes.ASM5, methodVisitor);
         mLogger = logger;
-        mMethodVisitor = methodVisitor;
         mIsStatic = isStatic;
     }
 
@@ -109,12 +108,17 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
     }
 
     public void visitCode() {
-        mMethodVisitor.visitCode();
+        super.visitCode();
         clear();
     }
 
     public void visitEnd() {
-        mMethodVisitor.visitEnd();
+        super.visitEnd();
+        clear();
+    }
+
+    public void visitFrame(int type, int nLocal, Object[] local, int nStack, Object[] stack) {
+        super.visitFrame(type, nLocal, local, nStack, stack);
         clear();
     }
 
@@ -122,7 +126,7 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
                                String owner,
                                String name,
                                String desc) {
-        mMethodVisitor.visitFieldInsn(opCode, owner, name, desc);
+        super.visitFieldInsn(opCode, owner, name, desc);
         switch (opCode) {
         case Opcodes.GETFIELD:
             pop();
@@ -137,12 +141,12 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
     }
 
     public void visitIincInsn(int arg0, int arg1) {
-        mMethodVisitor.visitIincInsn(arg0, arg1);
+        super.visitIincInsn(arg0, arg1);
         clear();
     }
 
     public void visitInsn(int opCode) {
-        mMethodVisitor.visitInsn(opCode);
+        super.visitInsn(opCode);
         switch (opCode) {
         case Opcodes.DUP:
             pushTextualDescription(peek());
@@ -153,24 +157,24 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
     }
 
     public void visitIntInsn(int opCode, int arg1) {
-        mMethodVisitor.visitIntInsn(opCode, arg1);
+        super.visitIntInsn(opCode, arg1);
         clear();
     }
 
     public void visitJumpInsn(int opCode, Label arg1) {
-        mMethodVisitor.visitJumpInsn(opCode, arg1);
+        super.visitJumpInsn(opCode, arg1);
         clear();
     }
 
     public void visitLabel(Label arg0) {
-        mMethodVisitor.visitLabel(arg0);
+        super.visitLabel(arg0);
         // We have to invalidate the stack since we don't know how we arrived
         // at this label. We might have jumped to this place from anywhere.
         clear();
     }
 
     public void visitLdcInsn(Object cst) {
-        mMethodVisitor.visitLdcInsn(cst);
+        super.visitLdcInsn(cst);
         if (cst instanceof Type) {
             Type t = (Type) cst;
             pushTextualDescription(t.getClassName() + ".class");
@@ -182,7 +186,7 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
     }
 
     public void visitLineNumber(int arg0, Label arg1) {
-        mMethodVisitor.visitLineNumber(arg0, arg1);
+        super.visitLineNumber(arg0, arg1);
     }
 
     public void visitLocalVariable(String name,
@@ -191,7 +195,7 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
                                    Label start,
                                    Label end,
                                    int index) {
-        mMethodVisitor.visitLocalVariable(name,
+        super.visitLocalVariable(name,
                                           desc,
                                           signature,
                                           start,
@@ -200,16 +204,18 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
     }
 
     public void visitLookupSwitchInsn(Label arg0, int[] arg1, Label[] arg2) {
-        mMethodVisitor.visitLookupSwitchInsn(arg0, arg1, arg2);
+        super.visitLookupSwitchInsn(arg0, arg1, arg2);
         clear();
     }
 
     // TODO refactor this method
+    @Override
     public void visitMethodInsn(int opCode,
                                 String owner,
                                 String name,
-                                String desc) {
-        mMethodVisitor.visitMethodInsn(opCode, owner, name, desc);
+                                String desc,
+                                boolean itf) {
+        super.visitMethodInsn(opCode, owner, name, desc, itf);
         switch (opCode) {
         case Opcodes.INVOKEVIRTUAL:
             // pass through to next case.
@@ -252,21 +258,21 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
     }
 
     public void visitMultiANewArrayInsn(String arg0, int arg1) {
-        mMethodVisitor.visitMultiANewArrayInsn(arg0, arg1);
+        super.visitMultiANewArrayInsn(arg0, arg1);
         clear();
     }
 
     public AnnotationVisitor visitParameterAnnotation(int arg0,
                                                       String arg1,
                                                       boolean arg2) {
-        return mMethodVisitor.visitParameterAnnotation(arg0, arg1, arg2);
+        return super.visitParameterAnnotation(arg0, arg1, arg2);
     }
 
     public void visitTableSwitchInsn(int arg0,
                                      int arg1,
                                      Label arg2,
                                      Label[] arg3) {
-        mMethodVisitor.visitTableSwitchInsn(arg0, arg1, arg2, arg3);
+        super.visitTableSwitchInsn(arg0, arg1, arg2, arg3);
         clear();
     }
 
@@ -274,16 +280,16 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
                                    Label arg1,
                                    Label arg2,
                                    String arg3) {
-        mMethodVisitor.visitTryCatchBlock(arg0, arg1, arg2, arg3);
+        super.visitTryCatchBlock(arg0, arg1, arg2, arg3);
         clear();
     }
 
     public void visitTypeInsn(int opCode, String desc) {
-        mMethodVisitor.visitTypeInsn(opCode, desc);
+        super.visitTypeInsn(opCode, desc);
     }
 
     public void visitVarInsn(int opCode, int index) {
-        mMethodVisitor.visitVarInsn(opCode, index);
+        super.visitVarInsn(opCode, index);
         switch (opCode) {
         case Opcodes.ALOAD:
             if (index == 0 && !mIsStatic) {
@@ -306,18 +312,18 @@ class StackAnalyzeMethodVisitor implements MethodVisitor {
     }
 
     public AnnotationVisitor visitAnnotation(String arg0, boolean arg1) {
-        return mMethodVisitor.visitAnnotation(arg0, arg1);
+        return super.visitAnnotation(arg0, arg1);
     }
 
     public AnnotationVisitor visitAnnotationDefault() {
-        return mMethodVisitor.visitAnnotationDefault();
+        return super.visitAnnotationDefault();
     }
 
     public void visitAttribute(Attribute arg0) {
-        mMethodVisitor.visitAttribute(arg0);
+        super.visitAttribute(arg0);
     }
 
     public void visitMaxs(int arg0, int arg1) {
-        mMethodVisitor.visitMaxs(arg0, arg1);
+        super.visitMaxs(arg0, arg1);
     }
 }
