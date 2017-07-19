@@ -114,7 +114,7 @@ public class ClassTransformer implements ClassFileTransformer {
         visitor = new ClassAdapter(mLogger, visitor, className);
         reader.accept(visitor, ClassReader.EXPAND_FRAMES);
         byte[] instrumentedClassfileBuffer = writer.toByteArray();
-        if (true || mInstrumentConfig.getDumpClassFiles()) {
+        if (mInstrumentConfig.getDumpClassFiles()) {
             mLogger.severe("==> dumping class files to " + mOriginalClassesDir);
             dumpClassToFile(originalClassBuffer,
                             mOriginalClassesDir,

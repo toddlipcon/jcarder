@@ -86,6 +86,7 @@ public abstract class LockTracer {
     return ret;
   }
 
+  // TODO(todd) is this used?
   public static void lockInterruptibly(Lock l, String refName, String stack) throws InterruptedException {
     try {
       l.lockInterruptibly();

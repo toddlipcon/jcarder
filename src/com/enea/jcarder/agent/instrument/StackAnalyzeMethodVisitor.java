@@ -244,7 +244,11 @@ class StackAnalyzeMethodVisitor extends MethodVisitor {
             }
             clear();
             if (isNonVoidMethod(name, desc)) {
-                pushTextualDescription(owner + "." + name + "()");
+                if (opCode != Opcodes.INVOKESTATIC) {
+                    pushTextualDescription("(" + owner + ")" + thisObject + "." + name + "()");
+                } else {
+                    pushTextualDescription(owner + "." + name + "()");
+                }
             }
             break;
         default:

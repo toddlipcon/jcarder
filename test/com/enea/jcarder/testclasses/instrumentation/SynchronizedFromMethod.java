@@ -41,7 +41,7 @@ public final class SynchronizedFromMethod implements SynchronizationTestIfc {
     public MonitorWithContext[] getExpectedMonitorEnterings() {
         return MonitorWithContext.create(mSync,
                                          getClass(), "go",
-                                         getClass().getName() + ".getSync()",
+                                         "(" + getClass().getName() + ")this.getSync()",
                                          35);
     }
 }

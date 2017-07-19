@@ -40,9 +40,10 @@ implements SynchronizationTestIfc {
     }
 
     public MonitorWithContext[] getExpectedMonitorEnterings() {
+        // TODO(todd): why is it 'unknown' below instead of 'this'?
         return MonitorWithContext.create(mSync,
                                          getClass(), "go",
-                                         getClass().getName() + ".getSync()",
+                                         "(" + getClass().getName() + ")<unknown>.getSync()",
                                          36);
     }
 
