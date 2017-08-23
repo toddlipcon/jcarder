@@ -25,6 +25,7 @@ import java.security.ProtectionDomain;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.CheckClassAdapter;
 
 import com.enea.jcarder.util.logging.Logger;
@@ -45,6 +46,8 @@ public class ClassTransformer implements ClassFileTransformer {
     private final InstrumentConfig mInstrumentConfig;
     private File mOriginalClassesDir;
     private File mInstrumentedClassesDir;
+
+    private final HierarchyListener hierarchyListener_ = new HierarchyListener(Opcodes.ASM5, null);
 
     public ClassTransformer(Logger logger,
                             File outputDirectory,
@@ -96,6 +99,7 @@ public class ClassTransformer implements ClassFileTransformer {
         }
         final String reason = isInstrumentable(className);
         if (reason != null) {
+            hierarchyListener_.visitClass(originalClassBuffer);
             mLogger.finest(
                 "Won't instrument class " + className + ": " + reason);
             return null;
@@ -106,13 +110,24 @@ public class ClassTransformer implements ClassFileTransformer {
             return null;
         }
         final ClassReader reader = new ClassReader(originalClassBuffer);
-        final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS)
+        {
+            @Override
+            protected String getCommonSuperClass(String type1, String type2) {
+                return hierarchyListener_.getCommonSuperClass(type1, type2);
+            }
+        };
+
         ClassVisitor visitor = writer;
         if (mInstrumentConfig.getValidateTransfomedClasses()) {
             visitor = new CheckClassAdapter(visitor, false);
         }
         visitor = new ClassAdapter(mLogger, visitor, className);
-        reader.accept(visitor, ClassReader.EXPAND_FRAMES);
+        synchronized (hierarchyListener_) {
+            hierarchyListener_.setDelegate(visitor);
+            reader.accept(hierarchyListener_, ClassReader.EXPAND_FRAMES);
+            hierarchyListener_.setDelegate(null);
+        }
         byte[] instrumentedClassfileBuffer = writer.toByteArray();
         if (mInstrumentConfig.getDumpClassFiles()) {
             mLogger.severe("==> dumping class files to " + mOriginalClassesDir);
