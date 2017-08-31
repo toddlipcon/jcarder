@@ -25,6 +25,7 @@ import java.security.ProtectionDomain;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.CheckClassAdapter;
 
 import com.enea.jcarder.util.logging.Logger;
@@ -46,6 +47,8 @@ public class ClassTransformer implements ClassFileTransformer {
     private File mOriginalClassesDir;
     private File mInstrumentedClassesDir;
 
+    private ClassInfoCache ciCache;
+
     public ClassTransformer(Logger logger,
                             File outputDirectory,
                             InstrumentConfig config) {
@@ -66,6 +69,7 @@ public class ClassTransformer implements ClassFileTransformer {
         }
         deleteDirRecursively(mInstrumentedClassesDir);
         deleteDirRecursively(mOriginalClassesDir);
+        ciCache = new ClassInfoCache(mLogger);
     }
 
     public byte[] transform(final ClassLoader classLoader,
@@ -106,7 +110,8 @@ public class ClassTransformer implements ClassFileTransformer {
             return null;
         }
         final ClassReader reader = new ClassReader(originalClassBuffer);
-        final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        final ClassWriter writer = new FrameClassWriter(classLoader, ciCache, Opcodes.V1_8);
+
         ClassVisitor visitor = writer;
         if (mInstrumentConfig.getValidateTransfomedClasses()) {
             visitor = new CheckClassAdapter(visitor, false);
