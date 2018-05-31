@@ -7,7 +7,7 @@
   <property name="build.test" location="build-test/"/>
   <property name="examples" location="examples"/>
   <property name="dist"  location="dist"/>
-  <property name="asm.jar" location="${3pp}/asm-all-2.2.2.jar"/>
+  <property name="asm.jar" location="${3pp}/asm-all-5.2.jar"/>
   <property name="mockito.jar" location="${3pp}/mockito-all-1.7.jar"/>
   <property name="jarjar.jar" location="${3pp}/jarjar-0.7.jar"/>
   <property name="jcip.jar" location="${3pp}/jcip-annotations-20070710.jar"/>
@@ -51,13 +51,15 @@
     <javac srcdir="${src}"
            destdir="${build}"
            classpath="${asm.jar}:${jcip.jar}"
-           target="1.5"
+           source="1.8"
+           target="1.8"
            debug="true"
            debuglevel="lines,vars,source"/>
     <javac srcdir="${examples}"
            destdir="${examples}"
            classpath="${examples}:${build}"
-           target="1.5"
+           source="1.8"
+           target="1.8"
            debug="true"
            debuglevel="lines,vars,source"/>
   </target>
@@ -120,13 +122,15 @@
     <javac srcdir="${src.test}"
            destdir="${build.test}"
            classpath="${asm.jar}:${jcip.jar}:${junit.jar}:${mockito.jar}:${build}"
-           target="1.5"
+           source="1.8"
+           target="1.8"
            debug="true"
            debuglevel="lines,vars,source"/>
   </target>
   <target name="test" depends="compile,compile-test">
     <junit printsummary="yes">
       <classpath refid="test.classpath" />
+      <sysproperty key="jcarder.loglevel" value="finest" />
       <formatter type="plain" />
       <batchtest fork="yes" todir="${build.test}">
         <fileset dir="${src.test}">

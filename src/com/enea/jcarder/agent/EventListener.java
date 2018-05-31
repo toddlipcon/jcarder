@@ -35,6 +35,7 @@ import com.enea.jcarder.common.contexts.ContextFileWriter;
 import com.enea.jcarder.common.contexts.ContextWriterIfc;
 import com.enea.jcarder.common.events.EventFileWriter;
 import com.enea.jcarder.common.events.LockEventListenerIfc;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 import com.enea.jcarder.util.Counter;
 import com.enea.jcarder.util.logging.Logger;
 
@@ -91,28 +92,22 @@ final class EventListener implements EventListenerIfc {
             new Counter("Entered Monitors", mLogger, 100000);
     }
 
-    public void beforeMonitorEnter(Object monitor, LockingContext context)
+    public void handleEvent(LockEventType type,
+                            Object monitor, LockingContext context)
         throws Exception {
-        mLogger.finest("EventListener.beforeMonitorEnter");
+
+        // TODO check mLogger before wasting this string concat
+        mLogger.finest("EventListener.handleEvent(" + type + ")");
+
         // Check ignoreFilter and switch to class level if the monitor is
         // matched by classLevelFilter. Results are cached.
         Object classifiedMonitor = checkMonitor(monitor);
 
         if (classifiedMonitor != sentinelIgnore) {
-            mNumberOfEnteredMonitors.increment();
-            lockEvent(true, monitor, classifiedMonitor, context);
-        }
-    }
-
-    public void beforeMonitorExit(Object monitor, LockingContext context)
-        throws Exception {
-        mLogger.finest("EventListener.beforeMonitorExit");
-        // Check ignoreFilter and switch to class level if the monitor is
-        // matched by classLevelFilter. Results are cached.
-        Object classifiedMonitor = checkMonitor(monitor);
-
-        if (classifiedMonitor != sentinelIgnore) {
-            lockEvent(false, monitor, classifiedMonitor, context);
+            if (type == LockEventType.MONITOR_ENTER) {
+                mNumberOfEnteredMonitors.increment();
+            }
+            lockEvent(type, monitor, classifiedMonitor, context);
         }
     }
 
@@ -194,7 +189,7 @@ final class EventListener implements EventListenerIfc {
         return firstOccurrence;
     }
 
-    private synchronized void lockEvent(boolean isLock,
+    private synchronized void lockEvent(LockEventType type,
                                         Object monitor,
                                         Object classifiedMonitor,
                                         LockingContext context)
@@ -202,7 +197,7 @@ final class EventListener implements EventListenerIfc {
         int newLockId = mLockIdGenerator.acquireLockId(classifiedMonitor);
         int newContextId = mContextCache.acquireContextId(context);
         Thread performingThread = Thread.currentThread();
-        mLockEventListener.onLockEvent(isLock,
+        mLockEventListener.onLockEvent(type,
                                        newLockId,
                                        newContextId,
                                        performingThread.getId());

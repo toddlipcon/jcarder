@@ -40,7 +40,8 @@ public final class SynchronizedNull implements SynchronizationTestIfc {
 
     public MonitorWithContext[] getExpectedMonitorEnterings() {
         return MonitorWithContext.create(mSync2,
-                                         getClass().getName() + ".go()",
-                                         getClass().getName() + ".mSync2");
+                                         getClass(), "go",
+                                         getClass().getName() + ".mSync2",
+                                         34);
     }
 }

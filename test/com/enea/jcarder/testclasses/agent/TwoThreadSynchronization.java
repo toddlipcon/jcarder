@@ -18,7 +18,7 @@ package com.enea.jcarder.testclasses.agent;
 
 import com.enea.jcarder.agent.LockEvent;
 import com.enea.jcarder.common.Lock;
-import com.enea.jcarder.common.LockingContext;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -66,33 +66,15 @@ implements SynchronizationTestIfc {
         final Lock lockSync1 = new Lock(mSync1);
         final Lock lockSync2 = new Lock(mSync2);
         final String threadName = Thread.currentThread().getName();
-        final String method = getClass().getName() + ".go()";
-        LockingContext contextSync0 =
-            new LockingContext(threadName,
-                               getClass().getName() + ".mSync0",
-                               method);
-        LockingContext contextSync1 =
-            new LockingContext(threadName,
-                               getClass().getName() + ".mSync1",
-                               method);
-        LockingContext contextSync1Thread =
-            new LockingContext(getName(),
-                               getClass().getName() + ".mSync1",
-                               getClass().getName() + ".run()");
-
-        LockingContext contextSync2Thread =
-            new LockingContext(getName(),
-                               getClass().getName() + ".mSync2",
-                               getClass().getName() + ".run()");
         return new LockEvent[] {
-            new LockEvent(true, lockSync0, contextSync0),
-            new LockEvent(true, lockSync1, contextSync1),
-            new LockEvent(true, lockSync2, contextSync2Thread),
-            new LockEvent(true, lockSync1, contextSync1Thread),
-            new LockEvent(false, lockSync1, contextSync1),
-            new LockEvent(false, lockSync1, contextSync1Thread),
-            new LockEvent(false, lockSync2, contextSync2Thread),
-            new LockEvent(false, lockSync0, contextSync0)
+            LockEvent.create(LockEventType.MONITOR_ENTER, lockSync0, getClass(), "go", "mSync0", 35, threadName),
+            LockEvent.create(LockEventType.MONITOR_ENTER, lockSync1, getClass(), "go", "mSync1", 37, threadName),
+            LockEvent.create(LockEventType.MONITOR_ENTER, lockSync2, getClass(), "run", "mSync2", 54, getName()),
+            LockEvent.create(LockEventType.MONITOR_ENTER, lockSync1, getClass(), "run", "mSync1", 56, getName()),
+            LockEvent.create(LockEventType.MONITOR_EXIT, lockSync1, getClass(), "go", "mSync1", 42, threadName),
+            LockEvent.create(LockEventType.MONITOR_EXIT, lockSync1, getClass(), "run", "mSync1", 58, getName()),
+            LockEvent.create(LockEventType.MONITOR_EXIT, lockSync2, getClass(), "run", "mSync2", 59, getName()),
+            LockEvent.create(LockEventType.MONITOR_EXIT, lockSync0, getClass(), "go", "mSync0", 45, threadName)
         };
     }
 }

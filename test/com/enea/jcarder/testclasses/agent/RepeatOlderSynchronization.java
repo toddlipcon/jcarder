@@ -18,7 +18,7 @@ package com.enea.jcarder.testclasses.agent;
 
 import com.enea.jcarder.agent.LockEvent;
 import com.enea.jcarder.common.Lock;
-import com.enea.jcarder.common.LockingContext;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 import static org.junit.Assert.assertTrue;
 
@@ -50,28 +50,14 @@ implements SynchronizationTestIfc {
     public LockEvent[] getExpectedLockEvents() {
         final Lock lockSync0 = new Lock(mSync0);
         final Lock lockSync1 = new Lock(mSync1);
-        final String threadName = Thread.currentThread().getName();
-        final String method = getClass().getName() + ".go()";
-        final LockingContext contextSync0 =
-            new LockingContext(threadName,
-                               getClass().getName() + ".mSync0",
-                               method);
-        final LockingContext contextSync0Foo =
-            new LockingContext(threadName,
-                               getClass().getName() + ".mSync0",
-                               getClass().getName() + ".foo()");
-        final LockingContext contextSync1Foo =
-            new LockingContext(threadName,
-                               getClass().getName() + ".mSync1",
-                               getClass().getName() + ".foo()");
         return new LockEvent[] {
-            new LockEvent(true, lockSync0, contextSync0),
-            new LockEvent(true, lockSync1, contextSync1Foo),
-            new LockEvent(true, lockSync0, contextSync0Foo),
+            LockEvent.create(LockEventType.MONITOR_ENTER, lockSync0, getClass(), "go", "mSync0", 31),
+            LockEvent.create(LockEventType.MONITOR_ENTER, lockSync1, getClass(), "foo", "mSync1", 41),
+            LockEvent.create(LockEventType.MONITOR_ENTER, lockSync0, getClass(), "foo", "mSync0", 43),
 
-            new LockEvent(false, lockSync0, contextSync0Foo),
-            new LockEvent(false, lockSync1, contextSync1Foo),
-            new LockEvent(false, lockSync0, contextSync0)
+            LockEvent.create(LockEventType.MONITOR_EXIT, lockSync0, getClass(), "foo", "mSync0", 45),
+            LockEvent.create(LockEventType.MONITOR_EXIT, lockSync1, getClass(), "foo", "mSync1", 46),
+            LockEvent.create(LockEventType.MONITOR_EXIT, lockSync0, getClass(), "go", "mSync0", 34)
         };
     }
 }

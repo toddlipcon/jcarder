@@ -45,14 +45,14 @@ implements SynchronizationTestIfc {
 
     public MonitorWithContext[] getExpectedMonitorEnterings() {
         return new MonitorWithContext[] {
-                new MonitorWithContext(this,
-                                       getClass().getName() + ".runHelp()",
-                                       "this",
-                                       Thread.currentThread()),
-                new MonitorWithContext(this,
-                                       getClass().getName() + ".runHelp()",
-                                       "this",
-                                       Thread.currentThread())
+            MonitorWithContext.create(this,
+                                      getClass(), "runHelp",
+                                      "this",
+                                      35)[0],
+            MonitorWithContext.create(this,
+                                      getClass(), "runHelp",
+                                      "this",
+                                      35)[0]
         };
     }
 }

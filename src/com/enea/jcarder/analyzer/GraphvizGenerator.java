@@ -158,8 +158,13 @@ final class GraphvizGenerator {
         default:
             color = "white";
         }
+        String lockName = reader.readLock(node.getLockId()).toString();
+        if (node.getLockId() < 0) {
+            lockName += " [shared]";
+        }
+
         return "  " + node.toString() + " [label = \""
-               + escape(reader.readLock(node.getLockId()).toString())
+               + escape(lockName)
                + "\" , fillcolor=" + color + "];\n";
     }
 

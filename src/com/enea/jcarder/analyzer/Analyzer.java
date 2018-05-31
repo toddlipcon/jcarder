@@ -74,7 +74,7 @@ public final class Analyzer {
     public void start(String[] args) {
         parseArguments(args);
         initLogger();
-        LockGraphBuilder graphBuilder = new LockGraphBuilder();
+        LockGraphBuilder graphBuilder;
         final ContextReaderIfc contextReader;
 
         try {
@@ -83,6 +83,7 @@ public final class Analyzer {
                                                         CONTEXTS_DB_FILENAME));
 
             EventFileReader eventReader = new EventFileReader(mLogger);
+            graphBuilder = new LockGraphBuilder(mLogger, contextReader);
             eventReader.parseFile(new File(mInputDirectory, EVENT_DB_FILENAME),
                                   graphBuilder);
         }
@@ -106,6 +107,8 @@ public final class Analyzer {
                                + e.getMessage());
             }
         } else {
+            cycleDetector.removeSafeSharedLockCycles();
+
             if (mOutputMode == OutputMode.INCLUDE_ONLY_MULTI_THREADED_CYCLES) {
                 cycleDetector.removeSingleThreadedCycles();
             }

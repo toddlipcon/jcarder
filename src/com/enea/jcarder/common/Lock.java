@@ -23,6 +23,15 @@ import net.jcip.annotations.ThreadSafe;
  */
 @ThreadSafe
 public final class Lock {
+    public static enum EventType {
+        MONITOR_ENTER,
+        MONITOR_EXIT,
+        LOCK_LOCK,
+        LOCK_UNLOCK,
+        SHARED_LOCK_LOCK,
+        SHARED_RLOCK_UNLOCK;
+    }
+
     private final String mClassName;
     private final int mObjectId;
 

@@ -39,6 +39,7 @@ import net.jcip.annotations.ThreadSafe;
 import com.enea.jcarder.util.Counter;
 import com.enea.jcarder.util.logging.Logger;
 
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 import static com.enea.jcarder.common.events.EventFileReader.EVENT_LENGTH;
 
 @ThreadSafe
@@ -96,13 +97,13 @@ public final class EventFileWriter implements LockEventListenerIfc {
         }
     }
 
-    public void onLockEvent(final boolean isLock,
+    public void onLockEvent(final LockEventType type,
                             final int lockId,
                             final int lockingContextId,
                             final long threadId) throws IOException {
         onWriterThread(new Callable<Void>() {
                 public Void call() throws IOException {
-                    mBuffer.put((byte)(isLock ? 1 : 0));
+                    mBuffer.put(type.typeId);
                     mBuffer.putInt(lockId);
                     mBuffer.putInt(lockingContextId);
                     mBuffer.putLong(threadId);

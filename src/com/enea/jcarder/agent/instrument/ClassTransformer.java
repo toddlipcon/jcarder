@@ -16,6 +16,7 @@
 
 package com.enea.jcarder.agent.instrument;
 
+import com.google.common.base.Throwables;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class ClassTransformer implements ClassFileTransformer {
             return instrument(classLoader, originalClassBuffer, className);
         } catch (Throwable t) {
             mLogger.severe("Failed to transform the class "
-                           + className + ": " + t.getMessage());
+                           + className + ": " + Throwables.getStackTraceAsString(t));
             dumpClassToFile(originalClassBuffer,
                             mOriginalClassesDir,
                             className);
@@ -106,15 +107,17 @@ public class ClassTransformer implements ClassFileTransformer {
             return null;
         }
         final ClassReader reader = new ClassReader(originalClassBuffer);
-        final ClassWriter writer = new ClassWriter(true);
+        final ClassWriter writer = new ASMClassWriter(className, reader.getSuperName(),
+               ClassWriter.COMPUTE_FRAMES, classLoader);
         ClassVisitor visitor = writer;
         if (mInstrumentConfig.getValidateTransfomedClasses()) {
-            visitor = new CheckClassAdapter(visitor);
+            visitor = new CheckClassAdapter(visitor, false);
         }
         visitor = new ClassAdapter(mLogger, visitor, className);
-        reader.accept(visitor, false);
+        reader.accept(visitor, ClassReader.EXPAND_FRAMES);
         byte[] instrumentedClassfileBuffer = writer.toByteArray();
         if (mInstrumentConfig.getDumpClassFiles()) {
+            mLogger.severe("==> dumping class files to " + mOriginalClassesDir);
             dumpClassToFile(originalClassBuffer,
                             mOriginalClassesDir,
                             className);

@@ -19,9 +19,11 @@ package com.enea.jcarder.agent.instrument;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import com.enea.jcarder.testclasses.instrumentation.ReentrantLockSynchronization;
 import java.io.File;
 import java.util.ArrayList;
 
+import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import org.junit.Test;
 import com.enea.jcarder.agent.EventListenerIfc;
 import com.enea.jcarder.agent.StaticEventListener;
 import com.enea.jcarder.common.LockingContext;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 import com.enea.jcarder.testclasses.instrumentation.SynchronizationTestIfc;
 import com.enea.jcarder.testclasses.instrumentation.SynchronizedArray;
 import com.enea.jcarder.testclasses.instrumentation.SynchronizedClass;
@@ -91,16 +94,26 @@ public final class TestDeadLockInstrumentation implements EventListenerIfc {
                      mEnteredMonitors.toArray());
     }
 
-    public void beforeMonitorEnter(Object monitor, LockingContext context) {
-        // onMonitorEnter shall be invoked BEFORE the look is taken
-        // in order to be able to generate the event even if the
-        // lock can never be taken and the thread is blocked forever.
-        // Otherwise we would only be able to generate lock graphs
-        // for possible deadlocks and not for deadlocks that acctually
-        // occured.
-        if (monitor != null) {
-            assertFalse(Thread.holdsLock(monitor));
-            mEnteredMonitors.add(new MonitorWithContext(monitor, context));
+    public void handleEvent(LockEventType type, Object monitor,
+                            LockingContext context) {
+        if (type == LockEventType.MONITOR_ENTER) {
+            // onMonitorEnter shall be invoked BEFORE the look is taken
+            // in order to be able to generate the event even if the
+            // lock can never be taken and the thread is blocked forever.
+            // Otherwise we would only be able to generate lock graphs
+            // for possible deadlocks and not for deadlocks that acctually
+            // occured.
+            if (monitor != null) {
+                assertFalse(Thread.holdsLock(monitor));
+                mEnteredMonitors.add(new MonitorWithContext(monitor, context));
+            }
+        } else if (type == LockEventType.LOCK_LOCK) {
+            if (monitor != null) {
+                if (monitor instanceof ReentrantLock) {
+                    assertFalse(((ReentrantLock) monitor).isHeldByCurrentThread());
+                }
+                mEnteredMonitors.add(new MonitorWithContext(monitor, context));
+            }
         }
     }
 
@@ -235,6 +248,11 @@ public final class TestDeadLockInstrumentation implements EventListenerIfc {
     }
 
     @Test
+    public void testReentrantLockSynchronization() throws Exception {
+        testClass(ReentrantLockSynchronization.class);
+    }
+
+    @Test
     public void testSynchronizedNewObject() throws Exception {
         SynchronizationTestIfc test =
             transformAsSynchronizationTest(SynchronizedNewObject.class);
@@ -252,15 +270,6 @@ public final class TestDeadLockInstrumentation implements EventListenerIfc {
 
     public void accessStaticField(Class owner, int fieldId, boolean isVolatile,
                                   boolean writeAccess) {
-        // TODO Auto-generated method stub
-    }
-
-    public void afterMonitorEnter(Object monitor, boolean foo) {
-        // TODO Auto-generated method stub
-    }
-
-
-    public void beforeMonitorExit(Object monitor, LockingContext context) {
         // TODO Auto-generated method stub
     }
 

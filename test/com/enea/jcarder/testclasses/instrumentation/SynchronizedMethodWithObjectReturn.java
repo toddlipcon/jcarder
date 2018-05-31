@@ -36,11 +36,9 @@ implements SynchronizationTestIfc {
     }
 
     public MonitorWithContext[] getExpectedMonitorEnterings() {
-        return new MonitorWithContext[] {
-                new MonitorWithContext(this,
-                                       getClass().getName() + ".runHelp()",
-                                       "this",
-                                       Thread.currentThread()),
-        };
+        return MonitorWithContext.create(this,
+                                         getClass(), "runHelp",
+                                         "this",
+                                         31);
     }
 }

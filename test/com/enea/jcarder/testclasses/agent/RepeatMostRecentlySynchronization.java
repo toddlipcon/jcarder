@@ -18,7 +18,7 @@ package com.enea.jcarder.testclasses.agent;
 
 import com.enea.jcarder.agent.LockEvent;
 import com.enea.jcarder.common.Lock;
-import com.enea.jcarder.common.LockingContext;
+import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -46,23 +46,14 @@ implements SynchronizationTestIfc {
     public LockEvent[] getExpectedLockEvents() {
         final Lock lockSync0 = new Lock(mSync0);
         final Lock lockSync1 = new Lock(mSync1);
-        final String threadName = Thread.currentThread().getName();
-        final String method = getClass().getName() + ".go()";
-        LockingContext contextSync0 =
-            new LockingContext(threadName,
-                               getClass().getName() + ".mSync0",
-                               method);
-        LockingContext contextSync1 =
-            new LockingContext(threadName,
-                               getClass().getName() + ".mSync1",
-                               method);
         return new LockEvent[] {
-            new LockEvent(true, lockSync0, contextSync0),
-            new LockEvent(true, lockSync1, contextSync1),
-            new LockEvent(true, lockSync1, contextSync1),
-            new LockEvent(false, lockSync1, contextSync1),
-            new LockEvent(false, lockSync1, contextSync1),
-            new LockEvent(false, lockSync0, contextSync0)
+            LockEvent.create(LockEventType.MONITOR_ENTER, lockSync0, getClass(), "go", "mSync0", 32),
+            LockEvent.create(LockEventType.MONITOR_ENTER, lockSync1, getClass(), "go", "mSync1", 34),
+            LockEvent.create(LockEventType.MONITOR_ENTER, lockSync1, getClass(), "go", "mSync1", 39),
+            LockEvent.create(LockEventType.MONITOR_EXIT, lockSync1, getClass(), "go", "mSync1", 41),
+            LockEvent.create(LockEventType.MONITOR_EXIT, lockSync1, getClass(), "go", "mSync1", 42),
+            LockEvent.create(LockEventType.MONITOR_EXIT, lockSync0, getClass(), "go", "mSync0", 43)
         };
     }
+
 }

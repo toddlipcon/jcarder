@@ -32,7 +32,8 @@ public final class SynchronizedNewObject implements SynchronizationTestIfc {
 
     public MonitorWithContext[] getExpectedMonitorEnterings() {
         return MonitorWithContext.create(null,
-                                         getClass().getName() + ".go()",
-                                         "java.lang.Object.<init>()");
+                                         getClass(), "go",
+                                         "(java.lang.Object)<unknown>.<init>()",
+                                         29);
     }
 }

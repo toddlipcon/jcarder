@@ -17,7 +17,6 @@
 package com.enea.jcarder.agent.instrument;
 
 import net.jcip.annotations.NotThreadSafe;
-import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -26,34 +25,33 @@ import com.enea.jcarder.agent.StaticEventListener;
 import static com.enea.jcarder.agent.instrument.InstrumentationUtilities.getInternalName;
 
 @NotThreadSafe
-class MonitorEnterMethodAdapter extends MethodAdapter {
+class MonitorEnterMethodAdapter extends MethodVisitor {
     private static final String CALLBACK_CLASS_NAME =
         getInternalName(StaticEventListener.class);
-    private final String mClassAndMethodName;
-    private final String mClassName;
+    private final InstrumentationContext mContext;
     private StackAnalyzeMethodVisitor mStack;
 
+
     MonitorEnterMethodAdapter(final MethodVisitor visitor,
-                          final String className,
-                          final String methodName) {
-        super(visitor);
-        mClassAndMethodName = className + "." + methodName + "()";
-        mClassName = className;
+                              final InstrumentationContext context) {
+        super(Opcodes.ASM5, visitor);
+        mContext = context;
     }
 
+    @Override
     public void visitInsn(int inst) {
         if (inst == Opcodes.MONITORENTER) {
             mv.visitInsn(Opcodes.DUP);
-            mv.visitLdcInsn(convertFromJvmInternalNames(mStack.peek()));
-            mv.visitLdcInsn(mClassAndMethodName);
+            mv.visitLdcInsn(mContext.convertFromJvmInternalNames(mStack.peek()));
+            mv.visitLdcInsn(mContext.getCallContextString());
             mv.visitMethodInsn(Opcodes.INVOKESTATIC,
                                CALLBACK_CLASS_NAME,
                                "beforeMonitorEnter",
                    "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V");
         } else if (inst == Opcodes.MONITOREXIT) {
             mv.visitInsn(Opcodes.DUP);
-            mv.visitLdcInsn(convertFromJvmInternalNames(mStack.peek()));
-            mv.visitLdcInsn(mClassAndMethodName);
+            mv.visitLdcInsn(mContext.convertFromJvmInternalNames(mStack.peek()));
+            mv.visitLdcInsn(mContext.getCallContextString());
             mv.visitMethodInsn(Opcodes.INVOKESTATIC,
                                CALLBACK_CLASS_NAME,
                                "beforeMonitorExit",
@@ -61,20 +59,6 @@ class MonitorEnterMethodAdapter extends MethodAdapter {
         }
 
         super.visitInsn(inst);
-    }
-
-    private String convertFromJvmInternalNames(String s) {
-        if (s == null) {
-            assert false;
-            return "null???";
-        } else {
-            final String name = s.replace('/', '.');
-            if (name.equals(mClassName + ".class")) {
-                return "class";
-            } else {
-                return name;
-            }
-        }
     }
 
     void setStackAnalyzer(StackAnalyzeMethodVisitor stack) {
