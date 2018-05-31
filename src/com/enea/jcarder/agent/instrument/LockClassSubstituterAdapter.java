@@ -83,6 +83,8 @@ private static final String TRACING_REENTRANTLOCK_INTERNAL_NAME =
           "com/enea/jcarder/agent/LockTracer",
           name, traceCallSpec);
         return;
+      } else if ("isHeldByCurrentThread".equals(name)) {
+        // no instrumentation necessary
       } else {
         System.err.println("Didn't know how to instrument call to " +
                            owner + "." + name + desc);
