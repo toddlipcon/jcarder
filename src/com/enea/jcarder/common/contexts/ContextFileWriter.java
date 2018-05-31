@@ -16,6 +16,7 @@
 
 package com.enea.jcarder.common.contexts;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -56,7 +57,11 @@ implements ContextWriterIfc {
         mChannel = raFile.getChannel();
         writeHeader();
 
-        mWriterThread = Executors.newSingleThreadExecutor();
+        mWriterThread = Executors.newSingleThreadExecutor(
+            new ThreadFactoryBuilder()
+                .setNameFormat(file.getName() + "-%d")
+                .setDaemon(true)
+                .build());
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() { shutdownHook(); }
