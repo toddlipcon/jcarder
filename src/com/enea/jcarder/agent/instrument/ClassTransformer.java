@@ -16,6 +16,7 @@
 
 package com.enea.jcarder.agent.instrument;
 
+import com.google.common.base.Throwables;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class ClassTransformer implements ClassFileTransformer {
             return instrument(classLoader, originalClassBuffer, className);
         } catch (Throwable t) {
             mLogger.severe("Failed to transform the class "
-                           + className + ": " + t.getMessage());
+                           + className + ": " + Throwables.getStackTraceAsString(t));
             dumpClassToFile(originalClassBuffer,
                             mOriginalClassesDir,
                             className);
