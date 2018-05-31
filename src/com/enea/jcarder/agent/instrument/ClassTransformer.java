@@ -106,7 +106,8 @@ public class ClassTransformer implements ClassFileTransformer {
             return null;
         }
         final ClassReader reader = new ClassReader(originalClassBuffer);
-        final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        final ClassWriter writer = new ASMClassWriter(className, reader.getSuperName(),
+               ClassWriter.COMPUTE_FRAMES, classLoader);
         ClassVisitor visitor = writer;
         if (mInstrumentConfig.getValidateTransfomedClasses()) {
             visitor = new CheckClassAdapter(visitor, false);

@@ -10,7 +10,7 @@
   <name>jcarder</name>
 
   <properties>
-    <asm.version>5.2</asm.version>
+    <asm.version>6.2</asm.version>
     <mockito.version>1.10.19</mockito.version>
     <jcip.version>1.0</jcip.version>
     <junit.version>4.1</junit.version>
@@ -20,10 +20,20 @@
     <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-all -->
     <dependency>
       <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-all</artifactId>
+      <artifactId>asm</artifactId>
       <version>${asm.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-commons</artifactId>
+      <version>${asm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-util</artifactId>
+      <version>${asm.version}</version>
+    </dependency>
+    
     <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
     <dependency>
       <groupId>org.mockito</groupId>
