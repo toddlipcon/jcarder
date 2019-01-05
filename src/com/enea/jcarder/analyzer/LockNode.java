@@ -106,7 +106,6 @@ class LockNode {
     }
 
     boolean alike(LockNode other, ContextReaderIfc reader) {
-        // TODO Maybe introduce some kind of cache to improve performance?
         String thisClassName = reader.readLock(mLockId).getClassName();
         String otherClassName = reader.readLock(other.mLockId).getClassName();
         return thisClassName.equals(otherClassName);
