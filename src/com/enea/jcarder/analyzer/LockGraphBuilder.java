@@ -19,12 +19,10 @@ package com.enea.jcarder.analyzer;
 import com.enea.jcarder.common.contexts.ContextReaderIfc;
 import com.enea.jcarder.util.logging.Logger;
 import java.util.HashMap;
-import java.util.Stack;
 
 import net.jcip.annotations.NotThreadSafe;
 
 import com.enea.jcarder.common.events.LockEventListenerIfc;
-import com.enea.jcarder.common.events.LockEventListenerIfc.LockEventType;
 
 /**
  * This class is responsible for constructing a structure of LockNode and
@@ -108,13 +106,15 @@ class LockGraphBuilder implements LockEventListenerIfc {
             // locks to this one.
             for (LockWithContext sourceLwc : heldLocks.values()) {
                 LockNode sourceLock = getLockNode(sourceLwc.nodeId);
-                final LockEdge edge = new LockEdge(sourceLock,
-                                                   targetLock,
-                                                   threadId,
-                                                   sourceLwc.contextId,
-                                                   lockingContextId,
-                                                   heldLocks.keySet());
-                sourceLock.addOutgoingEdge(edge);
+                final LockEdge edge = new LockEdge(sourceLock, targetLock);
+                final LockTransition transition = new LockTransition(
+                        threadId,
+                        sourceLwc.contextId,
+                        lockingContextId,
+                        heldLocks.keySet()
+                );
+                sourceLock.addOutgoingEdge(edge)
+                        .addTransition(transition);
             }
 
             // And add this one to the set.

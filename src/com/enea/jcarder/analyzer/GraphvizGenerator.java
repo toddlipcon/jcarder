@@ -90,30 +90,33 @@ final class GraphvizGenerator {
         sb.append("  node [shape=ellipse, style=filled, fontsize=12];\n");
         final HashSet<LockNode> alreadyAppendedNodes = new HashSet<LockNode>();
         for (LockEdge edge : edgesToBePrinted) {
-            appendNodeIfNotAppended(reader,
-                                    sb,
-                                    alreadyAppendedNodes,
-                                    edge.getSource());
-            appendNodeIfNotAppended(reader,
-                                    sb,
-                                    alreadyAppendedNodes,
-                                    edge.getTarget());
-            sb.append("  " + edge.getSource().toString() + "");
-            sb.append(" -> " + edge.getTarget().toString() + "");
-            sb.append(createEdgeLabel(reader, edge, includePackages));
-            sb.append(";\n");
+            for (LockTransition transition : edge.getTransitions()) {
+                appendNodeIfNotAppended(reader,
+                        sb,
+                        alreadyAppendedNodes,
+                        edge.getSource());
+                appendNodeIfNotAppended(reader,
+                        sb,
+                        alreadyAppendedNodes,
+                        edge.getTarget());
+                sb.append("  ").append(edge.getSource().toString());
+                sb.append(" -> ").append(edge.getTarget().toString());
+
+                sb.append(createTransitionLabel(reader, transition, includePackages));
+                sb.append(";\n");
+            }
         }
         sb.append("}\n");
         return sb.toString();
     }
 
-    private String createEdgeLabel(ContextReaderIfc reader,
-                                   LockEdge edge,
-                                   boolean includePackages) {
+    private String createTransitionLabel(ContextReaderIfc reader,
+                                         LockTransition transition,
+                                         boolean includePackages) {
         final LockingContext source =
-            reader.readContext(edge.getSourceLockingContextId());
+            reader.readContext(transition.getSourceLockingContextId());
         final LockingContext target =
-            reader.readContext(edge.getTargetLockingContextId());
+            reader.readContext(transition.getTargetLockingContextId());
         return String.format(EDGE_LABEL_FORMAT,
                              escape(handlePackage(target.getThreadName(),
                                                   includePackages)),
