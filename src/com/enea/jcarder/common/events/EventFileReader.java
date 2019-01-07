@@ -30,6 +30,7 @@ public final class EventFileReader {
     private static final int LONG_LENGTH = 8;
     private final Logger mLogger;
     static final int EVENT_LENGTH = 1 + (INT_LENGTH * 2) + LONG_LENGTH;
+    private static final int FILE_BUFFER_LENGTH = EVENT_LENGTH * 1024;
     static final long MAGIC_COOKIE = 2153191828159737167L;
     static final int MAJOR_VERSION = 2;
     static final int MINOR_VERSION = 0;
@@ -47,12 +48,16 @@ public final class EventFileReader {
         mLogger.info("Opening for reading: " + path);
         FileChannel fileChannel = fis.getChannel();
         validateHeader(fileChannel, path);
-        final ByteBuffer buffer = ByteBuffer.allocate(EVENT_LENGTH);
-        while (fileChannel.read(buffer) == EVENT_LENGTH) {
+
+        final ByteBuffer buffer = ByteBuffer.allocate(FILE_BUFFER_LENGTH);
+        int read;
+        while ((read = fileChannel.read(buffer)) > 0) {
             buffer.rewind();
-            parseLockEvent(buffer, eventReceiver);
+            while (buffer.position() < read) {
+                parseLockEvent(buffer, eventReceiver);
+                numberOfParsedEvents++;
+            }
             buffer.rewind();
-            numberOfParsedEvents++;
         }
         mLogger.fine("Loaded " + numberOfParsedEvents
                      + " lock events from file.");

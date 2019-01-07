@@ -22,6 +22,8 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.HashMap;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -32,7 +34,6 @@ import com.enea.jcarder.util.logging.Logger;
 @NotThreadSafe
 public final class ContextFileReader
 implements ContextReaderIfc {
-    // TODO Make the directory of the database files configurable?
     public static final String EVENT_DB_FILENAME = "jcarder_events.db";
     public static final String CONTEXTS_DB_FILENAME = "jcarder_contexts.db";
     static final long MAGIC_COOKIE = 3927194112434171438L;
@@ -41,6 +42,9 @@ implements ContextReaderIfc {
     static final Charset CHARSET = Charset.forName("UTF-8");
     private final Logger mLogger;
     private final ByteBuffer mBuffer;
+
+    private final Map<Integer, LockingContext> lockingContextCache = new HashMap<>();
+    private final Map<Integer, Lock> lockCache = new HashMap<>();
 
     public ContextFileReader(Logger logger, File file) throws IOException {
         mLogger = logger;
@@ -82,20 +86,29 @@ implements ContextReaderIfc {
     }
 
     public LockingContext readContext(int id) {
-        try {
-          mBuffer.position(id);
-        } catch (IllegalArgumentException iae) {
-          throw new IllegalArgumentException("Invalid pos: " + id);
+        LockingContext lockingContext = lockingContextCache.get(id);
+        if (lockingContext == null) {
+            try {
+                mBuffer.position(id);
+            } catch (IllegalArgumentException iae) {
+                throw new IllegalArgumentException("Invalid pos: " + id);
+            }
+            lockingContext =  new LockingContext(readString(), readString(), readString());
+            lockingContextCache.put(id, lockingContext);
         }
-        return new LockingContext(readString(),
-                                  readString(),
-                                  readString());
+        return lockingContext;
     }
 
     public Lock readLock(int id) {
-        mBuffer.position(Math.abs(id));
-        String className = readString();
-        int objectId = mBuffer.getInt();
-        return new Lock(className, objectId);
+        int key = Math.abs(id);
+        Lock lock = lockCache.get(key);
+        if (lock == null) {
+            mBuffer.position(key);
+            String className = readString();
+            int objectId = mBuffer.getInt();
+            lock = new Lock(className, objectId);
+            lockCache.put(key, lock);
+        }
+        return lock;
     }
 }
