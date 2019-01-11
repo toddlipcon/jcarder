@@ -16,12 +16,7 @@
 
 package com.enea.jcarder.analyzer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -33,8 +28,6 @@ import com.enea.jcarder.util.logging.Logger;
 /**
  * This class is responsible for finding and managing cycles.
  *
- * TODO Add possibility to ignore cycles guarded by a common lock.
- *
  * TODO Add possibility to ignore cycles created by two threads that cannot
  * possibly run at the same time. Is it possible to achieve that by tracking
  * Thread.start() and Thread.join()?
@@ -45,13 +38,15 @@ import com.enea.jcarder.util.logging.Logger;
 class CycleDetector {
     private final HashSet<Cycle> mCycles;
     private final Logger mLogger;
+    private final boolean mFastMode;
     private final MaxValueCounter mMaxDepth;
     private final MaxValueCounter mMaxCycleDepth;
     private final MaxValueCounter mNoOfCycles;
     private final Counter mNoOfCreatedCycleObjects;
 
-    CycleDetector(Logger logger) {
+    CycleDetector(Logger logger, boolean fastMode) {
         mLogger = logger;
+        mFastMode = fastMode;
         mCycles = new HashSet<Cycle>();
         mMaxDepth = new MaxValueCounter("Graph Depth", mLogger);
         mMaxCycleDepth = new MaxValueCounter("Cycle Depth", mLogger);
@@ -167,6 +162,9 @@ class CycleDetector {
         Iterator<Cycle> iter = mCycles.iterator();
         while (iter.hasNext()) {
             final Cycle cycle = iter.next();
+            if (mFastMode) {
+                cycle.removeAlikeTransitions(reader);
+            }
             if (containsAlike(cycle, uniqueCycles, reader)) {
                 iter.remove();
                 removedCycles++;
@@ -224,6 +222,14 @@ class CycleDetector {
         }
         mLogger.info("Ignoring " + removedCycles + " cycle(s) that are shareable.");
     }
+
+    int getNumberOfTransitionCycles() {
+         int transitionCycles = 0;
+         for (Cycle cycle : mCycles) {
+             transitionCycles += cycle.getNumberOfTransitionCycles();
+         }
+         return transitionCycles;
+     }
 
     /**
      * Get the total number of edges in all known cycles.

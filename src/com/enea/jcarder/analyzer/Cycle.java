@@ -16,11 +16,7 @@
 
 package com.enea.jcarder.analyzer;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 import com.enea.jcarder.common.contexts.ContextReaderIfc;
 
@@ -74,8 +70,11 @@ class Cycle {
         final Iterator<LockEdge> iter = mEdgesInCycle.iterator();
         if (iter.hasNext()) {
             final long firstThreadId = iter.next().getThreadId();
+            if (firstThreadId < 0) {
+                return false;
+            }
             while (iter.hasNext()) {
-                if (firstThreadId != iter.next().getThreadId()) {
+                if (!iter.next().hasThreadId(firstThreadId)) {
                     return false;
                 }
             }
@@ -117,6 +116,12 @@ class Cycle {
         return false;
     }
 
+    void removeAlikeTransitions(ContextReaderIfc reader) {
+        for (LockEdge edge : mEdgesInCycle) {
+            edge.removeAlikeTransitions(reader);
+        }
+    }
+
     boolean alike(Cycle other, ContextReaderIfc reader) {
         if (this.equals(other)) {
             return true;
@@ -142,6 +147,14 @@ class Cycle {
             return false;
         }
         return true;
+    }
+
+    int getNumberOfTransitionCycles() {
+        int transitionCycles = 1;
+        for (LockEdge edge : mEdgesInCycle) {
+            transitionCycles *= edge.numberOfUniqueTransitions();
+        }
+        return transitionCycles;
     }
 
     public boolean equals(Object obj) {

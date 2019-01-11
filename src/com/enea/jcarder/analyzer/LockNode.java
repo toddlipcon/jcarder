@@ -54,21 +54,19 @@ class LockNode {
         }
     }
 
-    void addOutgoingEdge(LockEdge newEdge) {
+    LockEdge addOutgoingEdge(LockEdge newEdge) {
         LockEdge existingEdge = mOutgoingEdges.get(newEdge);
-        if (existingEdge == null) {
-            mOutgoingEdges.put(newEdge, newEdge);
-        } else {
+        if (existingEdge != null) {
             existingEdge.merge(newEdge);
+            return existingEdge;
         }
+        mOutgoingEdges.put(newEdge, newEdge);
+        return newEdge;
     }
 
     void populateContextIdTranslationMap(Map<Integer, Integer> translationMap) {
         for (LockEdge edge : mOutgoingEdges.values()) {
-            translationMap.put(edge.getSourceLockingContextId(),
-                               edge.getSourceLockingContextId());
-            translationMap.put(edge.getTargetLockingContextId(),
-                               edge.getTargetLockingContextId());
+            edge.populateContextIdTranslationMap(translationMap);
         }
     }
 
@@ -93,16 +91,20 @@ class LockNode {
         }
     }
 
-    long numberOfUniqueEdges() {
-        return mOutgoingEdges.size();
+    long numberOfUniqueTransitions() {
+        long numberOfUniqueTransitions = 0;
+        for (LockEdge edge : mOutgoingEdges.values()) {
+            numberOfUniqueTransitions += edge.numberOfUniqueTransitions();
+        }
+        return numberOfUniqueTransitions;
     }
 
-    long numberOfDuplicatedEdges() {
-        long numberOfDuplicatedEdges = 0;
+    long numberOfDuplicatedTransitions() {
+        long numberOfDuplicatedTransitions = 0;
         for (LockEdge edge : mOutgoingEdges.values()) {
-            numberOfDuplicatedEdges += edge.getDuplicates();
+            numberOfDuplicatedTransitions += edge.numberOfDuplicatedTransitions();
         }
-        return numberOfDuplicatedEdges;
+        return numberOfDuplicatedTransitions;
     }
 
     boolean alike(LockNode other, ContextReaderIfc reader) {

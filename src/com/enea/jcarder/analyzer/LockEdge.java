@@ -16,15 +16,10 @@
 
 package com.enea.jcarder.analyzer;
 
-import java.util.Map;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 import net.jcip.annotations.NotThreadSafe;
 
-import com.enea.jcarder.common.LockingContext;
 import com.enea.jcarder.common.contexts.ContextReaderIfc;
 
 /**
@@ -35,64 +30,51 @@ import com.enea.jcarder.common.contexts.ContextReaderIfc;
 class LockEdge {
     private final LockNode mSource;
     private final LockNode mTarget;
-    private final long mThreadId; // The thread that did the synchronization.
-    private int mSourceContextId;
-    private int mTargetContextId;
-    private long mNumberOfDuplicates;
+    private final LockTransition mTransition;
 
-    private Set<Integer> mGateLockIds;
-
-
-    LockEdge(LockNode source,
-             LockNode target,
-             long threadId,
-             int sourceLockingContextId,
-             int targetLockingContextId) {
-        this(source, target, threadId, sourceLockingContextId, targetLockingContextId,
-             Collections.<Integer>emptyList());
-    }
-
-    LockEdge(LockNode source,
-             LockNode target,
-             long threadId,
-             int sourceLockingContextId,
-             int targetLockingContextId,
-             Collection<Integer> gateLockIds) {
+    // full mode constructor
+    LockEdge(LockNode source, LockNode target, LockTransition transition) {
         mSource = source;
         mTarget = target;
-        mThreadId = threadId;
-        mSourceContextId = sourceLockingContextId;
-        mTargetContextId = targetLockingContextId;
-        mNumberOfDuplicates = 0;
-        mGateLockIds = new HashSet<Integer>(gateLockIds);
+        mTransition = transition;
+    }
+
+    Collection<LockTransition> getTransitions() {
+        return Collections.singletonList(mTransition);
     }
 
     void merge(LockEdge other) {
         assert this.equals(other);
-        mNumberOfDuplicates += (other.mNumberOfDuplicates + 1);
+        mTransition.merge(other.mTransition);
     }
 
-    long getDuplicates() {
-        return mNumberOfDuplicates;
+
+    long numberOfUniqueTransitions() {
+        return 1;
+    }
+
+    long numberOfDuplicatedTransitions() {
+        return mTransition.getDuplicates();
+    }
+
+    void populateContextIdTranslationMap(Map<Integer, Integer> translationMap) {
+        translationMap.put(mTransition.getSourceLockingContextId(),
+                mTransition.getSourceLockingContextId());
+        translationMap.put(mTransition.getTargetLockingContextId(),
+                mTransition.getTargetLockingContextId());
+    }
+
+    void translateContextIds(Map<Integer, Integer> translation) {
+        mTransition.translateContextIds(translation);
+    }
+
+    void removeAlikeTransitions(ContextReaderIfc reader) {
     }
 
     boolean alike(LockEdge other, ContextReaderIfc reader) {
-        /*
-         * TODO Some kind of cache to improve performance? Note that the context
-         * IDs are not declared final.
-         */
-        LockingContext thisSourceContext =
-            reader.readContext(mSourceContextId);
-        LockingContext otherSourceContext =
-            reader.readContext(other.mSourceContextId);
-        LockingContext thisTargetContext =
-            reader.readContext(mTargetContextId);
-        LockingContext otherTargetContext =
-            reader.readContext(other.mTargetContextId);
-        return thisSourceContext.alike(otherSourceContext)
-               && thisTargetContext.alike(otherTargetContext)
-               && mSource.alike(other.mSource, reader)
-               && mTarget.alike(other.mTarget, reader);
+        return mSource.alike(other.mSource, reader)
+                && mTarget.alike(other.mTarget, reader)
+                && mTransition.alike(other.mTransition, reader);
     }
 
     public boolean equals(Object obj) {
@@ -104,9 +86,8 @@ class LockEdge {
             LockEdge other = (LockEdge) obj;
             return (mTarget.getLockId() == other.mTarget.getLockId())
             && (mSource.getLockId() == other.mSource.getLockId())
-            && (mThreadId == other.mThreadId)
-            && (mSourceContextId == other.mSourceContextId)
-            && (mTargetContextId == other.mTargetContextId);
+            && (mTransition.equals(other.mTransition))
+            ;
         } catch (Exception e) {
             return false;
         }
@@ -114,12 +95,9 @@ class LockEdge {
 
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
-        result = prime + mSource.getLockId();
-        result = prime * result + mSourceContextId;
+        int result = prime + mSource.getLockId();
         result = prime * result + mTarget.getLockId();
-        result = prime * result + mTargetContextId;
-        result = prime * result + (int) (mThreadId ^ (mThreadId >>> 32));
+        result = prime * result + mTransition.hashCode();
         return result;
     }
 
@@ -131,38 +109,19 @@ class LockEdge {
         return mSource;
     }
 
-    int getSourceLockingContextId() {
-        return mSourceContextId;
-    }
-
-    int getTargetLockingContextId() {
-        return mTargetContextId;
-    }
-
-    /**
-     * Translate the source and target context ID according to a translation
-     * map.
-     */
-    void translateContextIds(Map<Integer, Integer> translation) {
-        final Integer newSourceId = translation.get(mSourceContextId);
-        if (newSourceId != null && newSourceId != mSourceContextId) {
-            mSourceContextId = newSourceId;
-        }
-        final Integer newTargetId = translation.get(mTargetContextId);
-        if (newTargetId != null && newSourceId != mTargetContextId) {
-            mTargetContextId = newTargetId;
-        }
-    }
-
     long getThreadId() {
-        return mThreadId;
+        return mTransition.getThreadId();
+    }
+
+    boolean hasThreadId(long threadId) {
+        return mTransition.getThreadId() == threadId;
     }
 
     Set<Integer> getGateLockIds() {
-        return mGateLockIds;
+        return mTransition.getGateLockIds();
     }
 
     public String toString() {
-        return "  " + mSource + "->" + mTarget + "(t " + mThreadId + ")";
+        return "  " + mSource + "->" + mTarget + "(t " + mTransition.getThreadId() + ")";
     }
 }

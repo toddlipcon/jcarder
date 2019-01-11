@@ -23,13 +23,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import com.enea.jcarder.common.LockingContext;
 import com.enea.jcarder.common.contexts.ContextFileReader;
@@ -63,6 +57,7 @@ public final class Analyzer {
     private boolean mIncludePackages = false;
     private boolean mPrintDetails = false;
     private boolean mIncludeGatedCycles = false;
+    private boolean mFastMode = false;
     private Logger mLogger;
     final private Level mLogLevel = Logger.Level.INFO;
     private String mInputDirectory = ".";
@@ -83,7 +78,7 @@ public final class Analyzer {
                                                         CONTEXTS_DB_FILENAME));
 
             EventFileReader eventReader = new EventFileReader(mLogger);
-            graphBuilder = new LockGraphBuilder(mLogger, contextReader);
+            graphBuilder = new LockGraphBuilder(mLogger, mFastMode, contextReader);
             eventReader.parseFile(new File(mInputDirectory, EVENT_DB_FILENAME),
                                   graphBuilder);
         }
@@ -94,7 +89,7 @@ public final class Analyzer {
         }
         printInitiallyLoadedStatistics(graphBuilder.getAllLocks());
 
-        CycleDetector cycleDetector = new CycleDetector(mLogger);
+        CycleDetector cycleDetector = new CycleDetector(mLogger, mFastMode);
         cycleDetector.analyzeLockNodes(graphBuilder.getAllLocks());
         printCycleAnalysisStatistics(cycleDetector);
 
@@ -172,15 +167,19 @@ public final class Analyzer {
 
     private void  printCycleAnalysisStatistics(CycleDetector cycleDetector) {
         System.out.println("\nCycle analysis result: ");
-        System.out.println("   Cycles:          "
+        System.out.println("   Cycles:            "
                            + cycleDetector.getCycles().size());
-        System.out.println("   Edges in cycles: "
+        if (mFastMode) {
+            System.out.println("   Transition cycles: "
+                    + cycleDetector.getNumberOfTransitionCycles());
+        }
+        System.out.println("   Edges in cycles:   "
                            + cycleDetector.getNumberOfEdges());
-        System.out.println("   Nodes in cycles: "
+        System.out.println("   Nodes in cycles:   "
                            + cycleDetector.getNumberOfNodes());
-        System.out.println("   Max cycle depth: "
+        System.out.println("   Max cycle depth:   "
                            + cycleDetector.getMaxCycleDepth());
-        System.out.println("   Max graph depth: "
+        System.out.println("   Max graph depth:   "
                            + cycleDetector.getMaxDepth());
         System.out.println();
     }
@@ -237,6 +236,9 @@ public final class Analyzer {
         op.addOption("-include-gated-cycles",
                      "Include cycles in the output even if they are always " +
                      "gated by higher ranked locks.");
+        op.addOption("-fast-mode",
+                     "Enables fast cycle analyze mode. It could be faster and " +
+                             "use less memory than default mode but report false positives sometimes");
         op.addOption("-printdetails",
                      "Print details");
         op.addOption("-version",
@@ -266,6 +268,8 @@ public final class Analyzer {
                 }
             } else if (option.equals("-include-gated-cycles")) {
                 mIncludeGatedCycles = true;
+            } else if (option.equals("-fast-mode")) {
+                mFastMode = true;
             } else if (option.equals("-printdetails")) {
                 mPrintDetails = true;
             } else if (option.equals("-version")) {
@@ -299,14 +303,16 @@ public final class Analyzer {
         SortedSet<String> methods = new TreeSet<String>();
         for (Cycle cycle : cycles) {
             for (LockEdge edge : cycle.getEdges()) {
-                LockingContext source =
-                    reader.readContext(edge.getSourceLockingContextId());
-                LockingContext target =
-                    reader.readContext(edge.getTargetLockingContextId());
-                threads.add(source.getThreadName());
-                threads.add(target.getThreadName());
-                methods.add(source.getMethodWithClass());
-                methods.add(target.getMethodWithClass());
+                for (LockTransition transition : edge.getTransitions()) {
+                    LockingContext source =
+                            reader.readContext(transition.getSourceLockingContextId());
+                    LockingContext target =
+                            reader.readContext(transition.getTargetLockingContextId());
+                    threads.add(source.getThreadName());
+                    threads.add(target.getThreadName());
+                    methods.add(source.getMethodWithClass());
+                    methods.add(target.getMethodWithClass());
+                }
             }
         }
         System.out.println();
@@ -325,17 +331,17 @@ public final class Analyzer {
 
     private void printInitiallyLoadedStatistics(Iterable<LockNode> locks) {
         int numberOfNodes = 0;
-        int numberOfUniqueEdges = 0;
-        int numberOfDuplicatedEdges = 0;
+        int numberOfUniqueTransitions = 0;
+        int numberOfDuplicatedTransitions = 0;
         for (LockNode lock : locks) {
             numberOfNodes++;
-            numberOfUniqueEdges += lock.numberOfUniqueEdges();
-            numberOfDuplicatedEdges += lock.numberOfDuplicatedEdges();
+            numberOfUniqueTransitions += lock.numberOfUniqueTransitions();
+            numberOfDuplicatedTransitions += lock.numberOfDuplicatedTransitions();
         }
         System.out.println("\nLoaded from database files:");
         System.out.println("   Nodes: " + numberOfNodes);
-        System.out.println("   Edges: " + numberOfUniqueEdges
-                           + " (excluding " + numberOfDuplicatedEdges
+        System.out.println("   Edges: " + numberOfUniqueTransitions
+                           + " (excluding " + numberOfDuplicatedTransitions
                            + " duplicated)");
     }
 

@@ -16,19 +16,12 @@
 
 package com.enea.jcarder.analyzer;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.enea.jcarder.analyzer.Cycle;
-import com.enea.jcarder.analyzer.CycleDetector;
-import com.enea.jcarder.analyzer.LockEdge;
-import com.enea.jcarder.analyzer.LockGraphBuilder;
-import com.enea.jcarder.analyzer.LockNode;
 import com.enea.jcarder.util.logging.Logger;
 
 /*
@@ -43,9 +36,9 @@ public final class TestCycleDetector {
     HashSet<Cycle> mExpectedCycles;
 
     @Before
-    public void setUp() throws Exception {
-        mBuilder = new LockGraphBuilder(new Logger(null), null);
-        mCycleDetector = new CycleDetector(new Logger(null));
+    public void setUp() {
+        mBuilder = new LockGraphBuilder(new Logger(null), false, null);
+        mCycleDetector = new CycleDetector(new Logger(null), false);
         mNodes = new LinkedList<LockNode>();
         mExpectedCycles = new HashSet<Cycle>();
     }
@@ -59,9 +52,7 @@ public final class TestCycleDetector {
         final LockNode targetLock = mBuilder.getLockNode(to);
         final LockEdge edge = new LockEdge(sourceLock,
                                            targetLock,
-                                           threadId,
-                                           -1,
-                                           -1);
+                                           new LockTransition(threadId, -1, -1));
         sourceLock.addOutgoingEdge(edge);
         if (!mNodes.contains(sourceLock)) {
             mNodes.add(sourceLock);
@@ -82,7 +73,7 @@ public final class TestCycleDetector {
     }
 
     @Test
-    public void testNoCycle() throws Exception {
+    public void testNoCycle() {
         addEdge(1, 2);
         addEdge(2, 3);
         addEdge(1, 3);
@@ -92,7 +83,7 @@ public final class TestCycleDetector {
     }
 
     @Test
-    public void testSmallCycle() throws Exception {
+    public void testSmallCycle() {
         LockEdge e1 = addEdge(1, 2);
         LockEdge e2 = addEdge(2, 1);
         mCycleDetector.analyzeLockNodes(mNodes);
@@ -101,7 +92,7 @@ public final class TestCycleDetector {
     }
 
     @Test
-    public void testCycle() throws Exception {
+    public void testCycle() {
         addEdge(1, 2);
         LockEdge e2 = addEdge(2, 3);
         LockEdge e3 = addEdge(3, 4);
@@ -113,7 +104,7 @@ public final class TestCycleDetector {
     }
 
     @Test
-    public void testCyclesWithTwoPaths() throws Exception {
+    public void testCyclesWithTwoPaths() {
         addEdge(1, 2);
         LockEdge e2 = addEdge(2, 3);
         LockEdge e3 = addEdge(3, 4);
@@ -126,7 +117,7 @@ public final class TestCycleDetector {
     }
 
     @Test
-    public void testCyclesWithTwoTimesTwoPathsLarge() throws Exception {
+    public void testCyclesWithTwoTimesTwoPathsLarge() {
         LockEdge e1 = addEdge(1, 2);
         LockEdge e2 = addEdge(2, 3);
         LockEdge e3 = addEdge(3, 4);
@@ -144,7 +135,7 @@ public final class TestCycleDetector {
     }
 
     @Test
-    public void testCyclesWithTwoTimesTwoPathsSmall() throws Exception {
+    public void testCyclesWithTwoTimesTwoPathsSmall() {
         LockEdge e1 = addEdge(1, 2);
         LockEdge e2 = addEdge(2, 1);
         LockEdge e1b = addEdge(1, 2, 2);
@@ -159,7 +150,7 @@ public final class TestCycleDetector {
 
 
     @Test
-    public void testCyclesWithTwoAlternateWays() throws Exception {
+    public void testCyclesWithTwoAlternateWays() {
         LockEdge e1 = addEdge(1, 2);
         LockEdge e2 = addEdge(1, 3);
         LockEdge e3 = addEdge(2, 4);
@@ -179,7 +170,7 @@ public final class TestCycleDetector {
 
 
     @Test
-    public void testComplexCycles() throws Exception {
+    public void testComplexCycles() {
         int a = 6;
         int b = 3;
         addEdge(1, 2);
@@ -204,7 +195,7 @@ public final class TestCycleDetector {
 
 
     @Test
-    public void testLotsOfCycles() throws Exception {
+    public void testLotsOfCycles() {
         int a = 1;
         int b = 2;
         int c = 3;
@@ -230,7 +221,7 @@ public final class TestCycleDetector {
 
 
     @Test
-    public void testComplexCycles2() throws Exception {
+    public void testComplexCycles2() {
         int a = 6;
         int b = 3;
         LockEdge e1 = addEdge(2, b);
@@ -247,7 +238,7 @@ public final class TestCycleDetector {
 
 
     @Test
-    public void testTwoSeparateCycles() throws Exception {
+    public void testTwoSeparateCycles() {
         LockEdge e1 = addEdge(1, 2);
         LockEdge e2 = addEdge(2, 1);
         LockEdge e3 = addEdge(3, 4);
@@ -260,7 +251,7 @@ public final class TestCycleDetector {
     }
 
     @Test
-    public void testTwoConnectedCycles() throws Exception {
+    public void testTwoConnectedCycles() {
         LockEdge e1 = addEdge(1, 2);
         LockEdge e2 = addEdge(2, 1);
         LockEdge e3 = addEdge(2, 3);
@@ -274,7 +265,7 @@ public final class TestCycleDetector {
     }
 
     @Test
-    public void testDuplicatedEdges() throws Exception {
+    public void testDuplicatedEdges() {
         LockEdge e1 = addEdge(1, 2);
         LockEdge e2 = addEdge(1, 2, 10);
         LockEdge e3 = addEdge(2, 1);
