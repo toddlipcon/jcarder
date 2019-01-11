@@ -90,15 +90,17 @@ final class GraphvizGenerator {
         sb.append("  node [shape=ellipse, style=filled, fontsize=12];\n");
         final HashSet<LockNode> alreadyAppendedNodes = new HashSet<LockNode>();
         for (LockEdge edge : edgesToBePrinted) {
+
+            appendNodeIfNotAppended(reader,
+                    sb,
+                    alreadyAppendedNodes,
+                    edge.getSource());
+            appendNodeIfNotAppended(reader,
+                    sb,
+                    alreadyAppendedNodes,
+                    edge.getTarget());
+
             for (LockTransition transition : edge.getTransitions()) {
-                appendNodeIfNotAppended(reader,
-                        sb,
-                        alreadyAppendedNodes,
-                        edge.getSource());
-                appendNodeIfNotAppended(reader,
-                        sb,
-                        alreadyAppendedNodes,
-                        edge.getTarget());
                 sb.append("  ").append(edge.getSource().toString());
                 sb.append(" -> ").append(edge.getTarget().toString());
 

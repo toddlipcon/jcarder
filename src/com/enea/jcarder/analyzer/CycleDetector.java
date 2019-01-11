@@ -38,13 +38,15 @@ import com.enea.jcarder.util.logging.Logger;
 class CycleDetector {
     private final HashSet<Cycle> mCycles;
     private final Logger mLogger;
+    private final boolean mFastMode;
     private final MaxValueCounter mMaxDepth;
     private final MaxValueCounter mMaxCycleDepth;
     private final MaxValueCounter mNoOfCycles;
     private final Counter mNoOfCreatedCycleObjects;
 
-    CycleDetector(Logger logger) {
+    CycleDetector(Logger logger, boolean fastMode) {
         mLogger = logger;
+        mFastMode = fastMode;
         mCycles = new HashSet<Cycle>();
         mMaxDepth = new MaxValueCounter("Graph Depth", mLogger);
         mMaxCycleDepth = new MaxValueCounter("Cycle Depth", mLogger);
@@ -160,7 +162,9 @@ class CycleDetector {
         Iterator<Cycle> iter = mCycles.iterator();
         while (iter.hasNext()) {
             final Cycle cycle = iter.next();
-            cycle.removeAlikeTransitions(reader);
+            if (mFastMode) {
+                cycle.removeAlikeTransitions(reader);
+            }
             if (containsAlike(cycle, uniqueCycles, reader)) {
                 iter.remove();
                 removedCycles++;

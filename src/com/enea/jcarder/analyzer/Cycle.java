@@ -69,12 +69,12 @@ class Cycle {
         // TODO Cache the result to improve performance?
         final Iterator<LockEdge> iter = mEdgesInCycle.iterator();
         if (iter.hasNext()) {
-            final long firstThreadId = iter.next().getUniqueThreadId();
+            final long firstThreadId = iter.next().getThreadId();
             if (firstThreadId < 0) {
                 return false;
             }
             while (iter.hasNext()) {
-                if (!iter.next().hasUniqueThreadId(firstThreadId)) {
+                if (!iter.next().hasThreadId(firstThreadId)) {
                     return false;
                 }
             }
@@ -88,7 +88,7 @@ class Cycle {
 
         while (iter.hasNext()) {
             LockEdge edge = iter.next();
-            for (int gateLockId : edge.getCommonGateLockIds()) {
+            for (int gateLockId : edge.getGateLockIds()) {
                 // shared locks dont gate
                 if (gateLockId < 0) continue;
 
@@ -152,7 +152,7 @@ class Cycle {
     int getNumberOfTransitionCycles() {
         int transitionCycles = 1;
         for (LockEdge edge : mEdgesInCycle) {
-            transitionCycles *= edge.getTransitions().size();
+            transitionCycles *= edge.numberOfUniqueTransitions();
         }
         return transitionCycles;
     }

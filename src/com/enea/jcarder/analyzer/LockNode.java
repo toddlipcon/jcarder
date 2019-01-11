@@ -57,6 +57,7 @@ class LockNode {
     LockEdge addOutgoingEdge(LockEdge newEdge) {
         LockEdge existingEdge = mOutgoingEdges.get(newEdge);
         if (existingEdge != null) {
+            existingEdge.merge(newEdge);
             return existingEdge;
         }
         mOutgoingEdges.put(newEdge, newEdge);

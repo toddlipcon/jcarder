@@ -34,6 +34,7 @@ import com.enea.jcarder.common.events.LockEventListenerIfc;
 class LockGraphBuilder implements LockEventListenerIfc {
 
     private final Logger mLogger;
+    private final boolean mFastMode;
     private final ContextReaderIfc mContextReader;
 
     private HashMap<Integer, LockNode> mLocks =
@@ -42,8 +43,9 @@ class LockGraphBuilder implements LockEventListenerIfc {
     private HashMap<Long, HashMap<Integer, LockWithContext>> currentLocksByThread =
         new HashMap<Long, HashMap<Integer, LockWithContext>>();
 
-    public LockGraphBuilder(Logger logger, ContextReaderIfc contextReader) {
+    public LockGraphBuilder(Logger logger, boolean fastMode, ContextReaderIfc contextReader) {
         mLogger = logger;
+        mFastMode = fastMode;
         mContextReader = contextReader;
     }
 
@@ -106,15 +108,23 @@ class LockGraphBuilder implements LockEventListenerIfc {
             // locks to this one.
             for (LockWithContext sourceLwc : heldLocks.values()) {
                 LockNode sourceLock = getLockNode(sourceLwc.nodeId);
-                final LockEdge edge = new LockEdge(sourceLock, targetLock);
                 final LockTransition transition = new LockTransition(
                         threadId,
                         sourceLwc.contextId,
                         lockingContextId,
                         heldLocks.keySet()
                 );
-                sourceLock.addOutgoingEdge(edge)
-                        .addTransition(transition);
+
+                if (mFastMode) {
+                    // edge having many transitions
+                    final LockEdge edge = new LockMultiEdge(sourceLock, targetLock);
+                    ((LockMultiEdge)sourceLock.addOutgoingEdge(edge))
+                            .addTransition(transition);
+                } else {
+                    // edge per transition
+                    final LockEdge edge = new LockEdge(sourceLock, targetLock, transition);
+                    sourceLock.addOutgoingEdge(edge);
+                }
             }
 
             // And add this one to the set.

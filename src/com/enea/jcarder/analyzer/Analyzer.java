@@ -57,6 +57,7 @@ public final class Analyzer {
     private boolean mIncludePackages = false;
     private boolean mPrintDetails = false;
     private boolean mIncludeGatedCycles = false;
+    private boolean mFastMode = false;
     private Logger mLogger;
     final private Level mLogLevel = Logger.Level.INFO;
     private String mInputDirectory = ".";
@@ -77,7 +78,7 @@ public final class Analyzer {
                                                         CONTEXTS_DB_FILENAME));
 
             EventFileReader eventReader = new EventFileReader(mLogger);
-            graphBuilder = new LockGraphBuilder(mLogger, contextReader);
+            graphBuilder = new LockGraphBuilder(mLogger, mFastMode, contextReader);
             eventReader.parseFile(new File(mInputDirectory, EVENT_DB_FILENAME),
                                   graphBuilder);
         }
@@ -88,7 +89,7 @@ public final class Analyzer {
         }
         printInitiallyLoadedStatistics(graphBuilder.getAllLocks());
 
-        CycleDetector cycleDetector = new CycleDetector(mLogger);
+        CycleDetector cycleDetector = new CycleDetector(mLogger, mFastMode);
         cycleDetector.analyzeLockNodes(graphBuilder.getAllLocks());
         printCycleAnalysisStatistics(cycleDetector);
 
@@ -168,8 +169,10 @@ public final class Analyzer {
         System.out.println("\nCycle analysis result: ");
         System.out.println("   Cycles:            "
                            + cycleDetector.getCycles().size());
-        System.out.println("   Transition cycles: "
-                           + cycleDetector.getNumberOfTransitionCycles());
+        if (mFastMode) {
+            System.out.println("   Transition cycles: "
+                    + cycleDetector.getNumberOfTransitionCycles());
+        }
         System.out.println("   Edges in cycles:   "
                            + cycleDetector.getNumberOfEdges());
         System.out.println("   Nodes in cycles:   "
@@ -233,6 +236,9 @@ public final class Analyzer {
         op.addOption("-include-gated-cycles",
                      "Include cycles in the output even if they are always " +
                      "gated by higher ranked locks.");
+        op.addOption("-fast-mode",
+                     "Enables fast cycle analyze mode. It could be faster and " +
+                             "use less memory than default mode but report false positives sometimes");
         op.addOption("-printdetails",
                      "Print details");
         op.addOption("-version",
@@ -262,6 +268,8 @@ public final class Analyzer {
                 }
             } else if (option.equals("-include-gated-cycles")) {
                 mIncludeGatedCycles = true;
+            } else if (option.equals("-fast-mode")) {
+                mFastMode = true;
             } else if (option.equals("-printdetails")) {
                 mPrintDetails = true;
             } else if (option.equals("-version")) {
